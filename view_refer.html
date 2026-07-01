@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cashgain - Refer & Earn</title>
+  <style>
+    :root { 
+      --primary: #2c3e50; 
+      --success: #27ae60; 
+      --bg: #f4f6f9; 
+      --text: #333; 
+    }
+    
+    /* Premium Responsive Layout - Perfect Mobile Fit */
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
+    
+    .refer-card { background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: center; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 24px; }
+    .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
+    
+    /* Modern Stats Dashboard Cards */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+    .stat-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; text-align: center; transition: 0.2s; }
+    .stat-box div:first-child { font-size: 13px; color: #7f8c8d; font-weight: 600; margin-bottom: 5px; }
+    .stat-box div:last-child { font-size: 22px; color: var(--primary); font-weight: 700; }
+    
+    /* Invitation Link Clipboard Console */
+    .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 18px 15px; border-radius: 12px; margin-top: 15px; }
+    .code-text { font-size: 22px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 8px 0; }
+    
+    .btn-share { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15); transition: 0.2s; }
+    .btn-share:hover { background: #219653; }
+    
+    /* Statements History Table System (Anti-Cutting Mobile Engine) */
+    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
+    th, td { border: 1px solid #eee; padding: 14px 12px; text-align: left; font-size: 14px; }
+    th { background: var(--primary); color: white; font-weight: 600; position: sticky; top: 0; }
+    .bonus-badge { color: var(--success); font-weight: bold; background: #eafaf1; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+  </style>
+</head>
+<body>
+
+  <div class="refer-card">
+    <h2>👥 Refer & Earn</h2>
+    <div class="subtitle">Invite your friends to Cashgain and secure exclusive instant rewards directly into your account when they join the network!</div>
+    
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div>Total Referral</div>
+        <div id="totalRefers">0</div>
+      </div>
+      <div class="stat-box">
+        <div>Total Rewards</div>
+        <div id="totalRewards">₹0</div>
+      </div>
+    </div>
+    
+    <div class="share-box">
+      <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
+      <div class="code-text" id="myReferCode">-------</div>
+      <button class="btn-share" onclick="copyReferLink()">🚀 Copy Invite Link</button>
+    </div>
+  </div>
+
+  <h4 style="color: var(--primary); max-width:450px; margin:0 auto 15px auto; font-weight:700; font-size:16px;">📜 Referral Transaction Details</h4>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Joined User</th>
+          <th>Reward Amount</th>
+        </tr>
+      </thead>
+      <tbody id="referTableBody">
+        <tr><td colspan="3" style="text-align:center; color:#7f8c8d;">Syncing system network data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Live Google Apps Script API Engine Mapping
+    const API_URL = "https://script.google.com/macros/s/AKfycbyHOkNnL3LJE2bY7cb3M8W4y3qK1e6nldMiKjLRNEULgD52blMkPgj7EcyCszVsprya/exec"; 
+    const userId = localStorage.getItem("currentUserId") || "CG1001";
+
+    function loadReferDashboard() {
+      if(!userId) return;
+      document.getElementById('myReferCode').innerText = userId;
+      
+      // Live server communications loop
+      fetch(API_URL + `?action=getReferralData&userId=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if(data.status === "success") {
+            document.getElementById('totalRefers').innerText = data.totalRefers;
+            document.getElementById('totalRewards').innerText = "₹" + data.totalRewards;
+            
+            let html = "";
+            data.history.forEach(row => {
+              html += `<tr>
+                <td>${row.date}</td>
+                <td>${row.user}</td>
+                <td><span class="bonus-badge">+₹${row.reward}</span></td>
+              </tr>`;
+            });
+            document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
+          }
+        })
+        .catch(err => {
+          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referral logs found. Network sync active.</td></tr>";
+        });
+    }
+
+    function copyReferLink() {
+      // Direct live custom web domain compiler logic
+      const baseLink = window.location.origin + window.location.pathname.replace('view_refer.html', 'index.html');
+      const fullInviteLink = `${baseLink}?ref=${userId}`;
+      
+      navigator.clipboard.writeText(fullInviteLink).then(() => {
+        alert("Success! Custom referral link copied to clipboard.");
+      }).catch(() => {
+        alert("Invite Link: " + fullInviteLink);
+      });
+    }
+
+    // Initialize layout setup on run
+    window.onload = loadReferDashboard;
+  </script>
+</body>
+</html>
