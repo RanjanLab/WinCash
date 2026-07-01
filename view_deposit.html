@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; }
+    .form-group { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    th { background: #34495e; color: white; }
+    .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .badge.Approved { background: #eafaf1; color: #27ae60; }
+    .badge.Pending { background: #fef9e7; color: #f1c40f; }
+  </style>
+</head>
+<body>
+
+  <h2>💰 Deposit Amount</h2>
+  
+  <div class="form-group">
+    <h4>Nayi Deposit Request Lagayein</h4>
+    <input type="number" id="depAmount" placeholder="Amount (₹)">
+    <input type="text" id="depUtr" placeholder="UTR / Transaction Ref Number">
+    <button onclick="submitDeposit()">Submit Request</button>
+  </div>
+
+  <h4>📜 Aapki Deposit History</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Amount</th>
+        <th>UTR / Ref No</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="depositTableBody">
+      <tr><td colspan="3">Data load ho raha hai...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyHOkNnL3LJE2bY7cb3M8W4y3qK1e6nldMiKjLRNEULgD52blMkPgj7EcyCszVsprya/exec";
+    const userId = localStorage.getItem("currentUserId");
+
+    function loadHistory() {
+      fetch(API_URL + `?action=getDepositHistory&userId=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          let html = "";
+          if(data.status === "success") {
+            data.history.forEach(row => {
+              html += `<tr>
+                <td>₹${row.amount}</td>
+                <td>${row.utr}</td>
+                <td><span class="badge ${row.status}">${row.status}</span></td>
+              </tr>`;
+            });
+            document.getElementById('depositTableBody').innerHTML = html || "<tr><td colspan='3'>Koi history nahi mili.</td></tr>";
+          }
+        });
+    }
+
+    function submitDeposit() {
+      let amount = document.getElementById('depAmount').value;
+      let utr = document.getElementById('depUtr').value;
+      if(!amount || !utr) return alert("Sari details dalein");
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'deposit', userId, name: localStorage.getItem("currentUserName"), mobile: localStorage.getItem("currentUserMobile"), amount, utr })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === "success") {
+          alert("Request Save Ho Gayi! Admin approval ka wait karein.");
+          document.getElementById('depAmount').value = "";
+          document.getElementById('depUtr').value = "";
+          loadHistory();
+        }
+      });
+    }
+
+    window.onload = loadHistory;
+  </script>
+</body>
+</html>
