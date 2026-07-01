@@ -60,7 +60,6 @@
       <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
       <div class="code-text" id="myReferCode">-------</div>
       
-      <!-- Native Mobile App Popup Trigger Button -->
       <div class="btn-container">
         <button class="btn-action" onclick="shareInviteSystem()">🔗 Share Invite Link</button>
       </div>
@@ -115,10 +114,10 @@
         });
     }
 
-    // 🚀 Native Mobile Share Engine with Fallback System
+    // 🚀 Native Mobile Share Engine with Fixed Direct Path URL
     function shareInviteSystem() {
-      // Direct registration compile configuration mapping (?ref=ID parameter ke sath)
-      const baseLink = window.location.origin + window.location.pathname.replace('view_refer.html', 'index.html');
+      // Is logic se window location directory index.html (Main Sign-up form) par return ho jayegi
+      const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
       const fullInviteLink = `${baseLink}?ref=${userId}`;
       
       const shareData = {
@@ -127,12 +126,10 @@
         url: fullInviteLink
       };
 
-      // Mobile devices ke apps (WhatsApp/Telegram etc.) pop-up kholne ka logic
       if (navigator.share) {
         navigator.share(shareData)
           .catch((error) => console.log('Error sharing:', error));
       } else {
-        // Desktop or legacy browsers backup clip copy system
         navigator.clipboard.writeText(fullInviteLink).then(() => {
           alert("Invite link compiled & copied to clipboard!");
         });
