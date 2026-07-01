@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cashgain - Secure Login</title>
   <style>
     :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --bg: #f4f6f9; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; padding: 15px; box-sizing: border-box; }
     
     /* 2-Second Intro Splash Screen */
     #splash { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: all 0.5s ease; }
@@ -14,23 +14,33 @@
     .splash-title { color: white; font-size: 32px; font-weight: bold; margin-top: 20px; letter-spacing: 2px; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     
-    /* Forms Container */
-    .form-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 340px; display: none; text-align: center; animation: fadeIn 0.5s ease; }
+    /* Forms Container - Optimized for Premium Mobile Fit */
+    .form-box { background: white; padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%; max-width: 360px; display: none; text-align: center; animation: fadeIn 0.5s ease; box-sizing: border-box; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    h2 { color: var(--primary); margin-bottom: 25px; font-size: 24px; }
-    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-    button { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+    h2 { color: var(--primary); margin-bottom: 25px; font-size: 24px; font-weight: 700; }
+    input { width: 100%; padding: 13px 15px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 8px; box-sizing: border-box; font-size: 15px; transition: 0.2s; background: #fafafa; }
+    input:focus { border-color: var(--primary); background: #fff; outline: none; }
+    
+    /* Premium Action Buttons with Loading Engine */
+    button { position: relative; width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15); }
     button:hover { background: #219653; }
+    button:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
     
-    .link-text { color: var(--primary); margin-top: 15px; font-size: 14px; cursor: pointer; text-decoration: underline; }
-    .alert-box { background: #fdf2f2; color: var(--danger); padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 15px; display: none; border: 1px solid #fde2e2; }
+    /* ⚡ Fast Loader CSS Spinner Animation */
+    .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     
-    /* Registration Success Card */
+    .link-text { color: var(--primary); margin-top: 18px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: 600; transition: 0.2s; display: inline-block; }
+    .link-text:hover { color: #1a252f; text-decoration: underline; }
+    .alert-box { background: #fdf2f2; color: var(--danger); padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 15px; display: none; border: 1px solid #fde2e2; text-align: left; font-weight: 500; line-height: 1.4; }
+    
+    /* Registration Success Card Elements */
     .success-card { display: none; text-align: center; animation: fadeIn 0.5s ease; }
     .check-icon { font-size: 60px; color: var(--success); margin-bottom: 15px; }
     .credential-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; }
-    .warning-banner { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 15px; }
+    .credential-box p { margin: 8px 0; font-size: 15px; }
+    .warning-banner { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 13px; margin-top: 15px; text-align: left; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -43,22 +53,28 @@
   <div id="loginSection" class="form-box" style="display: block;">
     <h2>Cashgain Login</h2>
     <div id="loginError" class="alert-box"></div>
-    <input type="text" id="loginUser" placeholder="User ID / Mobile">
+    <input type="text" id="loginUser" placeholder="User ID / Mobile Number">
     <input type="password" id="loginPass" placeholder="Password">
-    <button onclick="handleLogin()">Login</button>
-    <div class="link-text" onclick="switchForm('register')">Naya Account Banayein</div>
-    <div class="link-text" onclick="switchForm('forget')">Password Bhool Gaye?</div>
+    <button id="loginBtn" onclick="handleLogin()">
+      <span>Login</span>
+      <div class="spinner" id="loginSpinner"></div>
+    </button>
+    <div class="link-text" onclick="switchForm('register')">Create New Account</div><br>
+    <div class="link-text" onclick="switchForm('forget')">Forgot Password?</div>
   </div>
 
   <div id="registerSection" class="form-box">
-    <h2>Naya Registration</h2>
+    <h2>Account Registration</h2>
     <div id="regError" class="alert-box"></div>
-    <input type="text" id="regName" placeholder="Pura Naam">
+    <input type="text" id="regName" placeholder="Full Name">
     <input type="text" id="regMobile" placeholder="Mobile Number">
-    <input type="password" id="regPass" placeholder="Mubarak Password">
-    <input type="text" id="regByRefer" placeholder="Refer Code (Yadi Hai)">
-    <button onclick="handleRegister()">Sign Up</button>
-    <div class="link-text" onclick="switchForm('login')">Pehle se account hai? Login karein</div>
+    <input type="password" id="regPass" placeholder="Create Password">
+    <input type="text" id="regByRefer" placeholder="Referral Code (Optional)">
+    <button id="regBtn" onclick="handleRegister()">
+      <span>Sign Up</span>
+      <div class="spinner" id="regSpinner"></div>
+    </button>
+    <div class="link-text" onclick="switchForm('login')">Already have an account? Login</div>
   </div>
 
   <div id="successSection" class="form-box">
@@ -69,19 +85,22 @@
       <p><strong>Password:</strong> <span id="showPassword"></span></p>
     </div>
     <div class="warning-banner">
-      ⚠️ Suraksha Chetavni: अपना User ID और Password किसी को ना बताए।
+      ⚠️ <strong>Security Warning:</strong> Please do not share your User ID and Password with anyone.
     </div>
     <button onclick="switchForm('login')">Go to Login</button>
   </div>
 
   <div id="forgetSection" class="form-box">
-    <h2>Password Recover</h2>
+    <h2>Recover Password</h2>
     <div id="forgetError" class="alert-box"></div>
     <div id="forgetSuccess" class="alert-box" style="background:#edf7ed; color:var(--success); border-color:#e1f0e1;"></div>
-    <input type="text" id="forUser" placeholder="User ID">
-    <input type="text" id="forMobile" placeholder="Registered Mobile">
-    <button onclick="handleForget()">Find Password</button>
-    <div class="link-text" onclick="switchForm('login')">Wapas Login par jayein</div>
+    <input type="text" id="forUser" placeholder="Enter User ID">
+    <input type="text" id="forMobile" placeholder="Registered Mobile Number">
+    <button id="forBtn" onclick="handleForget()">
+      <span>Find Password</span>
+      <div class="spinner" id="forSpinner"></div>
+    </button>
+    <div class="link-text" onclick="switchForm('login')">Back to Login</div>
   </div>
 
   <script>
@@ -107,14 +126,30 @@
       if(type === 'success') document.getElementById('successSection').style.display = 'block';
     }
 
+    // Dynamic Loader Control
+    function toggleLoader(btnId, spinnerId, isStarting) {
+      const btn = document.getElementById(btnId);
+      const spinner = document.getElementById(spinnerId);
+      if(isStarting) {
+        btn.disabled = true;
+        spinner.style.display = "block";
+      } else {
+        btn.disabled = false;
+        spinner.style.display = "none";
+      }
+    }
+
     function handleLogin() {
       let user = document.getElementById('loginUser').value;
       let pass = document.getElementById('loginPass').value;
-      if(!user || !pass) return alert('Sari details bharein');
+      if(!user || !pass) return alert('Please fill in all details');
+
+      toggleLoader('loginBtn', 'loginSpinner', true);
 
       fetch(API_URL + `?action=login&user=${user}&pass=${pass}`)
         .then(res => res.json())
         .then(data => {
+          toggleLoader('loginBtn', 'loginSpinner', false);
           if(data.status === "success") {
             localStorage.setItem("currentUserId", data.userId);
             localStorage.setItem("currentUserName", data.name);
@@ -124,6 +159,10 @@
             document.getElementById('loginError').innerText = data.message;
             document.getElementById('loginError').style.display = 'block';
           }
+        })
+        .catch(err => {
+          toggleLoader('loginBtn', 'loginSpinner', false);
+          alert('Network connection error. Try again.');
         });
     }
 
@@ -133,7 +172,9 @@
       let pass = document.getElementById('regPass').value;
       let byRefer = document.getElementById('regByRefer').value;
 
-      if(!name || !mobile || !pass) return alert('Kripya mandatory fields bharein');
+      if(!name || !mobile || !pass) return alert('Please fill in all mandatory fields');
+
+      toggleLoader('regBtn', 'regSpinner', true);
 
       fetch(API_URL, {
         method: 'POST',
@@ -141,6 +182,7 @@
       })
       .then(res => res.json())
       .then(data => {
+        toggleLoader('regBtn', 'regSpinner', false);
         if(data.status === "success") {
           document.getElementById('showUserId').innerText = data.userId;
           document.getElementById('showPassword').innerText = pass;
@@ -149,25 +191,37 @@
           document.getElementById('regError').innerText = data.message;
           document.getElementById('regError').style.display = 'block';
         }
+      })
+      .catch(err => {
+        toggleLoader('regBtn', 'regSpinner', false);
+        alert('Network connection error. Try again.');
       });
     }
 
     function handleForget() {
       let userId = document.getElementById('forUser').value;
       let mobile = document.getElementById('forMobile').value;
+      if(!userId || !mobile) return alert('Please enter both User ID and Mobile Number');
+
+      toggleLoader('forBtn', 'forSpinner', true);
 
       fetch(API_URL + `?action=forget&userId=${userId}&mobile=${mobile}`)
         .then(res => res.json())
         .then(data => {
+          toggleLoader('forBtn', 'forSpinner', false);
           if(data.status === "success") {
             document.getElementById('forgetError').style.display = 'none';
-            document.getElementById('forgetSuccess').innerText = "Aapka Password hai: " + data.password;
+            document.getElementById('forgetSuccess').innerText = "Your Password is: " + data.password;
             document.getElementById('forgetSuccess').style.display = 'block';
           } else {
             document.getElementById('forgetSuccess').style.display = 'none';
             document.getElementById('forgetError').innerText = data.message;
             document.getElementById('forgetError').style.display = 'block';
           }
+        })
+        .catch(err => {
+          toggleLoader('forBtn', 'forSpinner', false);
+          alert('Network connection error. Try again.');
         });
     }
   </script>
