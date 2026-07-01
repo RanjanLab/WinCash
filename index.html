@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashgain - Secure Login</title>
+  <style>
+    :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --bg: #f4f6f9; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+    
+    /* 2-Second Intro Splash Screen */
+    #splash { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: all 0.5s ease; }
+    .logo-anim { width: 100px; height: 100px; background: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold; color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: pulse 1.5s infinite; }
+    .splash-title { color: white; font-size: 32px; font-weight: bold; margin-top: 20px; letter-spacing: 2px; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    
+    /* Forms Container */
+    .form-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 340px; display: none; text-align: center; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h2 { color: var(--primary); margin-bottom: 25px; font-size: 24px; }
+    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+    button { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+    button:hover { background: #219653; }
+    
+    .link-text { color: var(--primary); margin-top: 15px; font-size: 14px; cursor: pointer; text-decoration: underline; }
+    .alert-box { background: #fdf2f2; color: var(--danger); padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 15px; display: none; border: 1px solid #fde2e2; }
+    
+    /* Registration Success Card */
+    .success-card { display: none; text-align: center; animation: fadeIn 0.5s ease; }
+    .check-icon { font-size: 60px; color: var(--success); margin-bottom: 15px; }
+    .credential-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; }
+    .warning-banner { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <div id="splash">
+    <div class="logo-anim">CG</div>
+    <div class="splash-title">Cashgain</div>
+  </div>
+
+  <div id="loginSection" class="form-box" style="display: block;">
+    <h2>Cashgain Login</h2>
+    <div id="loginError" class="alert-box"></div>
+    <input type="text" id="loginUser" placeholder="User ID / Mobile">
+    <input type="password" id="loginPass" placeholder="Password">
+    <button onclick="handleLogin()">Login</button>
+    <div class="link-text" onclick="switchForm('register')">Naya Account Banayein</div>
+    <div class="link-text" onclick="switchForm('forget')">Password Bhool Gaye?</div>
+  </div>
+
+  <div id="registerSection" class="form-box">
+    <h2>Naya Registration</h2>
+    <div id="regError" class="alert-box"></div>
+    <input type="text" id="regName" placeholder="Pura Naam">
+    <input type="text" id="regMobile" placeholder="Mobile Number">
+    <input type="password" id="regPass" placeholder="Mubarak Password">
+    <input type="text" id="regByRefer" placeholder="Refer Code (Yadi Hai)">
+    <button onclick="handleRegister()">Sign Up</button>
+    <div class="link-text" onclick="switchForm('login')">Pehle se account hai? Login karein</div>
+  </div>
+
+  <div id="successSection" class="form-box">
+    <div class="check-icon">✔️</div>
+    <h2>Registration Successful!</h2>
+    <div class="credential-box">
+      <p><strong>User ID:</strong> <span id="showUserId" style="color:var(--success); font-weight:bold;"></span></p>
+      <p><strong>Password:</strong> <span id="showPassword"></span></p>
+    </div>
+    <div class="warning-banner">
+      ⚠️ Suraksha Chetavni: अपना User ID और Password किसी को ना बताए।
+    </div>
+    <button onclick="switchForm('login')">Go to Login</button>
+  </div>
+
+  <div id="forgetSection" class="form-box">
+    <h2>Password Recover</h2>
+    <div id="forgetError" class="alert-box"></div>
+    <div id="forgetSuccess" class="alert-box" style="background:#edf7ed; color:var(--success); border-color:#e1f0e1;"></div>
+    <input type="text" id="forUser" placeholder="User ID">
+    <input type="text" id="forMobile" placeholder="Registered Mobile">
+    <button onclick="handleForget()">Find Password</button>
+    <div class="link-text" onclick="switchForm('login')">Wapas Login par jayein</div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyHOkNnL3LJE2bY7cb3M8W4y3qK1e6nldMiKjLRNEULgD52blMkPgj7EcyCszVsprya/exec";
+
+    // 2-Second Intro Logic
+    setTimeout(() => {
+      const splash = document.getElementById('splash');
+      splash.style.opacity = '0';
+      setTimeout(() => splash.style.display = 'none', 500);
+    }, 2000);
+
+    function switchForm(type) {
+      document.querySelectorAll('.form-box').forEach(box => box.style.display = 'none');
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('regError').style.display = 'none';
+      document.getElementById('forgetError').style.display = 'none';
+      document.getElementById('forgetSuccess').style.display = 'none';
+
+      if(type === 'login') document.getElementById('loginSection').style.display = 'block';
+      if(type === 'register') document.getElementById('registerSection').style.display = 'block';
+      if(type === 'forget') document.getElementById('forgetSection').style.display = 'block';
+      if(type === 'success') document.getElementById('successSection').style.display = 'block';
+    }
+
+    function handleLogin() {
+      let user = document.getElementById('loginUser').value;
+      let pass = document.getElementById('loginPass').value;
+      if(!user || !pass) return alert('Sari details bharein');
+
+      fetch(API_URL + `?action=login&user=${user}&pass=${pass}`)
+        .then(res => res.json())
+        .then(data => {
+          if(data.status === "success") {
+            localStorage.setItem("currentUserId", data.userId);
+            localStorage.setItem("currentUserName", data.name);
+            localStorage.setItem("currentUserMobile", data.mobile);
+            window.location.href = "dashboard.html";
+          } else {
+            document.getElementById('loginError').innerText = data.message;
+            document.getElementById('loginError').style.display = 'block';
+          }
+        });
+    }
+
+    function handleRegister() {
+      let name = document.getElementById('regName').value;
+      let mobile = document.getElementById('regMobile').value;
+      let pass = document.getElementById('regPass').value;
+      let byRefer = document.getElementById('regByRefer').value;
+
+      if(!name || !mobile || !pass) return alert('Kripya mandatory fields bharein');
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'register', name, mobile, pass, byRefer })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === "success") {
+          document.getElementById('showUserId').innerText = data.userId;
+          document.getElementById('showPassword').innerText = pass;
+          switchForm('success');
+        } else {
+          document.getElementById('regError').innerText = data.message;
+          document.getElementById('regError').style.display = 'block';
+        }
+      });
+    }
+
+    function handleForget() {
+      let userId = document.getElementById('forUser').value;
+      let mobile = document.getElementById('forMobile').value;
+
+      fetch(API_URL + `?action=forget&userId=${userId}&mobile=${mobile}`)
+        .then(res => res.json())
+        .then(data => {
+          if(data.status === "success") {
+            document.getElementById('forgetError').style.display = 'none';
+            document.getElementById('forgetSuccess').innerText = "Aapka Password hai: " + data.password;
+            document.getElementById('forgetSuccess').style.display = 'block';
+          } else {
+            document.getElementById('forgetSuccess').style.display = 'none';
+            document.getElementById('forgetError').innerText = data.message;
+            document.getElementById('forgetError').style.display = 'block';
+          }
+        });
+    }
+  </script>
+</body>
+</html>
