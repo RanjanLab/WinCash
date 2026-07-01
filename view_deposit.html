@@ -1,44 +1,59 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cashgain - Deposit Amount</title>
+  <title>Cashgain - Deposit Center</title>
   <style>
-    /* Professional Clean Design */
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f9; color: #333; padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
-    .form-group { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
-    h2, h4 { margin-top: 0; color: #2c3e50; text-align: center; }
+    :root { --primary: #2c3e50; --success: #27ae60; --bg: #f4f6f9; --text: #333; }
     
-    label { font-weight: bold; font-size: 14px; color: #4f5d75; display: block; margin-top: 15px; }
-    input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+    /* Professional Layout - Perfect Mobile Fit */
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
+    .form-group { background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h2, h4 { margin-top: 0; color: var(--primary); text-align: center; font-weight: 700; }
+    h2 { font-size: 24px; margin-bottom: 5px; }
+    h4 { font-size: 16px; color: #7f8c8d; margin-bottom: 20px; }
+    
+    label { font-weight: 600; font-size: 14px; color: #4f5d75; display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 13px 15px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fafafa; transition: 0.2s; }
+    input:focus, select:focus { border-color: var(--primary); background: #fff; outline: none; }
     
     /* Dynamic Instruction Alert Box */
-    .instruction-box { background: #e8f4fd; color: #2980b9; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; display: none; border-left: 4px solid #3498db; margin: 10px 0; text-align: left; line-height: 1.4; }
+    .instruction-box { background: #e8f4fd; color: #2980b9; padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 500; display: none; border-left: 4px solid #3498db; margin: 12px 0; text-align: left; line-height: 1.4; }
     
-    /* Action Buttons Style */
-    .btn-pay { width: 100%; padding: 14px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2); transition: 0.2s; }
+    /* Premium Action Buttons with Micro Loading Engines */
+    .btn-pay { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15); transition: 0.2s; }
+    .btn-pay:hover { background: #219653; }
     .btn-pay:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
-    .btn-submit { width: 100%; padding: 14px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
     
-    /* History Table Layout Fixes (Niche cutting issue resolved) */
-    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); background: white; -webkit-overflow-scrolling: touch; }
+    .btn-submit { position: relative; width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15); transition: 0.2s; }
+    .btn-submit:hover { background: #1a252f; }
+    .btn-submit:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
+    
+    /* ⚡ Fast Loader CSS Spinner Animation */
+    .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* History Table Layout Fixes (Responsive Anti-Cutting Engine) */
+    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 400px; }
-    th, td { border: 1px solid #eee; padding: 12px; text-align: left; font-size: 14px; }
-    th { background: #34495e; color: white; font-weight: 600; position: sticky; top: 0; }
+    th, td { border: 1px solid #eee; padding: 14px 12px; text-align: left; font-size: 14px; }
+    th { background: var(--primary); color: white; font-weight: 600; position: sticky; top: 0; }
     .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; }
-    .badge.Approved { background: #eafaf1; color: #27ae60; }
+    .badge.Approved { background: #eafaf1; color: var(--success); }
     .badge.Pending { background: #fef9e7; color: #f1c40f; }
 
     /* 🧾 DIGITAL RECEIPT MODAL */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; }
-    .receipt-box { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box; }
-    .receipt-success-icon { font-size: 50px; color: #27ae60; margin-bottom: 10px; }
-    .receipt-title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 15px; }
-    .receipt-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 15px; box-sizing: border-box; }
+    .receipt-box { background: white; width: 100%; max-width: 380px; padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box; animation: fadeIn 0.4s ease; }
+    .receipt-success-icon { font-size: 50px; color: var(--success); margin-bottom: 10px; }
+    .receipt-title { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
+    .receipt-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
     .receipt-row span:first-child { color: #7f8c8d; }
     .receipt-row span:last-child { font-weight: bold; color: #333; }
-    .btn-close-receipt { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    .btn-close-receipt { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -46,35 +61,39 @@
   <h2>💰 Deposit Center</h2>
   
   <div class="form-group">
-    <h4>Nayi Deposit Request</h4>
+    <h4>New Deposit Request</h4>
     
-    <label>1. Amount Bharein (₹)</label>
-    <input type="number" id="depAmount" placeholder="Kitna paisa jodhna hai?">
+    <label>1. Enter Amount (₹)</label>
+    <input type="number" id="depAmount" placeholder="Enter amount to add">
     
-    <label>2. Payment App Chunein</label>
+    <label>2. Select Payment App</label>
     <select id="paymentApp" onchange="handleAppSelect()">
-      <option value="">-- App Chunein --</option>
+      <option value="">-- Choose App --</option>
       <option value="paytm">Paytm</option>
       <option value="phonepe">PhonePe</option>
     </select>
     
     <div class="instruction-box" id="instructionBox">
-      💡 <strong>Zaroori Instruction:</strong> Payment safal hone ke baad UPI app se <strong>12-digit UTR / Reference Number</strong> ko zaroor COPY kar lein aur neeche box me dalein!
+      💡 <strong>Important Instruction:</strong> After successful payment, copy the <strong>12-digit UTR / Reference Number</strong> from your UPI app and paste it below!
     </div>
     
+    <!-- Real-Time Pay Button (With Loading State) -->
     <button class="btn-pay" id="payBtn" onclick="openPaymentApp()" disabled>
       ⏳ UPI Loading... Please wait
     </button>
     
-    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+    <hr style="border:0; border-top:1px solid #eee; margin:25px 0;">
     
-    <label>3. Payment Ke Baad UTR Id Dalein</label>
-    <input type="text" id="depUtr" placeholder="12-digit UTR / Ref Number yahan likhein">
+    <label>3. Paste UTR Reference ID after Payment</label>
+    <input type="text" id="depUtr" placeholder="Enter 12-digit UTR / Ref Number">
     
-    <button class="btn-submit" onclick="submitDeposit()">Submit Transaction</button>
+    <button class="btn-submit" id="submitBtn" onclick="submitDeposit()">
+      <span>Submit Transaction</span>
+      <div class="spinner" id="submitSpinner"></div>
+    </button>
   </div>
 
-  <h4>📜 Aapki Deposit History Report</h4>
+  <h4 style="color: var(--primary); margin-bottom: 15px;">📜 Your Deposit History Report</h4>
   <div class="table-container">
     <table>
       <thead>
@@ -85,16 +104,17 @@
         </tr>
       </thead>
       <tbody id="depositTableBody">
-        <tr><td colspan="3" style="text-align:center;">History sync ho rahi hai...</td></tr>
+        <tr><td colspan="3" style="text-align:center; color:#7f8c8d;">Syncing history...</td></tr>
       </tbody>
     </table>
   </div>
 
+  <!-- DIGITAL RECEIPT MODAL -->
   <div class="modal-overlay" id="receiptModal">
     <div class="receipt-box">
       <div class="receipt-success-icon">🎉</div>
       <div class="receipt-title">Deposit Receipt</div>
-      <p style="font-size: 13px; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">Aapki request admin verification ke liye bhej di gayi hai.</p>
+      <p style="font-size: 13px; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">Your request has been submitted for admin verification.</p>
       <div class="receipt-row"><span>User ID</span><span id="rcptUid"></span></div>
       <div class="receipt-row"><span>Amount</span><span id="rcptAmt"></span></div>
       <div class="receipt-row"><span>UTR Number</span><span id="rcptUtr"></span></div>
@@ -104,7 +124,6 @@
   </div>
 
   <script>
-    // ⚠️ APNA ASLI GOOGLE APPS SCRIPT URL YAHAN DALEIN
     const API_URL = "https://script.google.com/macros/s/AKfycbzTHUBzK9eAbRDF_vdmJ0cX7OiPUHtUOJGvrMLewSVf4NUfrL7qZMoCIRoIa9KkTMVm/exec"; 
 
     const userId = localStorage.getItem("currentUserId");
@@ -159,8 +178,8 @@
 
     function openPaymentApp() {
       var amount = document.getElementById('depAmount').value;
-      if(!amount || amount <= 0) { return alert("Kripya pehle sahi amount bharein!"); }
-      if(!isUpiLoaded || !adminUpiId) { return alert("UPI ID sheet se load ho rahi hai, kripya 1 second rukein."); }
+      if(!amount || amount <= 0) { return alert("Please enter a valid amount first!"); }
+      if(!isUpiLoaded || !adminUpiId) { return alert("UPI ID is loading from sheet, please wait a moment."); }
       
       var platformName = "Cashgain";
       var upiUrl = `upi://pay?pa=${adminUpiId}&pn=${encodeURIComponent(platformName)}&am=${amount}&cu=INR`;
@@ -170,7 +189,13 @@
     function submitDeposit() {
       let amount = document.getElementById('depAmount').value;
       let utr = document.getElementById('depUtr').value;
-      if(!amount || !utr) return alert("Sari details bharein!");
+      if(!amount || !utr) return alert("Please fill in all details!");
+
+      // Start Loading Animation
+      const submitBtn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('submitSpinner');
+      submitBtn.disabled = true;
+      spinner.style.display = "block";
 
       fetch(API_URL, {
         method: 'POST',
@@ -185,6 +210,10 @@
       })
       .then(res => res.json())
       .then(data => {
+        // Stop Loading Animation
+        submitBtn.disabled = false;
+        spinner.style.display = "none";
+
         document.getElementById('rcptUid').innerText = userId;
         document.getElementById('rcptAmt').innerText = "₹" + amount;
         document.getElementById('rcptUtr').innerText = utr;
@@ -194,6 +223,11 @@
         document.getElementById('depUtr').value = "";
         document.getElementById('paymentApp').value = "";
         handleAppSelect();
+      })
+      .catch(err => {
+        submitBtn.disabled = false;
+        spinner.style.display = "none";
+        alert("Network connection error. Try again.");
       });
     }
 
@@ -215,7 +249,7 @@
                 <td><span class="badge ${row.status}">${row.status}</span></td>
               </tr>`;
             });
-            document.getElementById('depositTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center;'>Koi history nahi mili.</td></tr>";
+            document.getElementById('depositTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center;'>No history found.</td></tr>";
           }
         });
     }
