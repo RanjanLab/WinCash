@@ -6,7 +6,7 @@
   <title>Cashgain - Dashboard</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; display: flex; height: 100vh; background: #f4f6f9; }
-    .sidebar { width: 260px; background: #2c3e50; color: white; display: flex; flex-direction: column; }
+    .sidebar { width: 260px; background: #2c3e50; color: white; display: flex; flex-direction: column; z-index: 10; }
     .sidebar h2 { text-align: center; padding: 20px; margin: 0; background: #1a252f; border-bottom: 1px solid #34495e; }
     .user-tag { padding: 15px; background: #34495e; text-align: center; font-size: 14px; }
     .menu-btn { width: 100%; padding: 15px 20px; background: none; border: none; color: #ecf0f1; text-align: left; cursor: pointer; font-size: 16px; border-bottom: 1px solid #34495e; transition: 0.2s; }
@@ -14,8 +14,25 @@
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
     .top-bar { height: 60px; background: white; display: flex; justify-content: flex-end; align-items: center; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+    .content-area { flex: 1; padding: 30px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     iframe { width: 100%; height: 100%; border: none; }
+
+    /* 📱 Mobile Responsive Update (Keval Mobile Screen Ke Liye Badlav) */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; }
+      .sidebar h2 { padding: 15px; font-size: 20px; }
+      .user-tag { padding: 10px; font-size: 13px; }
+      
+      /* Mobile par buttons ek line me horizontal scroll honge taaki zyada jagah bache */
+      .sidebar { display: block; }
+      .menu-container { display: flex; overflow-x: auto; white-space: nowrap; background: #2c3e50; -webkit-overflow-scrolling: touch; }
+      .menu-btn { width: auto; display: inline-block; padding: 12px 20px; border-bottom: none; border-right: 1px solid #34495e; font-size: 14px; flex-shrink: 0; }
+      
+      .main-content { flex: 1; height: auto; }
+      .top-bar { height: 50px; padding: 0 15px; }
+      .content-area { padding: 15px; height: calc(100vh - 170px); }
+    }
   </style>
   <script>
     if(!localStorage.getItem("currentUserId")) { window.location.href = "index.html"; }
@@ -26,10 +43,13 @@
   <div class="sidebar">
     <h2>Cashgain</h2>
     <div class="user-tag">ID: <strong id="lblUid">...</strong><br><span id="lblUname">...</span></div>
-    <button class="menu-btn" onclick="loadFrame('view_home.html')">🏠 Home Wallet</button>
-    <button class="menu-btn" onclick="loadFrame('view_deposit.html')">💳 Deposit Balance</button>
-    <button class="menu-btn" onclick="loadFrame('view_earning.html')">📈 Earning Ledger</button>
-    <button class="menu-btn" onclick="loadFrame('view_withdrawal.html')">💸 Withdraw Money</button>
+    <!-- Mobile responsive layout ke liye menu container jodha gaya hai -->
+    <div class="menu-container">
+      <button class="menu-btn" onclick="loadFrame('view_home.html')">🏠 Home Wallet</button>
+      <button class="menu-btn" onclick="loadFrame('view_deposit.html')">💳 Deposit Balance</button>
+      <button class="menu-btn" onclick="loadFrame('view_earning.html')">📈 Earning Ledger</button>
+      <button class="menu-btn" onclick="loadFrame('view_withdrawal.html')">💸 Withdraw Money</button>
+    </div>
   </div>
 
   <div class="main-content">
