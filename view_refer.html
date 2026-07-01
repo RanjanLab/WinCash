@@ -8,7 +8,6 @@
     :root { 
       --primary: #2c3e50; 
       --success: #27ae60; 
-      --info: #2980b9;
       --bg: #f4f6f9; 
       --text: #333; 
     }
@@ -28,15 +27,10 @@
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 20px 15px; border-radius: 12px; margin-top: 15px; box-sizing: border-box; }
     .code-text { font-size: 26px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 10px 0; }
     
-    /* 🛠️ Guaranteed Mobile View Buttons Layout */
-    .btn-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; width: 100%; }
-    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease; box-sizing: border-box; }
-    
-    .btn-copy-code { background: var(--info); }
-    .btn-copy-code:hover { background: #2471a3; }
-    
-    .btn-share-link { background: var(--success); }
-    .btn-share-link:hover { background: #219653; }
+    /* 🔗 Single Professional Action Button */
+    .btn-container { margin-top: 15px; width: 100%; }
+    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2); transition: all 0.2s ease; box-sizing: border-box; background: var(--success); }
+    .btn-action:hover { background: #219653; transform: translateY(-1px); }
     
     .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
@@ -66,10 +60,9 @@
       <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
       <div class="code-text" id="myReferCode">-------</div>
       
-      <!-- 📋 Both Buttons Stacked Properly for Mobile View -->
+      <!-- Only One Dedicated Invite Button -->
       <div class="btn-container">
-        <button class="btn-action btn-copy-code" onclick="copyReferCode()">📋 Copy Referral Code</button>
-        <button class="btn-action btn-share-link" onclick="copyReferLink()">🔗 Copy Invite Link</button>
+        <button class="btn-action" onclick="copyReferLink()">🔗 Share Invite Link</button>
       </div>
     </div>
   </div>
@@ -122,14 +115,7 @@
         });
     }
 
-    function copyReferCode() {
-      navigator.clipboard.writeText(userId).then(() => {
-        alert("Success! Referral Code copied to clipboard.");
-      }).catch(() => {
-        alert("Referral Code: " + userId);
-      });
-    }
-
+    // 🔗 Auto-Fill Directed Link Compiler
     function copyReferLink() {
       const baseLink = window.location.origin + window.location.pathname.replace('view_refer.html', 'index.html');
       const fullInviteLink = `${baseLink}?ref=${userId}`;
