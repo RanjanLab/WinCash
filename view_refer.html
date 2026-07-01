@@ -80,7 +80,8 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyqoqpXNXTK_8PyFBC60jUCXr2Tv_BJwAEL5q_G1zDYr9zSXpMK06zH8_y7KGqNP1Q0/exec"; 
+    // 🔥 UPDATED WITH YOUR NEW WEB APP EXEC URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbyrf51vQv6UYjcznk9wwGaQ7a1ESTngRyQGz2SRB6Mf7ExysBmrXNzNRQDwd5masbE/exec"; 
     const userId = (localStorage.getItem("currentUserId") || "").trim();
     let actualReferCode = ""; 
 
@@ -91,8 +92,6 @@
         .then(res => res.json())
         .then(data => {
           if(data.status === "success") {
-            // 🔥 REAL-TIME DYNAMIC FRONTEND COUNTER CALCULATOR (SAFETY MESH)
-            // Agar backend counting kisi server error ya sync delay se miss kare, toh ye khud automatic loop check karke accurate value print karega.
             let localCount = 0;
             let localRewards = 0;
             let html = "";
@@ -118,7 +117,7 @@
               });
             }
 
-            // Fallback Engine: Agar server counting accurate ho toh server wali, nahi toh local dynamic sum dikhayega
+            // Real-time calculated counters alignment based on Settings Cell B7 configuration values
             document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
             document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
