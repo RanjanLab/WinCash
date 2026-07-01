@@ -82,11 +82,11 @@
   </div>
 
   <script>
-    // 🔥 LIVE UPDATED: NEW CONSOLE URL
     const API_URL = "https://script.google.com/macros/s/AKfycbxkRB2VX77x5ShgcLVr-W8CLm-HxVwtnxo23oD9hVYytHZ-Yr4qN7MTK96owVUUATOV/exec"; 
-    const userId = localStorage.getItem("currentUserId") || "CG1001";
-
-    document.getElementById('myReferCode').innerText = userId;
+    const userId = localStorage.getItem("currentUserId") || "";
+    
+    // 🔗 Global variable jo live database se load hone wale refer code ko save rakhega
+    let actualReferCode = ""; 
 
     function loadReferDashboard() {
       if(!userId) return;
@@ -97,6 +97,16 @@
           if(data.status === "success") {
             document.getElementById('totalRefers').innerText = data.totalRefers;
             document.getElementById('totalRewards').innerText = "₹" + data.totalRewards;
+            
+            // 🔥 FIX ENGINE: Script se aaya hua own refer code set karna (Jaise REF718268)
+            if (data.ownReferCode) {
+              actualReferCode = data.ownReferCode;
+              document.getElementById('myReferCode').innerText = data.ownReferCode;
+            } else {
+              // Backup safety agar script purani ho
+              actualReferCode = userId;
+              document.getElementById('myReferCode').innerText = userId;
+            }
             
             let html = "";
             data.history.forEach(row => {
@@ -115,12 +125,16 @@
     }
 
     function shareInviteSystem() {
+      // Agar kisi wajah se code load nahi hua toh backup me userId chala jayega
+      const codeToShare = actualReferCode || userId;
+      
       const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
-      const fullInviteLink = `${baseLink}?ref=${userId}`;
+      // 🔥 DYNAMIC FIX: Ab URL me strictly Referral Code hi pass hoga!
+      const fullInviteLink = `${baseLink}?ref=${codeToShare}`;
       
       const shareData = {
         title: 'Join Cashgain Network',
-        text: `Hey! Use my Referral Code: ${userId} to register on Cashgain and claim exclusive joining balance bonuses instantly!`,
+        text: `Hey! Use my Referral Code: ${codeToShare} to register on Cashgain and claim exclusive joining balance bonuses instantly!`,
         url: fullInviteLink
       };
 
@@ -129,7 +143,7 @@
           .catch((error) => console.log('Error sharing:', error));
       } else {
         navigator.clipboard.writeText(fullInviteLink).then(() => {
-          alert("Invite link compiled & copied to clipboard!");
+          alert("Invite link compiled with Referral Code & copied to clipboard!");
         });
       }
     }
