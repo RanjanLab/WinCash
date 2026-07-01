@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    th { background: #9b59b6; color: white; }
+    .profit-text { color: #27ae60; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h2>📈 Daily Earning Statement</h2>
+  <p>Total Deposit par har raat milne wala automatic interest yahan dikhega.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Profit Amount</th>
+        <th>Remark</th>
+      </tr>
+    </thead>
+    <tbody id="earnTableBody">
+      <tr><td colspan="3">Statement load ho rahi hai...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyHOkNnL3LJE2bY7cb3M8W4y3qK1e6nldMiKjLRNEULgD52blMkPgj7EcyCszVsprya/exec";
+    const userId = localStorage.getItem("currentUserId");
+
+    fetch(API_URL + `?action=getEarningHistory&userId=${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        let html = "";
+        if(data.status === "success") {
+          data.history.forEach(row => {
+            html += `<tr>
+              <td>${row.date}</td>
+              <td class="profit-text">+₹${row.amount}</td>
+              <td>${row.remark}</td>
+            </tr>`;
+          });
+          document.getElementById('earnTableBody').innerHTML = html || "<tr><td colspan='3'>Abhi tak koi earning credit nahi hui hai.</td></tr>";
+        }
+      });
+  </script>
+</body>
+</html>
