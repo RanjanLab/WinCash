@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashgain - Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; display: flex; height: 100vh; background: #f4f6f9; }
+    .sidebar { width: 260px; background: #2c3e50; color: white; display: flex; flex-direction: column; }
+    .sidebar h2 { text-align: center; padding: 20px; margin: 0; background: #1a252f; border-bottom: 1px solid #34495e; }
+    .user-tag { padding: 15px; background: #34495e; text-align: center; font-size: 14px; }
+    .menu-btn { width: 100%; padding: 15px 20px; background: none; border: none; color: #ecf0f1; text-align: left; cursor: pointer; font-size: 16px; border-bottom: 1px solid #34495e; transition: 0.2s; }
+    .menu-btn:hover { background: #34495e; color: #27ae60; }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .top-bar { height: 60px; background: white; display: flex; justify-content: flex-end; align-items: center; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+    iframe { width: 100%; height: 100%; border: none; }
+  </style>
+  <script>
+    if(!localStorage.getItem("currentUserId")) { window.location.href = "index.html"; }
+  </script>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Cashgain</h2>
+    <div class="user-tag">ID: <strong id="lblUid">...</strong><br><span id="lblUname">...</span></div>
+    <button class="menu-btn" onclick="loadFrame('view_home.html')">🏠 Home Wallet</button>
+    <button class="menu-btn" onclick="loadFrame('view_deposit.html')">💳 Deposit Balance</button>
+    <button class="menu-btn" onclick="loadFrame('view_earning.html')">📈 Earning Ledger</button>
+    <button class="menu-btn" onclick="loadFrame('view_withdrawal.html')">💸 Withdraw Money</button>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    <div class="content-area">
+      <iframe id="contentFrame" src="view_home.html"></iframe>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('lblUid').innerText = localStorage.getItem("currentUserId");
+    document.getElementById('lblUname').innerText = localStorage.getItem("currentUserName");
+
+    function loadFrame(page) {
+      document.getElementById('contentFrame').src = page;
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
