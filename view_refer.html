@@ -27,7 +27,7 @@
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 20px 15px; border-radius: 12px; margin-top: 15px; box-sizing: border-box; }
     .code-text { font-size: 26px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 10px 0; }
     
-    /* 🔗 Single Professional Action Button */
+    /* 🔗 Premium Native Social Share Action Button */
     .btn-container { margin-top: 15px; width: 100%; }
     .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2); transition: all 0.2s ease; box-sizing: border-box; background: var(--success); }
     .btn-action:hover { background: #219653; transform: translateY(-1px); }
@@ -60,9 +60,9 @@
       <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
       <div class="code-text" id="myReferCode">-------</div>
       
-      <!-- Only One Dedicated Invite Button -->
+      <!-- Native Mobile App Popup Trigger Button -->
       <div class="btn-container">
-        <button class="btn-action" onclick="copyReferLink()">🔗 Share Invite Link</button>
+        <button class="btn-action" onclick="shareInviteSystem()">🔗 Share Invite Link</button>
       </div>
     </div>
   </div>
@@ -115,16 +115,28 @@
         });
     }
 
-    // 🔗 Auto-Fill Directed Link Compiler
-    function copyReferLink() {
+    // 🚀 Native Mobile Share Engine with Fallback System
+    function shareInviteSystem() {
+      // Direct registration compile configuration mapping (?ref=ID parameter ke sath)
       const baseLink = window.location.origin + window.location.pathname.replace('view_refer.html', 'index.html');
       const fullInviteLink = `${baseLink}?ref=${userId}`;
       
-      navigator.clipboard.writeText(fullInviteLink).then(() => {
-        alert("Success! Custom referral link copied to clipboard.");
-      }).catch(() => {
-        alert("Invite Link: " + fullInviteLink);
-      });
+      const shareData = {
+        title: 'Join Cashgain Network',
+        text: `Hey! Use my Referral Code: ${userId} to register on Cashgain and claim exclusive joining balance bonuses instantly!`,
+        url: fullInviteLink
+      };
+
+      // Mobile devices ke apps (WhatsApp/Telegram etc.) pop-up kholne ka logic
+      if (navigator.share) {
+        navigator.share(shareData)
+          .catch((error) => console.log('Error sharing:', error));
+      } else {
+        // Desktop or legacy browsers backup clip copy system
+        navigator.clipboard.writeText(fullInviteLink).then(() => {
+          alert("Invite link compiled & copied to clipboard!");
+        });
+      }
     }
 
     window.onload = loadReferDashboard;
