@@ -80,8 +80,8 @@
   </div>
 
   <script>
-    // 🔥 UPDATED WITH YOUR NEW WEB APP EXEC URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbyrf51vQv6UYjcznk9wwGaQ7a1ESTngRyQGz2SRB6Mf7ExysBmrXNzNRQDwd5masbE/exec"; 
+    // 🔥 LIVE MAPPED WITH YOUR BRAND NEW EXEC URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbwG6zlDFFFRu0wR2yNyePE36mNb774C0WxySoKBbuVEiDD5gFo0ZGmE8oin2zRum4Vb/exec"; 
     const userId = (localStorage.getItem("currentUserId") || "").trim();
     let actualReferCode = ""; 
 
@@ -117,7 +117,7 @@
               });
             }
 
-            // Real-time calculated counters alignment based on Settings Cell B7 configuration values
+            // Live layout render update align panel
             document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
             document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
