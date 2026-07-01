@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; }
+    .form-group { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    th { background: #34495e; color: white; }
+    .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .badge.Approved { background: #eafaf1; color: #27ae60; }
+    .badge.Pending { background: #fef9e7; color: #f1c40f; }
+  </style>
+</head>
+<body>
+
+  <h2>💸 Withdrawal Request</h2>
+  
+  <div class="form-group">
+    <h4>Nayi Withdrawal Request Lagayein</h4>
+    <input type="number" id="withAmount" placeholder="Amount (₹)">
+    <button onclick="submitWithdraw()">Withdraw Fund</button>
+  </div>
+
+  <h4>📜 Aapki Withdrawal History</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="withTableBody">
+      <tr><td colspan="2">Data load ho raha hai...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyHOkNnL3LJE2bY7cb3M8W4y3qK1e6nldMiKjLRNEULgD52blMkPgj7EcyCszVsprya/exec";
+    const userId = localStorage.getItem("currentUserId");
+
+    function loadHistory() {
+      fetch(API_URL + `?action=getWithdrawHistory&userId=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          let html = "";
+          if(data.status === "success") {
+            data.history.forEach(row => {
+              html += `<tr>
+                <td>₹${row.amount}</td>
+                <td><span class="badge ${row.status}">${row.status}</span></td>
+              </tr>`;
+            });
+            document.getElementById('withTableBody').innerHTML = html || "<tr><td colspan='2'>Koi history nahi mili.</td></tr>";
+          }
+        });
+    }
+
+    function submitWithdraw() {
+      let amount = document.getElementById('withAmount').value;
+      if(!amount || amount <= 0) return alert("Sahi amount dalein");
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'withdraw', userId, name: localStorage.getItem("currentUserName"), mobile: localStorage.getItem("currentUserMobile"), amount })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === "success") {
+          alert("Withdrawal request lag gayi hai!");
+          document.getElementById('withAmount').value = "";
+          loadHistory();
+        } else {
+          alert(data.message);
+        }
+      });
+    }
+
+    window.onload = loadHistory;
+  </script>
+</body>
+</html>
