@@ -27,7 +27,6 @@
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 20px 15px; border-radius: 12px; margin-top: 15px; box-sizing: border-box; }
     .code-text { font-size: 26px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 10px 0; }
     
-    /* 🔗 Premium Native Social Share Action Button */
     .btn-container { margin-top: 15px; width: 100%; }
     .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2); transition: all 0.2s ease; box-sizing: border-box; background: var(--success); }
     .btn-action:hover { background: #219653; transform: translateY(-1px); }
@@ -83,7 +82,8 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbymvll21UeiebhZ3ROrA8BmXCDpZvdw0avGhMxQTkG4Q8CvKqF5S2Xxr4jeXVGoC3Qt/exec"; 
+    // 🔥 LIVE UPDATED: NEW CONSOLE URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbxkRB2VX77x5ShgcLVr-W8CLm-HxVwtnxo23oD9hVYytHZ-Yr4qN7MTK96owVUUATOV/exec"; 
     const userId = localStorage.getItem("currentUserId") || "CG1001";
 
     document.getElementById('myReferCode').innerText = userId;
@@ -114,9 +114,7 @@
         });
     }
 
-    // 🚀 Native Mobile Share Engine with Fixed Direct Path URL
     function shareInviteSystem() {
-      // Is logic se window location directory index.html (Main Sign-up form) par return ho jayegi
       const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
       const fullInviteLink = `${baseLink}?ref=${userId}`;
       
