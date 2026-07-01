@@ -81,7 +81,7 @@
 
   <script>
     // 🔥 LIVE MAPPED WITH YOUR BRAND NEW EXEC URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbwG6zlDFFFRu0wR2yNyePE36mNb774C0WxySoKBbuVEiDD5gFo0ZGmE8oin2zRum4Vb/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
     const userId = (localStorage.getItem("currentUserId") || "").trim();
     let actualReferCode = ""; 
 
@@ -117,7 +117,7 @@
               });
             }
 
-            // Live layout render update align panel
+            // Live layout updates
             document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
             document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
