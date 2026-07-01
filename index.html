@@ -69,6 +69,7 @@
     <input type="text" id="regName" placeholder="Full Name">
     <input type="text" id="regMobile" placeholder="Mobile Number">
     <input type="password" id="regPass" placeholder="Create Password">
+    <input type="password" id="regConfirmPass" placeholder="Confirm Password">
     <input type="text" id="regByRefer" placeholder="Referral Code (Optional)">
     <button id="regBtn" onclick="handleRegister()">
       <span>Sign Up</span>
@@ -170,9 +171,17 @@
       let name = document.getElementById('regName').value;
       let mobile = document.getElementById('regMobile').value;
       let pass = document.getElementById('regPass').value;
+      let confirmPass = document.getElementById('regConfirmPass').value;
       let byRefer = document.getElementById('regByRefer').value;
 
-      if(!name || !mobile || !pass) return alert('Please fill in all mandatory fields');
+      if(!name || !mobile || !pass || !confirmPass) return alert('Please fill in all mandatory fields');
+      
+      // 🔥 NEW VALIDATION: Password Match Checking Protocol
+      if(pass !== confirmPass) {
+        document.getElementById('regError').innerText = "Passwords do not match! Please check again.";
+        document.getElementById('regError').style.display = 'block';
+        return;
+      }
 
       toggleLoader('regBtn', 'regSpinner', true);
 
