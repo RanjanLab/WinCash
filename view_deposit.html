@@ -1,51 +1,200 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashgain - Deposit Amount</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; }
-    .form-group { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-    button { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-    th { background: #34495e; color: white; }
-    .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    /* Professional Clean Design */
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f9; color: #333; padding: 15px; box-sizing: border-box; }
+    .form-group { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+    h2, h4 { margin-top: 0; color: #2c3e50; text-align: center; }
+    
+    label { font-weight: bold; font-size: 14px; color: #4f5d75; display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+    
+    /* Dynamic Instruction Alert Box */
+    .instruction-box { background: #e8f4fd; color: #2980b9; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; display: none; border-left: 4px solid #3498db; margin: 10px 0; text-align: left; line-height: 1.4; }
+    
+    /* Action Buttons Style */
+    .btn-pay { width: 100%; padding: 14px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2); transition: 0.2s; }
+    .btn-pay:hover { background: #219653; }
+    .btn-submit { width: 100%; padding: 14px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+    .btn-submit:hover { background: #1a252f; }
+    
+    /* History Table Layout */
+    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { border: 1px solid #eee; padding: 12px; text-align: left; font-size: 14px; }
+    th { background: #34495e; color: white; font-weight: 600; }
+    .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; }
     .badge.Approved { background: #eafaf1; color: #27ae60; }
     .badge.Pending { background: #fef9e7; color: #f1c40f; }
+
+    /* 🧾 DYNAMIC POPUP DIGITAL RECEIPT */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; }
+    .receipt-box { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-sizing: border-box; }
+    @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .receipt-success-icon { font-size: 50px; color: #27ae60; margin-bottom: 10px; }
+    .receipt-title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 15px; }
+    .receipt-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
+    .receipt-row span:first-child { color: #7f8c8d; }
+    .receipt-row span:last-child { font-weight: bold; color: #333; }
+    .btn-close-receipt { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 20px; }
   </style>
 </head>
 <body>
 
-  <h2>💰 Deposit Amount</h2>
+  <h2>💰 Deposit Center</h2>
   
   <div class="form-group">
-    <h4>Nayi Deposit Request Lagayein</h4>
-    <button onclick="window.location.href='view_pay.html'" style="width:100%; padding:12px; background:#27ae60; color:white; border:none; border-radius:6px; font-weight:bold; font-size:15px; margin-bottom:15px; cursor:pointer;">
-  ⚡ Click Here to Pay and Generate Receipt
+    <h4>Nayi Deposit Request</h4>
+    
+    <label>1. Amount Bharein (₹)</label>
+    <input type="number" id="depAmount" placeholder="Kitna paisa jodhna hai?">
+    
+    <label>2. Payment App Chunein</label>
+    <select id="paymentApp" onchange="handleAppSelect()">
+      <option value="">-- App Chunein --</option>
+      <option value="paytm">Paytm</option>
+      <option value="phonepe">PhonePe</option>
+    </select>
+    
+    <div class="instruction-box" id="instructionBox">
+      💡 <strong>Zaroori Instruction:</strong> Payment safal hone ke baad UPI app se <strong>12-digit UTR / Reference Number</strong> ko zaroor COPY kar lein aur neeche box me dalein!
+    </div>
+    
+    <button class="btn-pay" id="payBtn" onclick="openPaymentApp()">
+      🚀 Pay with Selected App
     </button>
     
-    <input type="number" id="depAmount" placeholder="Amount (₹)">
-    <input type="text" id="depUtr" placeholder="UTR / Transaction Ref Number">
-    <button onclick="submitDeposit()">Submit Request</button>
+    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+    
+    <label>3. Payment Ke Baad UTR Id Dalein</label>
+    <input type="text" id="depUtr" placeholder="12-digit UTR / Ref Number yahan likhein">
+    
+    <button class="btn-submit" onclick="submitDeposit()">Submit Transaction</button>
   </div>
 
-  <h4>📜 Aapki Deposit History</h4>
-  <table>
-    <thead>
-      <tr>
-        <th>Amount</th>
-        <th>UTR / Ref No</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="depositTableBody">
-      <tr><td colspan="3">Data load ho raha hai...</td></tr>
-    </tbody>
-  </table>
+  <h4>📜 Aapki Deposit History Report</h4>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>UTR / Ref No</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="depositTableBody">
+        <tr><td colspan="3" style="text-align:center;">History sync ho rahi hai...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" id="receiptModal">
+    <div class="receipt-box">
+      <div class="receipt-success-icon">🎉</div>
+      <div class="receipt-title">Deposit Receipt</div>
+      <p style="font-size: 13px; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">Aapki request admin verification ke liye bhej di gayi hai.</p>
+      
+      <div class="receipt-row"><span>User ID</span><span id="rcptUid"></span></div>
+      <div class="receipt-row"><span>Amount</span><span id="rcptAmt"></span></div>
+      <div class="receipt-row"><span>UTR Number</span><span id="rcptUtr"></span></div>
+      <div class="receipt-row"><span>Status</span><span style="color:#f1c40f;">Pending Approval</span></div>
+      
+      <button class="btn-close-receipt" onclick="closeReceipt()">OK, Done</button>
+    </div>
+  </div>
 
   <script>
+    // YAHA APNA GOOGLE APPS SCRIPT WEB APP URL BASE PASTE KAREIN
     const API_URL = "https://script.google.com/macros/s/AKfycbyHOkNnL3LJE2bY7cb3M8W4y3qK1e6nldMiKjLRNEULgD52blMkPgj7EcyCszVsprya/exec";
     const userId = localStorage.getItem("currentUserId");
+    let adminUpiId = ""; 
+
+    // Settings Tab ke B6 cell se UPI Handle load karne ka auto-fetch function
+    function fetchAdminUpi() {
+      fetch(API_URL + "?action=getUpi")
+        .then(res => res.json())
+        .then(data => {
+          if(data.status === "success") { 
+            adminUpiId = data.upiId; 
+          }
+        })
+        .catch(err => console.log("UPI Fetching Error or Background Syncing..."));
+    }
+
+    function handleAppSelect() {
+      var app = document.getElementById('paymentApp').value;
+      var instr = document.getElementById('instructionBox');
+      var payBtn = document.getElementById('payBtn');
+      
+      if(app !== "") {
+        instr.style.display = "block";
+        payBtn.style.display = "flex";
+        payBtn.innerText = "🚀 Pay using " + (app === 'paytm' ? 'Paytm' : 'PhonePe');
+      } else {
+        instr.style.display = "none";
+        payBtn.style.display = "none";
+      }
+    }
+
+    // Dynamic UPI Intent Linking Execution
+    function openPaymentApp() {
+      var amount = document.getElementById('depAmount').value;
+      var app = document.getElementById('paymentApp').value;
+      
+      if(!amount || amount <= 0) { 
+        return alert("Kripya pehle sahi amount bharein!"); 
+      }
+      if(!adminUpiId) { 
+        return alert("System background sync me hai, 2 second baad dobara click karein."); 
+      }
+      
+      var platformName = "Cashgain Platform";
+      var upiUrl = `upi://pay?pa=${adminUpiId}&pn=${encodeURIComponent(platformName)}&am=${amount}&cu=INR`;
+      
+      // Auto routing protocol window redirection
+      window.location.href = upiUrl;
+    }
+
+    function submitDeposit() {
+      let amount = document.getElementById('depAmount').value;
+      let utr = document.getElementById('depUtr').value;
+      if(!amount || !utr) return alert("Sari details bharein!");
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ 
+          action: 'deposit', 
+          userId: userId, 
+          name: localStorage.getItem("currentUserName"), 
+          mobile: localStorage.getItem("currentUserMobile"), 
+          amount: amount, 
+          utr: utr 
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        // Digital receipt overlay activation
+        document.getElementById('rcptUid').innerText = userId;
+        document.getElementById('rcptAmt').innerText = "₹" + amount;
+        document.getElementById('rcptUtr').innerText = utr;
+        document.getElementById('receiptModal').style.display = "flex";
+        
+        // Form field reset system
+        document.getElementById('depAmount').value = "";
+        document.getElementById('depUtr').value = "";
+        document.getElementById('paymentApp').value = "";
+        handleAppSelect();
+      });
+    }
+
+    function closeReceipt() {
+      document.getElementById('receiptModal').style.display = "none";
+      loadHistory();
+    }
 
     function loadHistory() {
       fetch(API_URL + `?action=getDepositHistory&userId=${userId}`)
@@ -60,32 +209,15 @@
                 <td><span class="badge ${row.status}">${row.status}</span></td>
               </tr>`;
             });
-            document.getElementById('depositTableBody').innerHTML = html || "<tr><td colspan='3'>Koi history nahi mili.</td></tr>";
+            document.getElementById('depositTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center;'>Koi history nahi mili.</td></tr>";
           }
         });
     }
 
-    function submitDeposit() {
-      let amount = document.getElementById('depAmount').value;
-      let utr = document.getElementById('depUtr').value;
-      if(!amount || !utr) return alert("Sari details dalein");
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'deposit', userId, name: localStorage.getItem("currentUserName"), mobile: localStorage.getItem("currentUserMobile"), amount, utr })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === "success") {
-          alert("Request Save Ho Gayi! Admin approval ka wait karein.");
-          document.getElementById('depAmount').value = "";
-          document.getElementById('depUtr').value = "";
-          loadHistory();
-        }
-      });
-    }
-
-    window.onload = loadHistory;
+    window.onload = function() {
+      fetchAdminUpi();
+      loadHistory();
+    };
   </script>
 </body>
 </html>
