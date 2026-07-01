@@ -12,7 +12,6 @@
       --text: #333; 
     }
     
-    /* Premium Responsive Layout - Perfect Mobile Fit */
     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
     
     .refer-card { background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: center; animation: fadeIn 0.5s ease; }
@@ -21,20 +20,17 @@
     h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 24px; }
     .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
     
-    /* Modern Stats Dashboard Cards */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-    .stat-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; text-align: center; transition: 0.2s; }
+    .stat-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; text-align: center; }
     .stat-box div:first-child { font-size: 13px; color: #7f8c8d; font-weight: 600; margin-bottom: 5px; }
     .stat-box div:last-child { font-size: 22px; color: var(--primary); font-weight: 700; }
     
-    /* Invitation Link Clipboard Console */
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 18px 15px; border-radius: 12px; margin-top: 15px; }
     .code-text { font-size: 22px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 8px 0; }
     
     .btn-share { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15); transition: 0.2s; }
     .btn-share:hover { background: #219653; }
     
-    /* Statements History Table System (Anti-Cutting Mobile Engine) */
     .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
     th, td { border: 1px solid #eee; padding: 14px 12px; text-align: left; font-size: 14px; }
@@ -83,15 +79,15 @@
   </div>
 
   <script>
-    // Live Google Apps Script API Engine Mapping
-    const API_URL = "https://script.google.com/macros/s/AKfycbz7D59y18Gx27c0-GUAQPEgdlrjpCJ55nzSMMu7XUlvH-xCnyMQCq9FYwy3zEwvWREq/exec"; 
+    // 🔥 LIVE MAPPED: NEW EXEC URL FROM RECENT DEPLOYMENT
+    const API_URL = "https://script.google.com/macros/s/AKfycbymvll21UeiebhZ3ROrA8BmXCDpZvdw0avGhMxQTkG4Q8CvKqF5S2Xxr4jeXVGoC3Qt/exec"; 
     const userId = localStorage.getItem("currentUserId") || "CG1001";
+
+    document.getElementById('myReferCode').innerText = userId;
 
     function loadReferDashboard() {
       if(!userId) return;
-      document.getElementById('myReferCode').innerText = userId;
       
-      // Live server communications loop
       fetch(API_URL + `?action=getReferralData&userId=${userId}`)
         .then(res => res.json())
         .then(data => {
@@ -116,7 +112,6 @@
     }
 
     function copyReferLink() {
-      // Direct live custom web domain compiler logic
       const baseLink = window.location.origin + window.location.pathname.replace('view_refer.html', 'index.html');
       const fullInviteLink = `${baseLink}?ref=${userId}`;
       
@@ -127,7 +122,6 @@
       });
     }
 
-    // Initialize layout setup on run
     window.onload = loadReferDashboard;
   </script>
 </body>
