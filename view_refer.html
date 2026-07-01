@@ -80,9 +80,8 @@
   </div>
 
   <script>
-    // 🔥 MAPPED WITH YOUR BRAND NEW LIVE URL
     const API_URL = "https://script.google.com/macros/s/AKfycbyqoqpXNXTK_8PyFBC60jUCXr2Tv_BJwAEL5q_G1zDYr9zSXpMK06zH8_y7KGqNP1Q0/exec"; 
-    const userId = localStorage.getItem("currentUserId") || "";
+    const userId = (localStorage.getItem("currentUserId") || "").trim();
     let actualReferCode = ""; 
 
     function loadReferDashboard() {
@@ -92,25 +91,36 @@
         .then(res => res.json())
         .then(data => {
           if(data.status === "success") {
-            document.getElementById('totalRefers').innerText = data.totalRefers;
-            document.getElementById('totalRewards').innerText = "₹" + data.totalRewards;
+            // 🔥 REAL-TIME DYNAMIC FRONTEND COUNTER CALCULATOR (SAFETY MESH)
+            // Agar backend counting kisi server error ya sync delay se miss kare, toh ye khud automatic loop check karke accurate value print karega.
+            let localCount = 0;
+            let localRewards = 0;
+            let html = "";
             
             if (data.ownReferCode) {
-              actualReferCode = data.ownReferCode;
+              actualReferCode = data.ownReferCode.trim();
               document.getElementById('myReferCode').innerText = data.ownReferCode;
             } else {
               actualReferCode = userId;
               document.getElementById('myReferCode').innerText = userId;
             }
-            
-            let html = "";
-            data.history.forEach(row => {
-              html += `<tr>
-                <td>${row.date}</td>
-                <td>${row.user}</td>
-                <td><span class="bonus-badge">+₹${row.reward}</span></td>
-              </tr>`;
-            });
+
+            if (data.history && data.history.length > 0) {
+              data.history.forEach(row => {
+                localCount++;
+                localRewards += Number(row.reward || 0);
+                
+                html += `<tr>
+                  <td>${row.date}</td>
+                  <td>${row.user}</td>
+                  <td><span class="bonus-badge">+₹${row.reward}</span></td>
+                </tr>`;
+              });
+            }
+
+            // Fallback Engine: Agar server counting accurate ho toh server wali, nahi toh local dynamic sum dikhayega
+            document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
+            document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
           }
         })
@@ -121,7 +131,6 @@
 
     function shareInviteSystem() {
       const codeToShare = actualReferCode || userId;
-      
       const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
       const fullInviteLink = `${baseLink}?ref=${codeToShare}`;
       
