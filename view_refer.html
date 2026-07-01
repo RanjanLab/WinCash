@@ -15,23 +15,22 @@
     
     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
     
-    .refer-card { background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: center; animation: fadeIn 0.5s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .refer-card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: center; }
     
     h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 24px; }
-    .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
+    .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
     
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
     .stat-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; text-align: center; }
     .stat-box div:first-child { font-size: 13px; color: #7f8c8d; font-weight: 600; margin-bottom: 5px; }
     .stat-box div:last-child { font-size: 22px; color: var(--primary); font-weight: 700; }
     
-    .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 18px 15px; border-radius: 12px; margin-top: 15px; }
+    .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 20px 15px; border-radius: 12px; margin-top: 15px; box-sizing: border-box; }
     .code-text { font-size: 26px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 10px 0; }
     
-    /* 🛠️ Professional Vertical Layout Buttons for Guaranteed Mobile Fit */
-    .btn-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-    .btn-action { width: 100%; padding: 14px; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease; box-sizing: border-box; }
+    /* 🛠️ Guaranteed Mobile View Buttons Layout */
+    .btn-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; width: 100%; }
+    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease; box-sizing: border-box; }
     
     .btn-copy-code { background: var(--info); }
     .btn-copy-code:hover { background: #2471a3; }
@@ -42,7 +41,7 @@
     .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
     th, td { border: 1px solid #eee; padding: 14px 12px; text-align: left; font-size: 14px; }
-    th { background: var(--primary); color: white; font-weight: 600; position: sticky; top: 0; }
+    th { background: var(--primary); color: white; font-weight: 600; }
     .bonus-badge { color: var(--success); font-weight: bold; background: #eafaf1; padding: 4px 8px; border-radius: 6px; display: inline-block; }
   </style>
 </head>
@@ -67,6 +66,7 @@
       <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
       <div class="code-text" id="myReferCode">-------</div>
       
+      <!-- 📋 Both Buttons Stacked Properly for Mobile View -->
       <div class="btn-container">
         <button class="btn-action btn-copy-code" onclick="copyReferCode()">📋 Copy Referral Code</button>
         <button class="btn-action btn-share-link" onclick="copyReferLink()">🔗 Copy Invite Link</button>
