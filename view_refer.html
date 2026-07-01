@@ -8,6 +8,7 @@
     :root { 
       --primary: #2c3e50; 
       --success: #27ae60; 
+      --info: #2980b9;
       --bg: #f4f6f9; 
       --text: #333; 
     }
@@ -26,10 +27,17 @@
     .stat-box div:last-child { font-size: 22px; color: var(--primary); font-weight: 700; }
     
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 18px 15px; border-radius: 12px; margin-top: 15px; }
-    .code-text { font-size: 22px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 8px 0; }
+    .code-text { font-size: 24px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 8px 0; }
     
-    .btn-share { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15); transition: 0.2s; }
-    .btn-share:hover { background: #219653; }
+    /* 🛠️ Dual Action Grid System for Buttons */
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+    .btn-action { padding: 12px 8px; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease; }
+    
+    .btn-copy-code { background: var(--info); }
+    .btn-copy-code:hover { background: #2471a3; }
+    
+    .btn-share-link { background: var(--success); }
+    .btn-share-link:hover { background: #219653; }
     
     .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
@@ -58,7 +66,11 @@
     <div class="share-box">
       <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
       <div class="code-text" id="myReferCode">-------</div>
-      <button class="btn-share" onclick="copyReferLink()">🚀 Copy Invite Link</button>
+      
+      <div class="btn-grid">
+        <button class="btn-action btn-copy-code" onclick="copyReferCode()">📋 Copy Code</button>
+        <button class="btn-action btn-share-link" onclick="copyReferLink()">🔗 Share Link</button>
+      </div>
     </div>
   </div>
 
@@ -79,7 +91,6 @@
   </div>
 
   <script>
-    // 🔥 LIVE MAPPED: NEW EXEC URL FROM RECENT DEPLOYMENT
     const API_URL = "https://script.google.com/macros/s/AKfycbymvll21UeiebhZ3ROrA8BmXCDpZvdw0avGhMxQTkG4Q8CvKqF5S2Xxr4jeXVGoC3Qt/exec"; 
     const userId = localStorage.getItem("currentUserId") || "CG1001";
 
@@ -111,6 +122,16 @@
         });
     }
 
+    // 📋 Code Copy Logic
+    function copyReferCode() {
+      navigator.clipboard.writeText(userId).then(() => {
+        alert("Success! Referral Code copied to clipboard.");
+      }).catch(() => {
+        alert("Referral Code: " + userId);
+      });
+    }
+
+    // 🔗 Link Share Copy Logic
     function copyReferLink() {
       const baseLink = window.location.origin + window.location.pathname.replace('view_refer.html', 'index.html');
       const fullInviteLink = `${baseLink}?ref=${userId}`;
