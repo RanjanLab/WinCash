@@ -2,36 +2,83 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Cashgain - Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; display: flex; height: 100vh; background: #f4f6f9; }
-    .sidebar { width: 260px; background: #2c3e50; color: white; display: flex; flex-direction: column; z-index: 10; }
-    .sidebar h2 { text-align: center; padding: 20px; margin: 0; background: #1a252f; border-bottom: 1px solid #34495e; }
-    .user-tag { padding: 15px; background: #34495e; text-align: center; font-size: 14px; }
-    .menu-btn { width: 100%; padding: 15px 20px; background: none; border: none; color: #ecf0f1; text-align: left; cursor: pointer; font-size: 16px; border-bottom: 1px solid #34495e; transition: 0.2s; }
-    .menu-btn:hover { background: #34495e; color: #27ae60; }
-    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .top-bar { height: 60px; background: white; display: flex; justify-content: flex-end; align-items: center; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .content-area { flex: 1; padding: 30px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    iframe { width: 100%; height: 100%; border: none; }
+    /* Global Styles */
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; display: flex; height: 100vh; background: #f4f6f9; overflow: hidden; }
+    
+    /* Desktop Sidebar (Default) */
+    .sidebar { width: 260px; background: #2c3e50; color: white; display: flex; flex-direction: column; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+    .sidebar h2 { text-align: center; padding: 20px; margin: 0; background: #1a252f; border-bottom: 1px solid #34495e; font-size: 22px; letter-spacing: 1px; }
+    .user-tag { padding: 15px; background: #34495e; text-align: center; font-size: 14px; border-bottom: 1px solid #2c3e50; line-height: 1.5; }
+    
+    .menu-container { display: flex; flex-direction: column; flex: 1; }
+    .menu-btn { width: 100%; padding: 15px 20px; background: none; border: none; color: #ecf0f1; text-align: left; cursor: pointer; font-size: 16px; border-bottom: 1px solid #34495e; transition: 0.2s; display: flex; align-items: center; gap: 10px; box-sizing: border-box; }
+    .menu-btn:hover, .menu-btn.active { background: #34495e; color: #27ae60; font-weight: bold; }
+    
+    /* Main Content Area */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; height: 100vh; }
+    .top-bar { height: 60px; background: white; display: flex; justify-content: flex-end; align-items: center; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 5; }
+    .logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .logout-btn:hover { background: #c0392b; }
+    
+    .content-area { flex: 1; padding: 25px; overflow-y: auto; -webkit-overflow-scrolling: touch; box-sizing: border-box; }
+    iframe { width: 100%; height: 100%; border: none; display: block; }
 
-    /* 📱 Mobile Responsive Update (Keval Mobile Screen Ke Liye Badlav) */
+    /* 📱 Mobile Responsive Update (Keval Mobile Screen Ke Liye Bottom Bar) */
     @media (max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; }
-      .sidebar h2 { padding: 15px; font-size: 20px; }
-      .user-tag { padding: 10px; font-size: 13px; }
+      body { flex-direction: column; height: 100vh; }
       
-      /* Mobile par buttons ek line me horizontal scroll honge taaki zyada jagah bache */
-      .sidebar { display: block; }
-      .menu-container { display: flex; overflow-x: auto; white-space: nowrap; background: #2c3e50; -webkit-overflow-scrolling: touch; }
-      .menu-btn { width: auto; display: inline-block; padding: 12px 20px; border-bottom: none; border-right: 1px solid #34495e; font-size: 14px; flex-shrink: 0; }
+      /* Header/Top Section on Mobile */
+      .sidebar { width: 100%; height: auto; position: static; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+      .sidebar h2 { padding: 12px; font-size: 18px; border-bottom: none; }
+      .user-tag { padding: 8px; font-size: 12px; border-bottom: none; background: #2c3e50; text-align: center; }
       
+      /* Main Content Frame Adjustments */
       .main-content { flex: 1; height: auto; }
-      .top-bar { height: 50px; padding: 0 15px; }
-      .content-area { padding: 15px; height: calc(100vh - 170px); }
+      .top-bar { height: 45px; padding: 0 15px; background: #1a252f; border-bottom: 1px solid #2c3e50; justify-content: center; }
+      .logout-btn { padding: 5px 12px; font-size: 12px; background: #e74c3c; }
+      
+      /* Content Area Padding for Bottom Bar gap */
+      .content-area { padding: 12px; height: calc(100vh - 175px); }
+
+      /* Fixed Locked Bottom Navigation Bar */
+      .menu-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 65px;
+        background: #2c3e50;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 2px solid #34495e;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+        z-index: 9999;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      
+      /* Mobile Button Style - Stacked Icon & Text */
+      .menu-btn {
+        width: 25%;
+        height: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 5px 0;
+        font-size: 11px;
+        border-bottom: none;
+        border-right: none;
+        color: #bdc3c7;
+        gap: 4px;
+      }
+      .menu-btn:hover, .menu-btn.active {
+        background: #1a252f;
+        color: #27ae60;
+      }
     }
   </style>
   <script>
@@ -42,13 +89,22 @@
 
   <div class="sidebar">
     <h2>Cashgain</h2>
-    <div class="user-tag">ID: <strong id="lblUid">...</strong><br><span id="lblUname">...</span></div>
-    <!-- Mobile responsive layout ke liye menu container jodha gaya hai -->
+    <div class="user-tag">ID: <strong id="lblUid">...</strong> | <span id="lblUname">...</span></div>
+    
+    <!-- Locked Bottom Navigation Menu for Mobile / Sidebar for Desktop -->
     <div class="menu-container">
-      <button class="menu-btn" onclick="loadFrame('view_home.html')">🏠 Home Wallet</button>
-      <button class="menu-btn" onclick="loadFrame('view_deposit.html')">💳 Deposit Balance</button>
-      <button class="menu-btn" onclick="loadFrame('view_earning.html')">📈 Earning Ledger</button>
-      <button class="menu-btn" onclick="loadFrame('view_withdrawal.html')">💸 Withdraw Money</button>
+      <button class="menu-btn active" id="btnHome" onclick="loadFrame('view_home.html', this)">
+        <span>🏠</span><span>Home</span>
+      </button>
+      <button class="menu-btn" onclick="loadFrame('view_deposit.html', this)">
+        <span>💳</span><span>Deposit</span>
+      </button>
+      <button class="menu-btn" onclick="loadFrame('view_earning.html', this)">
+        <span>📈</span><span>Earning</span>
+      </button>
+      <button class="menu-btn" onclick="loadFrame('view_withdrawal.html', this)">
+        <span>💸</span><span>Withdraw</span>
+      </button>
     </div>
   </div>
 
@@ -65,8 +121,14 @@
     document.getElementById('lblUid').innerText = localStorage.getItem("currentUserId");
     document.getElementById('lblUname').innerText = localStorage.getItem("currentUserName");
 
-    function loadFrame(page) {
+    function loadFrame(page, btnElement) {
       document.getElementById('contentFrame').src = page;
+      
+      // Active Button Highlight Switch Logic
+      document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+      if(btnElement) {
+        btnElement.classList.add('active');
+      }
     }
 
     function logout() {
