@@ -13,9 +13,7 @@
     }
     
     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
-    
     .refer-card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: center; }
-    
     h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 24px; }
     .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
     
@@ -57,7 +55,7 @@
     
     <div class="share-box">
       <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
-      <div class="code-text" id="myReferCode">-------</div>
+      <div class="code-text" id="myReferCode">Loading...</div>
       
       <div class="btn-container">
         <button class="btn-action" onclick="shareInviteSystem()">🔗 Share Invite Link</button>
@@ -82,10 +80,9 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxkRB2VX77x5ShgcLVr-W8CLm-HxVwtnxo23oD9hVYytHZ-Yr4qN7MTK96owVUUATOV/exec"; 
+    // 🔥 MAPPED WITH YOUR BRAND NEW LIVE URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbyqoqpXNXTK_8PyFBC60jUCXr2Tv_BJwAEL5q_G1zDYr9zSXpMK06zH8_y7KGqNP1Q0/exec"; 
     const userId = localStorage.getItem("currentUserId") || "";
-    
-    // 🔗 Global variable jo live database se load hone wale refer code ko save rakhega
     let actualReferCode = ""; 
 
     function loadReferDashboard() {
@@ -98,12 +95,10 @@
             document.getElementById('totalRefers').innerText = data.totalRefers;
             document.getElementById('totalRewards').innerText = "₹" + data.totalRewards;
             
-            // 🔥 FIX ENGINE: Script se aaya hua own refer code set karna (Jaise REF718268)
             if (data.ownReferCode) {
               actualReferCode = data.ownReferCode;
               document.getElementById('myReferCode').innerText = data.ownReferCode;
             } else {
-              // Backup safety agar script purani ho
               actualReferCode = userId;
               document.getElementById('myReferCode').innerText = userId;
             }
@@ -125,11 +120,9 @@
     }
 
     function shareInviteSystem() {
-      // Agar kisi wajah se code load nahi hua toh backup me userId chala jayega
       const codeToShare = actualReferCode || userId;
       
       const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
-      // 🔥 DYNAMIC FIX: Ab URL me strictly Referral Code hi pass hoga!
       const fullInviteLink = `${baseLink}?ref=${codeToShare}`;
       
       const shareData = {
@@ -143,7 +136,7 @@
           .catch((error) => console.log('Error sharing:', error));
       } else {
         navigator.clipboard.writeText(fullInviteLink).then(() => {
-          alert("Invite link compiled with Referral Code & copied to clipboard!");
+          alert("Invite link copied to clipboard!");
         });
       }
     }
