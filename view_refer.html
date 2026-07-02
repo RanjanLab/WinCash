@@ -80,13 +80,18 @@
   </div>
 
   <script>
-    // 🔥 LIVE MAPPED WITH YOUR BRAND NEW EXEC URL
+    // 🔥 LIVE MAPPED EXEC URL
     const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
+    
+    // 🎯 CURRENT LOGGED IN USER CHECK: Ye automatic local storage se 'CG1004' uthayega
     const userId = (localStorage.getItem("currentUserId") || "").trim();
     let actualReferCode = ""; 
 
     function loadReferDashboard() {
-      if(!userId) return;
+      if(!userId) {
+        document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Error: No User Logged In!</td></tr>";
+        return;
+      }
       
       fetch(API_URL + `?action=getReferralData&userId=${userId}`)
         .then(res => res.json())
@@ -117,14 +122,14 @@
               });
             }
 
-            // Live layout updates
+            // UI Render update for current user (CG1004)
             document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
             document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
           }
         })
         .catch(err => {
-          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referral logs found. Network sync active.</td></tr>";
+          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>Connection error. Syncing network database...</td></tr>";
         });
     }
 
