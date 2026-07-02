@@ -5,24 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Cashgain - Refer & Earn</title>
   <style>
-    :root { --primary: #2c3e50; --success: #27ae60; --bg: #f4f6f9; --text: #333; }
+    :root { 
+      --primary: #2c3e50; 
+      --success: #27ae60; 
+      --bg: #f4f6f9; 
+      --text: #333; 
+    }
+    
     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
     .refer-card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin: 0 auto 25px auto; box-sizing: border-box; text-align: center; }
     h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 24px; }
     .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
+    
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
     .stat-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; text-align: center; }
     .stat-box div:first-child { font-size: 13px; color: #7f8c8d; font-weight: 600; margin-bottom: 5px; }
     .stat-box div:last-child { font-size: 22px; color: var(--primary); font-weight: 700; }
+    
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 20px 15px; border-radius: 12px; margin-top: 15px; box-sizing: border-box; }
     .code-text { font-size: 26px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 10px 0; }
+    
     .btn-container { margin-top: 15px; width: 100%; }
-    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--success); }
-    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; background: white; }
-    table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
+    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--success); box-shadow: 0 4px 12 rgba(39,174,96,0.2); font-weight: bold; transition: background 0.2s; }
+    .btn-action:hover { background: #219653; }
+    
+    .table-container { overflow-x: auto; max-width: 650px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; background: white; min-width: 500px; }
     th, td { border: 1px solid #eee; padding: 14px 12px; text-align: left; font-size: 14px; }
     th { background: var(--primary); color: white; font-weight: 600; }
     .bonus-badge { color: var(--success); font-weight: bold; background: #eafaf1; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+    .remark-text { font-size: 13px; color: #555; font-style: italic; }
   </style>
 </head>
 <body>
@@ -51,87 +63,84 @@
     </div>
   </div>
 
-  <h4 style="color: var(--primary); max-width:450px; margin:0 auto 15px auto; font-weight:700; font-size:16px;">📜 Referral Transaction Details</h4>
+  <h4 style="color: var(--primary); max-width:450px; margin:0 auto 15px auto; font-weight:700; font-size:16px;">📜 Referral Joining History</h4>
   <div class="table-container">
     <table>
       <thead>
         <tr>
           <th>Date</th>
-          <th>Joined User</th>
-          <th>Reward Amount</th>
+          <th>Joined User ID</th>
+          <th>Rewards</th>
+          <th>Remarks</th>
         </tr>
       </thead>
       <tbody id="referTableBody">
-        <tr><td colspan="3" style="text-align:center; color:#7f8c8d;">Syncing system network data...</td></tr>
+        <tr><td colspan="4" style="text-align:center; color:#7f8c8d;">Syncing system network data...</td></tr>
       </tbody>
     </table>
   </div>
 
   <script>
-    // 🔥 ACTIVE SERVER EXEC URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
-    const userId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
-    let actualReferCode = ""; 
+    // 🎯 DYNAMICALLY LINKED WITH YOUR BRAND NEW EXEC TOKEN URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbyOwqtVIcyvvUbQH_OS8oX19uwT06t32-B4OTqw_p5JHHtyDWzLzRq4drAivZg0qBNH/exec"; 
+    const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
+    let userOwnReferCode = ""; 
 
     function loadReferDashboard() {
-      if(!userId) return;
+      if(!loginUserId) {
+        document.getElementById('referTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Session Expired. Please Re-login.</td></tr>";
+        return;
+      }
       
-      fetch(API_URL + `?action=getReferralData&userId=${userId}`)
+      fetch(API_URL + `?action=getReferralData&userId=${loginUserId}`)
         .then(res => res.json())
         .then(data => {
           if(data.status === "success") {
-            let verifiedCount = 0;
-            let verifiedRewards = 0;
-            let html = "";
-            
+            // Dashboard layout code presentation
             if (data.ownReferCode) {
-              actualReferCode = data.ownReferCode.trim();
-              document.getElementById('myReferCode').innerText = data.ownReferCode;
+              userOwnReferCode = data.ownReferCode.trim().toLowerCase();
+              document.getElementById('myReferCode').innerText = data.ownReferCode.trim();
             }
 
+            // Live metrics counter reset
+            document.getElementById('totalRefers').innerText = data.totalRefers || 0;
+            document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || 0);
+            
+            let html = "";
             if (data.history && data.history.length > 0) {
               data.history.forEach(row => {
-                
-                // 🎯 STRICT FIX: Agar database se aane wale user ka naam ya ID khud login user se match ho, toh skip karo
-                if (row.user && row.user.toLowerCase().includes(userId)) {
-                  return;
-                }
-                
-                verifiedCount++;
-                verifiedRewards += Number(row.reward || 0);
-                
                 let displayDate = row.date;
                 if(displayDate && displayDate.includes("T")) displayDate = displayDate.split("T")[0];
                 
-                // 📋 Yahan ab strictly dusre user ka data render hoga
+                // Backup fallback value check for blank remark
+                let remarkDisplay = row.remark && row.remark.trim() !== "" ? row.remark : "Referral Bonus";
+                
                 html += `<tr>
                   <td>${displayDate}</td>
-                  <td>${row.user}</td>
+                  <td><strong>${row.user}</strong></td>
                   <td><span class="bonus-badge">+₹${row.reward}</span></td>
+                  <td><span class="remark-text">${remarkDisplay}</span></td>
                 </tr>`;
               });
             }
 
-            // UI Engine Counters Live Update
-            document.getElementById('totalRefers').innerText = verifiedCount;
-            document.getElementById('totalRewards').innerText = "₹" + verifiedRewards;
-            document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
+            document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='4' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
           }
         })
         .catch(err => {
-          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Network Error. Try reloading.</td></tr>";
+          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center; color:#7f8c8d;'>No referral logs found. Network sync active.</td></tr>";
         });
     }
 
     function shareInviteSystem() {
-      const codeToShare = actualReferCode || userId;
+      const codeToShare = document.getElementById('myReferCode').innerText || loginUserId;
       const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
       const fullInviteLink = `${baseLink}?ref=${codeToShare}`;
       
       if (navigator.share) {
-        navigator.share({ title: 'Join Cashgain Network', text: `Use my code: ${codeToShare} to join Cashgain!`, url: fullInviteLink });
+        navigator.share({ title: 'Join Cashgain Network', text: `Use my Referral Code: ${codeToShare} to register on Cashgain!`, url: fullInviteLink });
       } else {
-        navigator.clipboard.writeText(fullInviteLink).then(() => alert("Invite link copied!"));
+        navigator.clipboard.writeText(fullInviteLink).then(() => alert("Invite link copied to clipboard!"));
       }
     }
     window.onload = loadReferDashboard;
