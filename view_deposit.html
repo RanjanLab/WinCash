@@ -93,6 +93,7 @@
       <div class="receipt-title">Deposit Receipt</div>
       <p style="font-size: 13px; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">Your transaction request has been sent for admin validation.</p>
       <div class="receipt-row"><span>User ID</span><span id="rcptUid"></span></div>
+      .wrapper { display: none; }
       <div class="receipt-row"><span>Amount</span><span id="rcptAmt"></span></div>
       <div class="receipt-row"><span>UTR Number</span><span id="rcptUtr"></span></div>
       <div class="receipt-row"><span>Status</span><span style="color:#f1c40f;">Pending Approval</span></div>
@@ -193,7 +194,6 @@
       });
     }
 
-    // 🕒 Parse English Month long dates into dd/MM/yyyy strings
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       let dateStr = rawDate.toString();
@@ -233,14 +233,30 @@
               if (row && typeof row === 'object') {
                 let displayDate = formatCleanDate(row.date || "N/A");
                 let displayAmount = row.amount || 0;
+                let displayStatus = row.status || "Pending";
                 
-                // 🎯 STRICT UTR PARSING: Reads explicit 'utr' key and trims apostrophe prefix
+                // 🎯 OMNI KEY EXTRACTOR LOGIC: 
+                // Yeh system automatically object ke andar saari keys ko scan karega 
+                // aur jo bhi 12-digit ka value ya alternative field key hogi, use automatic nikal lega.
                 let displayUtr = "N/A";
-                if (row.utr) {
-                  displayUtr = row.utr.toString().replace(/'/g, "").trim();
+                
+                // 1. Direct key name scan path
+                if (row.utr) displayUtr = row.utr;
+                else if (row.utrNumber) displayUtr = row.utrNumber;
+                else if (row.refNo) displayUtr = row.refNo;
+                else {
+                  // 2. Dynamic multi-key structure scanning fallback
+                  let objectValues = Object.values(row);
+                  for (let val of objectValues) {
+                    if (val && val.toString().replace(/'/g, "").trim().length >= 10 && val.toString() !== row.date.toString()) {
+                      displayUtr = val;
+                      break;
+                    }
+                  }
                 }
                 
-                let displayStatus = row.status || "Pending";
+                // Formatting raw single quote away from dashboard view
+                displayUtr = displayUtr.toString().replace(/'/g, "").trim();
                 
                 html += `<tr>
                   <td>${displayDate}</td>
