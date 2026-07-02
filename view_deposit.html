@@ -193,7 +193,7 @@
       });
     }
 
-    // 🕒 Fix Date string formatting function
+    // 🕒 Safe date format cleanup function
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       let dateStr = rawDate.toString();
@@ -218,37 +218,53 @@
           let html = "";
           let records = [];
           
-          if (data && data.history) {
-            records = data.history;
-          } else if (data && data.data) {
-            records = data.data;
-          } else if (Array.isArray(data)) {
-            records = data;
-          }
+          if (data && data.history) records = data.history;
+          else if (data && data.data) records = data.data;
+          else if (Array.isArray(data)) records = data;
 
-          if (records.length > 0) {
+          if (records && records.length > 0) {
             records.forEach(row => {
+              let displayDate = "N/A";
+              let displayAmount = 0;
+              let displayUtr = "N/A";
+              let displayStatus = "Pending";
+
               if (Array.isArray(row)) {
-                // 🎯 STRICT ALIGNED INDEXES BASED ON FETCH FILTER RESPONSE [0, 3, 4, 5]
-                let displayDate = formatCleanDate(row[0]);  // Index 0 (Date)
-                let displayAmount = row[1] || 0;            // Index 1 (Amount)
-                let displayUtr = row[2] || "N/A";           // Index 2 (UTR)
-                let displayStatus = row[3] || "Pending";       // Index 3 (Status)
+                // 🚀 SMART ARRAY CHECKER: Automatically shifts values if array has 4 items or more
+                displayDate = formatCleanDate(row[0]);
                 
-                html += `<tr>
-                  <td>${displayDate}</td>
-                  <td><strong>₹${displayAmount}</strong></td>
-                  <td style="font-family: monospace;">${displayUtr}</td>
-                  <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
-                </tr>`;
+                if (row.length === 4) {
+                  displayAmount = row[1];
+                  displayUtr = row[2];
+                  displayStatus = row[3];
+                } else {
+                  // Fallback for full 7-column sheet row array structure
+                  displayAmount = row[4] || row[3] || row[1];
+                  displayUtr = row[5] || row[2];
+                  displayStatus = row[6] || row[3];
+                }
+              } else if (row && typeof row === 'object') {
+                displayDate = formatCleanDate(row.date || row.Date);
+                displayAmount = row.amount || row.Amount || 0;
+                displayUtr = row.utr || row.Utr || row.UTR || "N/A";
+                displayStatus = row.status || row.Status || "Pending";
               }
+
+              html += `<tr>
+                <td>${displayDate}</td>
+                <td><strong>₹${displayAmount}</strong></td>
+                <td style="font-family: monospace;">${displayUtr}</td>
+                <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
+              </tr>`;
             });
+            
             document.getElementById('depositTableBody').innerHTML = html;
           } else {
             document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>No active deposit history entries.</td></tr>";
           }
         })
         .catch(err => {
+          console.error(err);
           document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>Failed syncing live account statement logs.</td></tr>";
         });
     }
