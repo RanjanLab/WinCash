@@ -80,16 +80,16 @@
   </div>
 
   <script>
-    // 🔥 LIVE MAPPED EXEC URL
+    // 🔥 LIVE CURRENT ACTIVE EXEC URL
     const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
     
-    // 🎯 CURRENT LOGGED IN USER CHECK: Ye automatic local storage se 'CG1004' uthayega
+    // Local storage se dynamic user logged ID read karna
     const userId = (localStorage.getItem("currentUserId") || "").trim();
     let actualReferCode = ""; 
 
     function loadReferDashboard() {
       if(!userId) {
-        document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Error: No User Logged In!</td></tr>";
+        document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Error: Session expired. Please relogin.</td></tr>";
         return;
       }
       
@@ -109,6 +109,7 @@
               document.getElementById('myReferCode').innerText = userId;
             }
 
+            // FILTER REVERSED STUB: Sirf un users ko filter karna jinhone current login ID ke code se join kiya hai
             if (data.history && data.history.length > 0) {
               data.history.forEach(row => {
                 localCount++;
@@ -122,14 +123,14 @@
               });
             }
 
-            // UI Render update for current user (CG1004)
+            // Dashboard dynamically layout updates
             document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
             document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
           }
         })
         .catch(err => {
-          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>Connection error. Syncing network database...</td></tr>";
+          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referral logs found. Network sync active.</td></tr>";
         });
     }
 
