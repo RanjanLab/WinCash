@@ -203,18 +203,49 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
-          if(data.status === "success" && data.history) {
-            data.history.forEach(row => {
-              // Core response parameters check dynamically parsed
-              let displayDate = row.date || new Date().toLocaleDateString('en-GB');
-              html += `<tr>
-                <td>${displayDate}</td>
-                <td><strong>₹${row.amount}</strong></td>
-                <td style="font-family: monospace;">${row.utr}</td>
-                <td><span class="badge ${row.status}">${row.status}</span></td>
-              </tr>`;
+          // 🎯 FIXED MATRIX: Extracting rows list parsed via direct positional indexing
+          let records = [];
+          if (data && data.history) {
+            records = data.history;
+          } else if (data && data.data) {
+            records = data.data;
+          } else if (Array.isArray(data)) {
+            records = data;
+          }
+
+          if (records.length > 0) {
+            records.forEach(row => {
+              if (Array.isArray(row)) {
+                // Mapped precisely via List of Array indexing [Date, Amount, UTR, Status]
+                let displayDate = row[0] || "N/A";
+                let displayAmount = row[1] || 0;
+                let displayUtr = row[2] || "N/A";
+                let displayStatus = row[3] || "Pending";
+                
+                html += `<tr>
+                  <td>${displayDate}</td>
+                  <td><strong>₹${displayAmount}</strong></td>
+                  <td style="font-family: monospace;">${displayUtr}</td>
+                  <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
+                </tr>`;
+              } else if (typeof row === 'object') {
+                // Fallback support for structural object data parameters 
+                let displayDate = row.date || "N/A";
+                let displayAmount = row.amount || 0;
+                let displayUtr = row.utr || "N/A";
+                let displayStatus = row.status || "Pending";
+                
+                html += `<tr>
+                  <td>${displayDate}</td>
+                  <td><strong>₹${displayAmount}</strong></td>
+                  <td style="font-family: monospace;">${displayUtr}</td>
+                  <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
+                </tr>`;
+              }
             });
-            document.getElementById('depositTableBody').innerHTML = html || "<tr><td colspan='4' style='text-align:center;'>No active deposit history entries.</td></tr>";
+            document.getElementById('depositTableBody').innerHTML = html;
+          } else {
+            document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>No active deposit history entries.</td></tr>";
           }
         })
         .catch(err => {
