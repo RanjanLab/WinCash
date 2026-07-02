@@ -18,7 +18,6 @@
     .btn-pay:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
     .btn-submit { width: 100%; padding: 14px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
     
-    /* Optimized layout for 4 columns */
     .table-container { overflow-x: auto; max-width: 100%; margin: 0 auto; margin-bottom: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 450px; }
     th, td { border: 1px solid #eee; padding: 12px; text-align: left; font-size: 13px; }
@@ -83,7 +82,7 @@
         </tr>
       </thead>
       <tbody id="depositTableBody">
-        <tr><td colspan="4" style="text-align:center;">Synchronizing server logs...</td></tr>
+        <tr><td colspan="4" style="text-align:center;">Synchronizing live server logs...</td></tr>
       </tbody>
     </table>
   </div>
@@ -102,8 +101,7 @@
   </div>
 
   <script>
-    // 🎯 LINKED DIRECTLY WITH YOUR RE-DEPLOYED SECURITY ENDPOINT TOKEN
-    const API_URL = "https://script.google.com/macros/s/AKfycbyCHGA5y9ammjJns1f8H0a58A5WLuIGX45_UrsxLDnYK6i6u19WqIyEGrcGJy_Dp8Hr/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxEsBe0qGN4Q0KhZA4SJvMfIa0g0xO3RS7d_BXv_jU-9nBp8igni4MX4c_vhLHlCNI/exec"; 
 
     const userId = localStorage.getItem("currentUserId") || "cg1002";
     const userName = localStorage.getItem("currentUserName") || "";
@@ -207,9 +205,10 @@
           let html = "";
           if(data.status === "success" && data.history) {
             data.history.forEach(row => {
-              // 🎯 STRICT OPTIMIZATION: Displaying Date, Amount, UTR, and Status fields only
+              // Core response parameters check dynamically parsed
+              let displayDate = row.date || new Date().toLocaleDateString('en-GB');
               html += `<tr>
-                <td>${row.date}</td>
+                <td>${displayDate}</td>
                 <td><strong>₹${row.amount}</strong></td>
                 <td style="font-family: monospace;">${row.utr}</td>
                 <td><span class="badge ${row.status}">${row.status}</span></td>
@@ -219,7 +218,7 @@
           }
         })
         .catch(err => {
-          document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>Failed syncing account statement logs.</td></tr>";
+          document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>Failed syncing live account statement logs.</td></tr>";
         });
     }
 
