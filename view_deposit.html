@@ -8,16 +8,12 @@
     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f9; color: #333; padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
     .form-group { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
     h2, h4 { margin-top: 0; color: #2c3e50; text-align: center; }
-    
     label { font-weight: bold; font-size: 14px; color: #4f5d75; display: block; margin-top: 15px; }
     input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-    
     .instruction-box { background: #e8f4fd; color: #2980b9; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; display: none; border-left: 4px solid #3498db; margin: 10px 0; text-align: left; line-height: 1.4; }
-    
     .btn-pay { width: 100%; padding: 14px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2); transition: 0.2s; }
     .btn-pay:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
     .btn-submit { width: 100%; padding: 14px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-    
     .table-container { overflow-x: auto; max-width: 100%; margin: 0 auto; margin-bottom: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); background: white; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 450px; }
     th, td { border: 1px solid #eee; padding: 12px; text-align: left; font-size: 13px; }
@@ -26,7 +22,6 @@
     .badge.Approved { background: #eafaf1; color: #27ae60; }
     .badge.Pending { background: #fef9e7; color: #f1c40f; }
     .badge.Failed { background: #fef2f2; color: #ef4444; }
-
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; }
     .receipt-box { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box; }
     .receipt-success-icon { font-size: 50px; color: #27ae60; margin-bottom: 10px; }
@@ -43,7 +38,6 @@
   
   <div class="form-group">
     <h4>New Deposit Request</h4>
-    
     <label>1. Enter Amount (₹)</label>
     <input type="number" id="depAmount" placeholder="Enter amount to add">
     
@@ -58,15 +52,11 @@
       💡 <strong>Important Instruction:</strong> After successful payment execution, copy the <strong>12-digit UTR / Reference Number</strong> from your UPI app and paste it into the field below!
     </div>
     
-    <button class="btn-pay" id="payBtn" onclick="openPaymentApp()" disabled>
-      ⏳ UPI Loading... Please wait
-    </button>
-    
+    <button class="btn-pay" id="payBtn" onclick="openPaymentApp()" disabled>⏳ UPI Loading... Please wait</button>
     <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
     
     <label>3. Paste UTR Reference ID After Payment</label>
     <input type="text" id="depUtr" placeholder="Enter 12-digit UTR / Ref Number">
-    
     <button class="btn-submit" onclick="submitDeposit()">Submit Transaction</button>
   </div>
 
@@ -101,8 +91,7 @@
   </div>
 
   <script>
-    // 🎯 STRICT SYSTEM ENGINE API URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbzY1DiNE4SW7siNmadyVJkRyZBqOZwvdaKNjrGTte1v69Rb7cTxy1mDZ6kTQ8Iuo4a4/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycby3X4ZtubTNgRMMsROTv-aBmEhI5L3y8tas34j5K0T1t-WJMJv-4QgeHCz1lSp-yKzZ/exec"; 
 
     const userId = localStorage.getItem("currentUserId") || "cg1002";
     const userName = localStorage.getItem("currentUserName") || "";
@@ -119,9 +108,6 @@
             isUpiLoaded = true;
             updatePayButtonText();
           }
-        })
-        .catch(err => {
-          setTimeout(fetchAdminUpi, 2000);
         });
     }
 
@@ -154,8 +140,8 @@
 
     function openPaymentApp() {
       var amount = document.getElementById('depAmount').value;
-      if(!amount || amount <= 0) { return alert("Please input a valid amount first!"); }
-      if(!isUpiLoaded || !adminUpiId) { return alert("UPI ID sheet se load ho rahi hai..."); }
+      if(!amount || amount <= 0) return alert("Please input a valid amount first!");
+      if(!isUpiLoaded || !adminUpiId) return alert("UPI ID sheet se load ho rahi hai...");
       window.location.href = `upi://pay?pa=${adminUpiId}&pn=Cashgain&am=${amount}&cu=INR`;
     }
 
@@ -180,7 +166,6 @@
         document.getElementById('rcptAmt').innerText = "₹" + amount;
         document.getElementById('rcptUtr').innerText = utr;
         document.getElementById('receiptModal').style.display = "flex";
-        
         document.getElementById('depAmount').value = "";
         document.getElementById('depUtr').value = "";
         document.getElementById('paymentApp').value = "";
@@ -204,23 +189,15 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
-          // 🎯 EXACT SYNC: Strictly targeted to read our custom data loop array
-          let records = [];
-          if (data && data.data) {
-            records = data.data;
-          } else if (data && data.history) {
-            records = data.history;
-          }
+          let records = (data && data.data) ? data.data : [];
 
           if (records && records.length > 0) {
             records.forEach(row => {
               if (row && typeof row === 'object') {
-                let displayDate = formatCleanDate(row.date || "N/A");
+                let displayDate = formatCleanDate(row.date);
                 let displayAmount = row.amount || 0;
+                let displayUtr = row.utr || "N/A";
                 let displayStatus = row.status || "Pending";
-                
-                // 🎯 DIRECT LOG KEY READING FOR UTR
-                let displayUtr = row.utr || row.UTR || "N/A";
                 
                 html += `<tr>
                   <td>${displayDate}</td>
@@ -234,9 +211,6 @@
           } else {
             document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>No active deposit history entries.</td></tr>";
           }
-        })
-        .catch(err => {
-          console.error(err);
         });
     }
 
