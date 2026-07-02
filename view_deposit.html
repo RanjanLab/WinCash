@@ -65,7 +65,7 @@
     <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
     
     <label>3. Paste UTR Reference ID After Payment</label>
-    <input type="text" id="deputr" placeholder="Enter 12-digit UTR / Ref Number">
+    <input type="text" id="depUtr" placeholder="Enter 12-digit UTR / Ref Number">
     
     <button class="btn-submit" onclick="submitDeposit()">Submit Transaction</button>
   </div>
@@ -93,7 +93,6 @@
       <div class="receipt-title">Deposit Receipt</div>
       <p style="font-size: 13px; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">Your transaction request has been sent for admin validation.</p>
       <div class="receipt-row"><span>User ID</span><span id="rcptUid"></span></div>
-      .wrapper { display: none; }
       <div class="receipt-row"><span>Amount</span><span id="rcptAmt"></span></div>
       <div class="receipt-row"><span>UTR Number</span><span id="rcptUtr"></span></div>
       <div class="receipt-row"><span>Status</span><span style="color:#f1c40f;">Pending Approval</span></div>
@@ -102,7 +101,8 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxtH7EMscojOkoQSLdMzOVOGE-mm825gVIFfzpotSOWlvkL_TlQ0a8NSdOjDXGlUJZT/exec"; 
+    // 🎯 LIVE API INSTANCE CONFIGURATION
+    const API_URL = "https://script.google.com/macros/s/AKfycbxEsBe0qGN4Q0KhZA4SJvMfIa0g0xO3RS7d_BXv_jU-9nBp8igni4MX4c_vhLHlCNI/exec"; 
 
     const userId = localStorage.getItem("currentUserId") || "cg1002";
     const userName = localStorage.getItem("currentUserName") || "";
@@ -226,7 +226,7 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
-          let records = (data && data.data) ? data.data : [];
+          let records = (data && data.history) ? data.history : ((data && data.data) ? data.data : []);
 
           if (records && records.length > 0) {
             records.forEach(row => {
@@ -235,28 +235,13 @@
                 let displayAmount = row.amount || 0;
                 let displayStatus = row.status || "Pending";
                 
-                // 🎯 OMNI KEY EXTRACTOR LOGIC: 
-                // Yeh system automatically object ke andar saari keys ko scan karega 
-                // aur jo bhi 12-digit ka value ya alternative field key hogi, use automatic nikal lega.
+                // 🎯 STRICT ALIGNED OBJECT PROPERTY MAPPING
                 let displayUtr = "N/A";
-                
-                // 1. Direct key name scan path
-                if (row.utr) displayUtr = row.utr;
-                else if (row.utrNumber) displayUtr = row.utrNumber;
-                else if (row.refNo) displayUtr = row.refNo;
-                else {
-                  // 2. Dynamic multi-key structure scanning fallback
-                  let objectValues = Object.values(row);
-                  for (let val of objectValues) {
-                    if (val && val.toString().replace(/'/g, "").trim().length >= 10 && val.toString() !== row.date.toString()) {
-                      displayUtr = val;
-                      break;
-                    }
-                  }
+                if (row.utr) {
+                  displayUtr = row.utr.toString().replace(/'/g, "").trim();
+                } else if (row.UTR) {
+                  displayUtr = row.UTR.toString().replace(/'/g, "").trim();
                 }
-                
-                // Formatting raw single quote away from dashboard view
-                displayUtr = displayUtr.toString().replace(/'/g, "").trim();
                 
                 html += `<tr>
                   <td>${displayDate}</td>
