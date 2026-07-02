@@ -5,31 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Cashgain - Refer & Earn</title>
   <style>
-    :root { 
-      --primary: #2c3e50; 
-      --success: #27ae60; 
-      --bg: #f4f6f9; 
-      --text: #333; 
-    }
-    
+    :root { --primary: #2c3e50; --success: #27ae60; --bg: #f4f6f9; --text: #333; }
     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
-    .refer-card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: center; }
+    .refer-card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 25px; max-width: 450px; width: 100%; margin: 0 auto 25px auto; box-sizing: border-box; text-align: center; }
     h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 24px; }
     .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
-    
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
     .stat-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; text-align: center; }
     .stat-box div:first-child { font-size: 13px; color: #7f8c8d; font-weight: 600; margin-bottom: 5px; }
     .stat-box div:last-child { font-size: 22px; color: var(--primary); font-weight: 700; }
-    
     .share-box { background: #e8f4fd; border: 1px dashed #3498db; padding: 20px 15px; border-radius: 12px; margin-top: 15px; box-sizing: border-box; }
     .code-text { font-size: 26px; font-weight: bold; color: #2980b9; letter-spacing: 2px; margin: 10px 0; }
-    
     .btn-container { margin-top: 15px; width: 100%; }
-    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2); transition: all 0.2s ease; box-sizing: border-box; background: var(--success); }
-    .btn-action:hover { background: #219653; transform: translateY(-1px); }
-    
-    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); background: white; -webkit-overflow-scrolling: touch; }
+    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--success); }
+    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; background: white; }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 420px; }
     th, td { border: 1px solid #eee; padding: 14px 12px; text-align: left; font-size: 14px; }
     th { background: var(--primary); color: white; font-weight: 600; }
@@ -54,9 +43,8 @@
     </div>
     
     <div class="share-box">
-      <div style="font-size: 13px; color: #555; font-weight: 600; letter-spacing: 0.5px;">YOUR UNIQUE REFERRAL CODE</div>
+      <div style="font-size: 13px; color: #555; font-weight: 600;">YOUR UNIQUE REFERRAL CODE</div>
       <div class="code-text" id="myReferCode">Loading...</div>
-      
       <div class="btn-container">
         <button class="btn-action" onclick="shareInviteSystem()">🔗 Share Invite Link</button>
       </div>
@@ -80,7 +68,8 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
+    // 🔥 APNA NAYA DEPLOY KIYA HUA EXEC URL YAHA DAALEIN
+    const API_URL = "https://script.google.com/macros/s/AKfycbz8HeJltVt0YgjwNUu0Wym-A5gh6fgQxxo1SovmIKgGvJTvwudcb8jxfoOE1Bo7ErO9/exec"; 
     const userId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
     let actualReferCode = ""; 
 
@@ -100,22 +89,13 @@
               document.getElementById('myReferCode').innerText = data.ownReferCode;
             }
 
-            // 🎯 STRICT TARGET FILTER: Yeh double check karega ki history data strictly isi user ka ho, kisi dummy bande ka na dikhe
             if (data.history && data.history.length > 0) {
               data.history.forEach(row => {
-                // Agar history data me joined user khud login user hi hai, toh use ignore karega (Self-refer fix)
-                if(row.user && row.user.toLowerCase().includes(userId)) {
-                  return;
-                }
-                
                 verifiedCount++;
                 verifiedRewards += Number(row.reward || 0);
                 
-                // Raw ISO Date Format to clean text conversion
                 let displayDate = row.date;
-                if(displayDate && displayDate.includes("T")) {
-                   displayDate = displayDate.split("T")[0];
-                }
+                if(displayDate && displayDate.includes("T")) displayDate = displayDate.split("T")[0];
                 
                 html += `<tr>
                   <td>${displayDate}</td>
@@ -125,14 +105,13 @@
               });
             }
 
-            // UI engine update strictly with verified values
             document.getElementById('totalRefers').innerText = verifiedCount;
             document.getElementById('totalRewards').innerText = "₹" + verifiedRewards;
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
           }
         })
         .catch(err => {
-          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referral logs found. Network sync active.</td></tr>";
+          document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Network Error. Try reloading.</td></tr>";
         });
     }
 
@@ -141,21 +120,12 @@
       const baseLink = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/index.html';
       const fullInviteLink = `${baseLink}?ref=${codeToShare}`;
       
-      const shareData = {
-        title: 'Join Cashgain Network',
-        text: `Hey! Use my Referral Code: ${codeToShare} to register on Cashgain and claim exclusive joining balance bonuses!`,
-        url: fullInviteLink
-      };
-
       if (navigator.share) {
-        navigator.share(shareData).catch((error) => console.log('Error sharing:', error));
+        navigator.share({ title: 'Join Cashgain Network', text: `Use my code: ${codeToShare} to join Cashgain!`, url: fullInviteLink });
       } else {
-        navigator.clipboard.writeText(fullInviteLink).then(() => {
-          alert("Invite link copied to clipboard!");
-        });
+        navigator.clipboard.writeText(fullInviteLink).then(() => alert("Invite link copied!"));
       }
     }
-
     window.onload = loadReferDashboard;
   </script>
 </body>
