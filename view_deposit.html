@@ -101,7 +101,6 @@
   </div>
 
   <script>
-    // 🎯 LIVE API INSTANCE CONFIGURATION
     const API_URL = "https://script.google.com/macros/s/AKfycbxEsBe0qGN4Q0KhZA4SJvMfIa0g0xO3RS7d_BXv_jU-9nBp8igni4MX4c_vhLHlCNI/exec"; 
 
     const userId = localStorage.getItem("currentUserId") || "cg1002";
@@ -121,7 +120,6 @@
           }
         })
         .catch(err => {
-          console.log("UPI Fetch error, retrying...");
           setTimeout(fetchAdminUpi, 2000);
         });
     }
@@ -130,7 +128,6 @@
       var app = document.getElementById('paymentApp').value;
       var instr = document.getElementById('instructionBox');
       var payBtn = document.getElementById('payBtn');
-      
       if(app !== "") {
         instr.style.display = "block";
         payBtn.style.display = "flex";
@@ -145,7 +142,6 @@
       var app = document.getElementById('paymentApp').value;
       var payBtn = document.getElementById('payBtn');
       if(!payBtn) return;
-
       if(isUpiLoaded) {
         payBtn.disabled = false;
         payBtn.innerText = "🚀 Pay using " + (app === 'paytm' ? 'Paytm' : 'PhonePe');
@@ -159,10 +155,7 @@
       var amount = document.getElementById('depAmount').value;
       if(!amount || amount <= 0) { return alert("Please input a valid amount first!"); }
       if(!isUpiLoaded || !adminUpiId) { return alert("UPI ID sheet se load ho rahi hai..."); }
-      
-      var platformName = "Cashgain";
-      var upiUrl = `upi://pay?pa=${adminUpiId}&pn=${encodeURIComponent(platformName)}&am=${amount}&cu=INR`;
-      window.location.href = upiUrl;
+      window.location.href = `upi://pay?pa=${adminUpiId}&pn=Cashgain&am=${amount}&cu=INR`;
     }
 
     function submitDeposit() {
@@ -197,26 +190,10 @@
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       let dateStr = rawDate.toString();
-      
       const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
       let parts = dateStr.split(" ");
       if(parts.length >= 4 && months[parts[1]]) {
-        let day = parts[2].padStart(2, '0');
-        let month = months[parts[1]];
-        let year = parts[3];
-        return `${day}/${month}/${year}`;
-      }
-      
-      if(dateStr.includes("GMT") || dateStr.includes("T")) {
-        try {
-          let d = new Date(dateStr);
-          if(!isNaN(d.getTime())) {
-            let day = String(d.getDate()).padStart(2, '0');
-            let month = String(d.getMonth() + 1).padStart(2, '0');
-            let year = d.getFullYear();
-            return `${day}/${month}/${year}`;
-          }
-        } catch(e) {}
+        return `${parts[2].padStart(2, '0')}/${months[parts[1]]}/${parts[3]}`;
       }
       return dateStr.substring(0, 10); 
     }
@@ -226,6 +203,7 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
+          // Handle custom object response arrays
           let records = (data && data.history) ? data.history : ((data && data.data) ? data.data : []);
 
           if (records && records.length > 0) {
@@ -235,13 +213,25 @@
                 let displayAmount = row.amount || 0;
                 let displayStatus = row.status || "Pending";
                 
-                // 🎯 STRICT ALIGNED OBJECT PROPERTY MAPPING
+                // 🎯 SMART AUTO-DETECTOR LOGIC FOR UTR
                 let displayUtr = "N/A";
-                if (row.utr) {
-                  displayUtr = row.utr.toString().replace(/'/g, "").trim();
-                } else if (row.UTR) {
-                  displayUtr = row.UTR.toString().replace(/'/g, "").trim();
+                
+                // 1. Agar direct keys match ho jayein
+                if (row.utr) displayUtr = row.utr;
+                else if (row.UTR) displayUtr = row.UTR;
+                else {
+                  // 2. Agar keys rename ho gayi hon, toh saare object values ko scan karo
+                  let allValues = Object.values(row);
+                  for (let val of allValues) {
+                    if (val && val.toString().replace(/'/g, "").trim().length >= 10 && val.toString() !== row.date.toString()) {
+                      displayUtr = val;
+                      break;
+                    }
+                  }
                 }
+                
+                // Final string clean up (Strips single quotes)
+                displayUtr = displayUtr.toString().replace(/'/g, "").trim();
                 
                 html += `<tr>
                   <td>${displayDate}</td>
@@ -258,8 +248,12 @@
         })
         .catch(err => {
           console.error(err);
-          document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>Failed syncing live account statement logs.</td></tr>";
         });
+    }
+
+    function closeReceipt() {
+      document.getElementById('receiptModal').style.display = "none";
+      loadHistory();
     }
 
     window.onload = function() {
