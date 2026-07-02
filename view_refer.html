@@ -80,52 +80,54 @@
   </div>
 
   <script>
-    // 🔥 LIVE CURRENT ACTIVE EXEC URL
     const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
-    
-    // Local storage se dynamic user logged ID read karna
-    const userId = (localStorage.getItem("currentUserId") || "").trim();
+    const userId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
     let actualReferCode = ""; 
 
     function loadReferDashboard() {
-      if(!userId) {
-        document.getElementById('referTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Error: Session expired. Please relogin.</td></tr>";
-        return;
-      }
+      if(!userId) return;
       
       fetch(API_URL + `?action=getReferralData&userId=${userId}`)
         .then(res => res.json())
         .then(data => {
           if(data.status === "success") {
-            let localCount = 0;
-            let localRewards = 0;
+            let verifiedCount = 0;
+            let verifiedRewards = 0;
             let html = "";
             
             if (data.ownReferCode) {
               actualReferCode = data.ownReferCode.trim();
               document.getElementById('myReferCode').innerText = data.ownReferCode;
-            } else {
-              actualReferCode = userId;
-              document.getElementById('myReferCode').innerText = userId;
             }
 
-            // FILTER REVERSED STUB: Sirf un users ko filter karna jinhone current login ID ke code se join kiya hai
+            // 🎯 STRICT TARGET FILTER: Yeh double check karega ki history data strictly isi user ka ho, kisi dummy bande ka na dikhe
             if (data.history && data.history.length > 0) {
               data.history.forEach(row => {
-                localCount++;
-                localRewards += Number(row.reward || 0);
+                // Agar history data me joined user khud login user hi hai, toh use ignore karega (Self-refer fix)
+                if(row.user && row.user.toLowerCase().includes(userId)) {
+                  return;
+                }
+                
+                verifiedCount++;
+                verifiedRewards += Number(row.reward || 0);
+                
+                // Raw ISO Date Format to clean text conversion
+                let displayDate = row.date;
+                if(displayDate && displayDate.includes("T")) {
+                   displayDate = displayDate.split("T")[0];
+                }
                 
                 html += `<tr>
-                  <td>${row.date}</td>
+                  <td>${displayDate}</td>
                   <td>${row.user}</td>
                   <td><span class="bonus-badge">+₹${row.reward}</span></td>
                 </tr>`;
               });
             }
 
-            // Dashboard dynamically layout updates
-            document.getElementById('totalRefers').innerText = data.totalRefers || localCount;
-            document.getElementById('totalRewards').innerText = "₹" + (data.totalRewards || localRewards);
+            // UI engine update strictly with verified values
+            document.getElementById('totalRefers').innerText = verifiedCount;
+            document.getElementById('totalRewards').innerText = "₹" + verifiedRewards;
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
           }
         })
@@ -141,13 +143,12 @@
       
       const shareData = {
         title: 'Join Cashgain Network',
-        text: `Hey! Use my Referral Code: ${codeToShare} to register on Cashgain and claim exclusive joining balance bonuses instantly!`,
+        text: `Hey! Use my Referral Code: ${codeToShare} to register on Cashgain and claim exclusive joining balance bonuses!`,
         url: fullInviteLink
       };
 
       if (navigator.share) {
-        navigator.share(shareData)
-          .catch((error) => console.log('Error sharing:', error));
+        navigator.share(shareData).catch((error) => console.log('Error sharing:', error));
       } else {
         navigator.clipboard.writeText(fullInviteLink).then(() => {
           alert("Invite link copied to clipboard!");
