@@ -84,11 +84,9 @@
   </div>
 
   <script>
-    // 🎯 LINKED DIRECTLY WITH YOUR RE-DEPLOYED SERVER URL KEY
-    const API_URL = "https://script.google.com/macros/s/AKfycbyUhDKJQ05Qr6o3T0ab_W_Ucw0JDYMpRLrNL3lcC2j9YrHUCGGkCObcsVza72EgfEv4/exec";
+    // 🎯 NEW UPDATED WEB APP URL LINKED HERE
+    const API_URL = "https://script.google.com/macros/s/AKfycbyq63ZBQyIz9-zKPrQVCPqWLvAzauBfezlJAWoM68PbLBAm6X7iSCzPgnIkTxptwyHm/exec";
     const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
-    const loginUserName = localStorage.getItem("currentUserName") || "User";
-    const loginUserMobile = localStorage.getItem("currentUserMobile") || "";
 
     function loadDepositHistory() {
       if(!loginUserId) {
@@ -128,7 +126,6 @@
         });
     }
 
-    // Fix update to trigger Code.gs doPost dynamic router engine
     function submitDepositRequest() {
       const amountInput = document.getElementById('depositAmount');
       const utrInput = document.getElementById('utrNumber');
@@ -152,8 +149,6 @@
         body: JSON.stringify({
           action: "deposit",
           userId: loginUserId,
-          name: loginUserName,
-          mobile: loginUserMobile,
           amount: Number(amount),
           utr: utr
         })
