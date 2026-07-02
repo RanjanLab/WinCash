@@ -101,7 +101,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwolyz5vnbH7_Du7la9nl_k5LmZo59ET2u1ifaS-HYSDct5Qf9d2rBJ8ZwF7PPxZHfc/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxEsBe0qGN4Q0KhZA4SJvMfIa0g0xO3RS7d_BXv_jU-9nBp8igni4MX4c_vhLHlCNI/exec"; 
 
     const userId = localStorage.getItem("currentUserId") || "cg1002";
     const userName = localStorage.getItem("currentUserName") || "";
@@ -193,12 +193,11 @@
       });
     }
 
-    // 🕒 Fix Long Time string parsing directly to clean standard (dd/MM/yyyy)
+    // 🕒 Parse English Month long dates into dd/MM/yyyy strings
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       let dateStr = rawDate.toString();
       
-      // Checking English Month name occurrences (Sat Feb 07 2026...)
       const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
       let parts = dateStr.split(" ");
       if(parts.length >= 4 && months[parts[1]]) {
@@ -227,7 +226,6 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
-          // 🎯 EXACT RESPONSE SYNC MATCHING THE SCREENSHOT KEYED DATA OBJECT
           let records = (data && data.data) ? data.data : [];
 
           if (records && records.length > 0) {
@@ -235,14 +233,19 @@
               if (row && typeof row === 'object') {
                 let displayDate = formatCleanDate(row.date || "N/A");
                 let displayAmount = row.amount || 0;
-                // Fetch dynamic text or set fallback text strictly if keys are missing from response
-                let displayUtr = row.utr || row.utrNumber || "Verified Link"; 
+                
+                // 🎯 STRICT UTR PARSING: Reads explicit 'utr' key and trims apostrophe prefix
+                let displayUtr = "N/A";
+                if (row.utr) {
+                  displayUtr = row.utr.toString().replace(/'/g, "").trim();
+                }
+                
                 let displayStatus = row.status || "Pending";
                 
                 html += `<tr>
                   <td>${displayDate}</td>
                   <td><strong>₹${displayAmount}</strong></td>
-                  <td style="font-family: monospace;">${displayUtr}</td>
+                  <td style="font-family: monospace; font-weight: bold; color: #2c3e50;">${displayUtr}</td>
                   <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
                 </tr>`;
               }
