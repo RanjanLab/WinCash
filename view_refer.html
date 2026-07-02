@@ -68,8 +68,8 @@
   </div>
 
   <script>
-    // 🔥 APNA NAYA DEPLOY KIYA HUA EXEC URL YAHA DAALEIN
-    const API_URL = "https://script.google.com/macros/s/AKfycbz8HeJltVt0YgjwNUu0Wym-A5gh6fgQxxo1SovmIKgGvJTvwudcb8jxfoOE1Bo7ErO9/exec"; 
+    // 🔥 ACTIVE SERVER EXEC URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbx3mjpPTWQ9b4ceolo1zKcrUgOAsLvBeUFWwCvwrSOwftrnXa9sYcDhTO3NmvWP19h4/exec"; 
     const userId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
     let actualReferCode = ""; 
 
@@ -91,12 +91,19 @@
 
             if (data.history && data.history.length > 0) {
               data.history.forEach(row => {
+                
+                // 🎯 STRICT FIX: Agar database se aane wale user ka naam ya ID khud login user se match ho, toh skip karo
+                if (row.user && row.user.toLowerCase().includes(userId)) {
+                  return;
+                }
+                
                 verifiedCount++;
                 verifiedRewards += Number(row.reward || 0);
                 
                 let displayDate = row.date;
                 if(displayDate && displayDate.includes("T")) displayDate = displayDate.split("T")[0];
                 
+                // 📋 Yahan ab strictly dusre user ka data render hoga
                 html += `<tr>
                   <td>${displayDate}</td>
                   <td>${row.user}</td>
@@ -105,6 +112,7 @@
               });
             }
 
+            // UI Engine Counters Live Update
             document.getElementById('totalRefers').innerText = verifiedCount;
             document.getElementById('totalRewards').innerText = "₹" + verifiedRewards;
             document.getElementById('referTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>No referrals tracked on this account.</td></tr>";
