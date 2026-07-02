@@ -56,7 +56,7 @@
   </div>
 
   <script>
-    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+    // ⚠️ GOOGLE APPS SCRIPT WEB APP URL
     const API_URL = "https://script.google.com/macros/s/AKfycbzY13Lc2C0SjuvsSYwPDdvkACgySu3BnN3RRI9RjUQ9-GJHFUX3JL9ugkQugS4-Sh-v/exec"; 
     const userId = localStorage.getItem("currentUserId");
 
@@ -92,15 +92,26 @@
         .then(data => {
           let html = "";
           if(data.status === "success") {
+            // ✅ Agar backend pure row arrays bhejta hai, toh naye indexes se data read hoga
             data.history.forEach(row => {
+              let date = row[0];   // Column A: Date
+              let amount = row[3]; // Column D: Amount
+              let status = row[4]; // Column E: Status / Remark
+
               html += `<tr>
-                <td>${row.date || '---'}</td>
-                <td>₹${row.amount}</td>
-                <td><span class="badge ${row.status}">${row.status}</span></td>
+                <td>${date || '---'}</td>
+                <td>₹${amount}</td>
+                <td><span class="badge ${status}">${status}</span></td>
               </tr>`;
             });
             document.getElementById('withdrawTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center;'>No history found.</td></tr>";
+          } else {
+            document.getElementById('withdrawTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center;'>No history found.</td></tr>";
           }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('withdrawTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Failed to load history.</td></tr>";
         });
     }
 
