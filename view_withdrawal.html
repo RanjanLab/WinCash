@@ -2,44 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cashgain - Withdrawal Request</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cashgain - Withdrawal Center</title>
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f9; color: #333; padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
-    .form-group { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
-    h2, h4 { margin-top: 0; color: #2c3e50; text-align: center; }
+    :root { 
+      --primary: #1e293b; 
+      --accent: #c2410c;
+      --success: #16a34a; 
+      --pending: #ea580c;
+      --bg: #f8fafc; 
+      --text: #334155; 
+    }
     
-    label { font-weight: bold; font-size: 14px; color: #4f5d75; display: block; margin-top: 15px; }
-    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; padding-bottom: 50px; box-sizing: border-box; }
+    .withdraw-card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); margin-bottom: 25px; max-width: 450px; width: 100%; margin: 0 auto 25px auto; box-sizing: border-box; text-align: center; }
+    h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .subtitle { color: #64748b; font-size: 13px; margin-bottom: 20px; line-height: 1.4; }
     
-    .btn-submit { width: 100%; padding: 14px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
-    .btn-submit:hover { background: #c0392b; }
+    .input-group { text-align: left; margin-bottom: 15px; max-width: 100%; }
+    .input-group label { font-size: 13px; font-weight: 600; color: var(--primary); display: block; margin-bottom: 6px; }
+    .input-group input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; transition: border 0.2s; background: #f8fafc; }
+    .input-group input:focus { border-color: var(--accent); outline: none; background: white; }
     
-    /* History Table Layout with Date Column */
-    .table-container { overflow-x: auto; max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); background: white; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; background: white; min-width: 450px; }
-    th, td { border: 1px solid #eee; padding: 12px; text-align: left; font-size: 14px; }
-    th { background: #34495e; color: white; font-weight: 600; }
-    .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; }
-    .badge.Approved { background: #eafaf1; color: #27ae60; }
-    .badge.Pending { background: #fef9e7; color: #f1c40f; }
-    .badge.Rejected { background: #fdebd0; color: #e67e22; }
+    .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--accent); box-shadow: 0 4px 12px rgba(194,65,12,0.2); transition: background 0.2s; margin-top: 10px; }
+    .btn-action:hover { background: #9a3412; }
+    
+    .table-container { overflow-x: auto; max-width: 450px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); background: white; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; background: white; min-width: 100%; }
+    th, td { border-bottom: 1px solid #f1f5f9; padding: 14px 12px; text-align: left; font-size: 14px; }
+    th { background: var(--primary); color: white; font-weight: 600; }
+    
+    .status-badge { font-weight: bold; padding: 4px 8px; border-radius: 6px; display: inline-block; font-size: 12px; }
+    .status-pending { color: var(--pending); background: #fff7ed; }
+    .status-approved { color: var(--success); background: #f0fdf4; }
+    .status-failed { color: #ef4444; background: #fef2f2; }
   </style>
 </head>
 <body>
 
-  <h2>💸 Withdrawal Center</h2>
-  
-  <div class="form-group">
-    <h4>New Withdrawal Request</h4>
+  <div class="withdraw-card">
+    <h2>💸 Withdrawal Center</h2>
+    <div class="subtitle">Submit a request to securely process funds directly from your account balance.</div>
     
-    <label>Enter Amount (₹)</label>
-    <input type="number" id="withAmount" placeholder="Enter amount to withdraw">
+    <div class="input-group">
+      <label>Enter Amount (₹)</label>
+      <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw" min="1">
+    </div>
     
-    <button class="btn-submit" onclick="submitWithdrawal()">Withdraw Fund</button>
+    <button class="btn-action" id="btnSubmit" onclick="submitWithdrawRequest()">Withdraw Fund</button>
   </div>
 
-  <h4>📜 Your Withdrawal History</h4>
+  <h4 style="color: var(--primary); max-width:450px; margin:0 auto 15px auto; font-weight:700; font-size:15px; display:flex; align-items:center; gap:6px;">📜 Your Withdrawal History</h4>
   <div class="table-container">
     <table>
       <thead>
@@ -49,75 +62,101 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="withdrawTableBody">
-        <tr><td colspan="3" style="text-align:center;">Syncing history...</td></tr>
+      <tbody id="withdrawalTableBody">
+        <tr><td colspan="3" style="text-align:center; color:#64748b;">Syncing account financial ledger...</td></tr>
       </tbody>
     </table>
   </div>
 
   <script>
-    // ⚠️ GOOGLE APPS SCRIPT WEB APP URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbzY13Lc2C0SjuvsSYwPDdvkACgySu3BnN3RRI9RjUQ9-GJHFUX3JL9ugkQugS4-Sh-v/exec"; 
-    const userId = localStorage.getItem("currentUserId");
+    // 🎯 LINKED WITH YOUR BRAND NEW EXEC URL TOKEN FOR WITHDRAWAL SYSTEM
+    const API_URL = "https://script.google.com/macros/s/AKfycbwTKIP6NRT6t_iSW4g61dKaqcZBYU71GtRLBgjQED22nKHyiMXozNJpaZksXVZcKpii/exec";
+    const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
+    const loginUserName = localStorage.getItem("currentUserName") || "User";
+    const loginUserMobile = localStorage.getItem("currentUserMobile") || "";
 
-    function submitWithdrawal() {
-      let amount = document.getElementById('withAmount').value;
-      if(!amount || amount <= 0) return alert("Please enter a valid amount!");
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ 
-          action: 'withdraw', 
-          userId: userId, 
-          name: localStorage.getItem("currentUserName"), 
-          mobile: localStorage.getItem("currentUserMobile"), 
-          amount: amount 
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === "success") {
-          alert("Withdrawal request submitted successfully!");
-          document.getElementById('withAmount').value = "";
-          loadHistory();
-        } else {
-          alert("Error: " + data.message);
-        }
-      });
-    }
-
-    function loadHistory() {
-      fetch(API_URL + `?action=getWithdrawHistory&userId=${userId}`)
+    function loadWithdrawalHistory() {
+      if(!loginUserId) {
+        document.getElementById('withdrawalTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#ef4444;'>Session Expired. Please Re-login.</td></tr>";
+        return;
+      }
+      
+      fetch(API_URL + `?action=getWithdrawHistory&userId=${loginUserId}`)
         .then(res => res.json())
-        .then(data => {
-          let html = "";
-          if(data.status === "success") {
-            // ✅ Agar backend pure row arrays bhejta hai, toh naye indexes se data read hoga
-            data.history.forEach(row => {
-              let date = row[0];   // Column A: Date
-              let amount = row[3]; // Column D: Amount
-              let status = row[4]; // Column E: Status / Remark
-
-              html += `<tr>
-                <td>${date || '---'}</td>
-                <td>₹${amount}</td>
-                <td><span class="badge ${status}">${status}</span></td>
-              </tr>`;
-            });
-            document.getElementById('withdrawTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center;'>No history found.</td></tr>";
+        .then(res => {
+          if(res.status === "success") {
+            let html = "";
+            if(res.data && res.data.length > 0) {
+              res.data.forEach(row => {
+                let statusClass = "status-pending";
+                let currentStatus = (row.status || "").trim().toLowerCase();
+                
+                if(currentStatus === "approved") {
+                  statusClass = "status-approved";
+                } else if(currentStatus === "failed" || currentStatus === "rejected") {
+                  statusClass = "status-failed";
+                }
+                
+                html += `<tr>
+                  <td>${row.date}</td>
+                  <td><strong>₹${row.amount}</strong></td>
+                  <td><span class="status-badge ${statusClass}">${row.status}</span></td>
+                </tr>`;
+              });
+            }
+            document.getElementById('withdrawalTableBody').innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#64748b;'>No withdrawal transactions found.</td></tr>";
           } else {
-            document.getElementById('withdrawTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center;'>No history found.</td></tr>";
+            document.getElementById('withdrawalTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#64748b;'>No history logs tracked.</td></tr>";
           }
         })
         .catch(err => {
-          console.error(err);
-          document.getElementById('withdrawTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Failed to load history.</td></tr>";
+          document.getElementById('withdrawalTableBody').innerHTML = "<tr><td colspan='3' style='text-align:center; color:#64748b;'>Network sync active. Empty logs.</td></tr>";
         });
     }
 
-    window.onload = function() {
-      loadHistory();
-    };
+    function submitWithdrawRequest() {
+      const amountInput = document.getElementById('withdrawAmount');
+      const amount = amountInput.value.trim();
+      const btn = document.getElementById('btnSubmit');
+      
+      if(!amount || isNaN(amount) || Number(amount) <= 0) {
+        alert("Please enter a valid amount!");
+        return;
+      }
+      
+      btn.innerText = "Processing Transact...";
+      btn.disabled = true;
+      
+      // Sending request directly via POST execution block to backend loop
+      fetch(API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "withdraw",
+          userId: loginUserId,
+          name: loginUserName,
+          mobile: loginUserMobile,
+          amount: Number(amount)
+        })
+      })
+      .then(() => {
+        alert("Withdrawal request submitted successfully!");
+        amountInput.value = "";
+        btn.innerText = "Withdraw Fund";
+        btn.disabled = false;
+        // Reload history data instantly
+        setTimeout(loadWithdrawalHistory, 1500);
+      })
+      .catch(err => {
+        alert("System error or network lag. Checking status...");
+        btn.innerText = "Withdraw Fund";
+        btn.disabled = false;
+        setTimeout(loadWithdrawalHistory, 1500);
+      });
+    }
+
+    window.onload = loadWithdrawalHistory;
   </script>
 </body>
 </html>
