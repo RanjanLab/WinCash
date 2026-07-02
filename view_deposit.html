@@ -101,8 +101,8 @@
   </div>
 
   <script>
-    // 🎯 FIXED REAL LIVE URL SYNC MATCHING THE LOG ENGINE
-    const API_URL = "https://script.google.com/macros/s/AKfycby_2XPo6_30qIXQFO3VvRwleVbD-VZJ1tDiNVEk2bYYUnxS3zgDe02hLj1NBHVRKao/exec"; 
+    // 🎯 STRICT SYSTEM ENGINE API URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbxEsBe0qGN4Q0KhZA4SJvMfIa0g0xO3RS7d_BXv_jU-9nBp8igni4MX4c_vhLHlCNI/exec"; 
 
     const userId = localStorage.getItem("currentUserId") || "cg1002";
     const userName = localStorage.getItem("currentUserName") || "";
@@ -204,7 +204,13 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
-          let records = (data && data.history) ? data.history : ((data && data.data) ? data.data : []);
+          // 🎯 EXACT SYNC: Strictly targeted to read our custom data loop array
+          let records = [];
+          if (data && data.data) {
+            records = data.data;
+          } else if (data && data.history) {
+            records = data.history;
+          }
 
           if (records && records.length > 0) {
             records.forEach(row => {
@@ -213,20 +219,8 @@
                 let displayAmount = row.amount || 0;
                 let displayStatus = row.status || "Pending";
                 
-                let displayUtr = "N/A";
-                if (row.utr) displayUtr = row.utr;
-                else if (row.UTR) displayUtr = row.UTR;
-                else {
-                  let allValues = Object.values(row);
-                  for (let val of allValues) {
-                    if (val && val.toString().replace(/'/g, "").trim().length >= 10 && val.toString() !== row.date.toString()) {
-                      displayUtr = val;
-                      break;
-                    }
-                  }
-                }
-                
-                displayUtr = displayUtr.toString().replace(/'/g, "").trim();
+                // 🎯 DIRECT LOG KEY READING FOR UTR
+                let displayUtr = row.utr || row.UTR || "N/A";
                 
                 html += `<tr>
                   <td>${displayDate}</td>
