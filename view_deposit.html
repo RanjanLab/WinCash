@@ -193,10 +193,21 @@
       });
     }
 
-    // 🕒 Clean formatting of date objects into simple short strings (dd/MM/yyyy)
+    // 🕒 Fix Long Time string parsing directly to clean standard (dd/MM/yyyy)
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       let dateStr = rawDate.toString();
+      
+      // Checking English Month name occurrences (Sat Feb 07 2026...)
+      const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
+      let parts = dateStr.split(" ");
+      if(parts.length >= 4 && months[parts[1]]) {
+        let day = parts[2].padStart(2, '0');
+        let month = months[parts[1]];
+        let year = parts[3];
+        return `${day}/${month}/${year}`;
+      }
+      
       if(dateStr.includes("GMT") || dateStr.includes("T")) {
         try {
           let d = new Date(dateStr);
@@ -216,55 +227,26 @@
         .then(res => res.json())
         .then(data => {
           let html = "";
-          let records = [];
-          
-          // 🎯 UNIVERSAL RESPONSE DECODER: Reads dynamic arrays or data objects transparently
-          if (data && data.history) records = data.history;
-          else if (data && data.data) records = data.data;
-          else if (Array.isArray(data)) records = data;
-          else if (data && data.status === "success" && !data.history && !data.data) {
-             // Checking if response is root level object wrapper
-             records = Object.values(data).filter(Array.isArray)[0] || [];
-          }
+          // 🎯 EXACT RESPONSE SYNC MATCHING THE SCREENSHOT KEYED DATA OBJECT
+          let records = (data && data.data) ? data.data : [];
 
           if (records && records.length > 0) {
             records.forEach(row => {
-              let displayDate = "N/A";
-              let displayAmount = 0;
-              let displayUtr = "N/A";
-              let displayStatus = "Pending";
-
-              if (Array.isArray(row)) {
-                displayDate = formatCleanDate(row[0]);
-                // Automatically switches maps based on dynamic query length values
-                if (row.length === 4) {
-                  displayAmount = row[1];
-                  displayUtr = row[2];
-                  displayStatus = row[3];
-                } else if (row.length >= 6) {
-                  displayAmount = row[3];
-                  displayUtr = row[4];
-                  displayStatus = row[5];
-                } else {
-                  displayAmount = row[1] || 0;
-                  displayUtr = row[2] || "N/A";
-                  displayStatus = row[3] || "Pending";
-                }
-              } else if (row && typeof row === 'object') {
-                displayDate = formatCleanDate(row.date || row.Date);
-                displayAmount = row.amount || row.Amount || 0;
-                displayUtr = row.utr || row.Utr || row.UTR || "N/A";
-                displayStatus = row.status || row.Status || "Pending";
+              if (row && typeof row === 'object') {
+                let displayDate = formatCleanDate(row.date || "N/A");
+                let displayAmount = row.amount || 0;
+                // Fetch dynamic text or set fallback text strictly if keys are missing from response
+                let displayUtr = row.utr || row.utrNumber || "Verified Link"; 
+                let displayStatus = row.status || "Pending";
+                
+                html += `<tr>
+                  <td>${displayDate}</td>
+                  <td><strong>₹${displayAmount}</strong></td>
+                  <td style="font-family: monospace;">${displayUtr}</td>
+                  <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
+                </tr>`;
               }
-
-              html += `<tr>
-                <td>${displayDate}</td>
-                <td><strong>₹${displayAmount}</strong></td>
-                <td style="font-family: monospace;">${displayUtr}</td>
-                <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
-              </tr>`;
             });
-            
             document.getElementById('depositTableBody').innerHTML = html;
           } else {
             document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>No active deposit history entries.</td></tr>";
@@ -272,7 +254,7 @@
         })
         .catch(err => {
           console.error(err);
-          document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>No transaction records synced yet.</td></tr>";
+          document.getElementById('depositTableBody').innerHTML = "<tr><td colspan='4' style='text-align:center;'>Failed syncing live account statement logs.</td></tr>";
         });
     }
 
