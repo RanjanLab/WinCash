@@ -193,12 +193,7 @@
       });
     }
 
-    function closeReceipt() {
-      document.getElementById('receiptModal').style.display = "none";
-      loadHistory();
-    }
-
-    // 🕒 Helper function to safely format full time strings into dd/MM/yyyy
+    // 🕒 Fix Date string formatting function
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       let dateStr = rawDate.toString();
@@ -233,31 +228,12 @@
 
           if (records.length > 0) {
             records.forEach(row => {
-              // 🎯 STRICT DYNAMIC EVALUATION MAP BASED ON LIST OF ARRAYS SEQUENCING
               if (Array.isArray(row)) {
-                let displayDate = formatCleanDate(row[0]);
-                let displayAmount = row[1] || 0;
-                let displayUtr = row[2] || "N/A";
-                let displayStatus = row[3] || "Pending";
-                
-                // Real-time bypass checking if backend arrays contains advanced offset structure
-                if(row.length >= 5) {
-                  displayAmount = row[4] || row[1];
-                  displayUtr = row[5] || row[2];
-                  displayStatus = row[6] || row[3];
-                }
-                
-                html += `<tr>
-                  <td>${displayDate}</td>
-                  <td><strong>₹${displayAmount}</strong></td>
-                  <td style="font-family: monospace;">${displayUtr}</td>
-                  <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
-                </tr>`;
-              } else if (typeof row === 'object') {
-                let displayDate = formatCleanDate(row.date);
-                let displayAmount = row.amount || 0;
-                let displayUtr = row.utr || "N/A";
-                let displayStatus = row.status || "Pending";
+                // 🎯 STRICT ALIGNED INDEXES BASED ON FETCH FILTER RESPONSE [0, 3, 4, 5]
+                let displayDate = formatCleanDate(row[0]);  // Index 0 (Date)
+                let displayAmount = row[1] || 0;            // Index 1 (Amount)
+                let displayUtr = row[2] || "N/A";           // Index 2 (UTR)
+                let displayStatus = row[3] || "Pending";       // Index 3 (Status)
                 
                 html += `<tr>
                   <td>${displayDate}</td>
