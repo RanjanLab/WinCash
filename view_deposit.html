@@ -198,13 +198,31 @@
       loadHistory();
     }
 
+    // 🕒 Helper function to safely format full time strings into dd/MM/yyyy
+    function formatCleanDate(rawDate) {
+      if(!rawDate) return "N/A";
+      let dateStr = rawDate.toString();
+      if(dateStr.includes("GMT") || dateStr.includes("T")) {
+        try {
+          let d = new Date(dateStr);
+          if(!isNaN(d.getTime())) {
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+          }
+        } catch(e) {}
+      }
+      return dateStr.substring(0, 10); 
+    }
+
     function loadHistory() {
       fetch(API_URL + `?action=getDepositHistory&userId=${userId}`)
         .then(res => res.json())
         .then(data => {
           let html = "";
-          // 🎯 FIXED MATRIX: Extracting rows list parsed via direct positional indexing
           let records = [];
+          
           if (data && data.history) {
             records = data.history;
           } else if (data && data.data) {
@@ -215,12 +233,19 @@
 
           if (records.length > 0) {
             records.forEach(row => {
+              // 🎯 STRICT DYNAMIC EVALUATION MAP BASED ON LIST OF ARRAYS SEQUENCING
               if (Array.isArray(row)) {
-                // Mapped precisely via List of Array indexing [Date, Amount, UTR, Status]
-                let displayDate = row[0] || "N/A";
+                let displayDate = formatCleanDate(row[0]);
                 let displayAmount = row[1] || 0;
                 let displayUtr = row[2] || "N/A";
                 let displayStatus = row[3] || "Pending";
+                
+                // Real-time bypass checking if backend arrays contains advanced offset structure
+                if(row.length >= 5) {
+                  displayAmount = row[4] || row[1];
+                  displayUtr = row[5] || row[2];
+                  displayStatus = row[6] || row[3];
+                }
                 
                 html += `<tr>
                   <td>${displayDate}</td>
@@ -229,8 +254,7 @@
                   <td><span class="badge ${displayStatus}">${displayStatus}</span></td>
                 </tr>`;
               } else if (typeof row === 'object') {
-                // Fallback support for structural object data parameters 
-                let displayDate = row.date || "N/A";
+                let displayDate = formatCleanDate(row.date);
                 let displayAmount = row.amount || 0;
                 let displayUtr = row.utr || "N/A";
                 let displayStatus = row.status || "Pending";
