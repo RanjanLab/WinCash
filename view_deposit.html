@@ -17,8 +17,8 @@
     
     /* Premium Mobile Fit Table Engine - Modified for No Scroll */
     .table-container { max-width: 600px; margin: 0 auto; margin-bottom: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); background: white; }
-    table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; } /* fixed layout lagaya taaki screen se bahar na jaye */
-    th, td { border: 1px solid #eee; padding: 10px 6px; text-align: left; font-size: 12px; word-wrap: break-word; white-space: normal; } /* Padding aur text tight kiya */
+    table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; } 
+    th, td { border: 1px solid #eee; padding: 10px 6px; text-align: left; font-size: 12px; word-wrap: break-word; white-space: normal; } 
     
     /* Column widths set for automatic perfect mobile fitting */
     th:nth-child(1), td:nth-child(1) { width: 25%; } /* Date (DD-MM-YYYY) */
@@ -183,22 +183,48 @@
       });
     }
 
-    // Date ko DD-MM-YYYY format me laane ke liye clean up code
+    // Hardened Force-Convert Date Engine to secure DD-MM-YYYY format
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
-      let dateStr = rawDate.toString();
-      const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
-      let parts = dateStr.split(" ");
-      if(parts.length >= 4 && months[parts[1]]) {
-        return `${parts[2].padStart(2, '0')}-${months[parts[1]]}-${parts[3]}`; // DD-MM-YYYY Format
-      }
+      let dateStr = rawDate.toString().trim();
       
-      // Agar simple ISO string data aa raha ho toh convert karega
-      if(dateStr.includes("-") && dateStr.length >= 10) {
-        let cleanParts = dateStr.substring(0, 10).split("-");
-        if(cleanParts.length === 3 && cleanParts[0].length === 4) {
-          return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`; // YYYY-MM-DD ko DD-MM-YYYY banayega
+      try {
+        // Step 1: Check for slash (/) structure
+        if(dateStr.includes("/")) {
+          let parts = dateStr.split(" ")[0].split("/");
+          if(parts.length === 3) {
+            if(parts[0].length === 4) {
+              return `${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${parts[0]}`; // YYYY/MM/DD
+            }
+            return `${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${parts[2]}`; // DD/MM/YYYY
+          }
         }
+        
+        // Step 2: Full text extraction format check
+        const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
+        let textParts = dateStr.split(" ");
+        if(textParts.length >= 4 && months[textParts[1]]) {
+          return `${textParts[2].padStart(2, '0')}-${months[textParts[1]]}-${textParts[3]}`;
+        }
+        
+        // Step 3: ISO Parsing format mechanism
+        let d = new Date(rawDate);
+        if (!isNaN(d.getTime())) {
+          let day = String(d.getDate()).padStart(2, '0');
+          let month = String(d.getMonth() + 1).padStart(2, '0');
+          let year = d.getFullYear();
+          return `${day}-${month}-${year}`;
+        }
+        
+        // Step 4: Fallback cleanup structure
+        if(dateStr.includes("-") && dateStr.length >= 10) {
+          let cleanParts = dateStr.substring(0, 10).split("-");
+          if(cleanParts.length === 3 && cleanParts[0].length === 4) {
+            return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`;
+          }
+        }
+      } catch(e) {
+        console.error("Date error:", e);
       }
       return dateStr.substring(0, 10); 
     }
@@ -213,7 +239,7 @@
           if (records && records.length > 0) {
             records.forEach(row => {
               if (row && typeof row === 'object') {
-                let displayDate = formatCleanDate(row.date);
+                let displayDate = formatCleanDate(row.date); // Dynamic parsing logic successfully integrated
                 let displayAmount = row.amount || 0;
                 let displayUtr = row.utr || "N/A";
                 let displayStatus = row.status || "Pending";
