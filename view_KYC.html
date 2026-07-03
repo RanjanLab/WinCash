@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cashgain - KYC Verification Center</title>
+  <style>
+    :root { 
+      --primary: #1e293b; 
+      --accent: #c2410c;
+      --success: #16a34a; 
+      --pending: #ea580c;
+      --bg: #f8fafc; 
+      --text: #334155; 
+    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding: 15px; box-sizing: border-box; }
+    .card { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); max-width: 450px; width: 100%; margin: 20px auto; box-sizing: border-box; }
+    h2 { color: var(--primary); margin-top: 0; font-weight: 700; font-size: 22px; text-align: center; }
+    .subtitle { color: #64748b; font-size: 13px; text-align: center; margin-bottom: 20px; line-height: 1.4; }
+    .status-banner { padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; font-size: 14px; display: none; }
+    .input-group { text-align: left; margin-bottom: 15px; }
+    .input-group label { font-size: 13px; font-weight: 600; color: var(--primary); display: block; margin-bottom: 6px; }
+    .input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #f8fafc; }
+    .input-group input:focus, .input-group select:focus { border-color: var(--accent); outline: none; background: white; }
+    .btn-submit { width: 100%; padding: 14px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--accent); box-shadow: 0 4px 12px rgba(194,65,12,0.2); margin-top: 10px; }
+    .btn-submit:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+    .hidden-section { display: none; }
+    
+    /* Custom Alert System */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 20000; backdrop-filter: blur(4px); }
+    .alert-box { background: white; width: 88%; max-width: 380px; padding: 30px 24px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px rgba(0,0,0,0.1); box-sizing: border-box; }
+    .alert-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+    .alert-msg { font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 22px; }
+    .btn-alert-close { width: 100%; padding: 13px; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>🔒 KYC Verification</h2>
+    <div class="subtitle">Update your payout destination channel settings to securely route your wallet cashouts.</div>
+    
+    <div id="kycStatusBanner" class="status-banner"></div>
+
+    <form id="kycForm" onsubmit="event.preventDefault(); submitKYCData();">
+      <div class="input-group">
+        <label>Select Payment Method</label>
+        <select id="paymentType" onchange="togglePaymentFields()" required>
+          <option value="">-- Choose Option --</option>
+          <option value="Bank Account">Bank Account</option>
+          <option value="UPI ID">UPI ID</option>
+        </select>
+      </div>
+
+      <div id="bankSection" class="hidden-section">
+        <div class="input-group">
+          <label>Bank Name</label>
+          <input type="text" id="bankName" placeholder="e.g. State Bank of India">
+        </div>
+        <div class="input-group">
+          <label>Account Number</label>
+          <input type="password" id="accountNumber" placeholder="Enter bank account number">
+        </div>
+        <div class="input-group">
+          <label>Confirm Account Number</label>
+          <input type="number" id="confirmAccount" placeholder="Re-enter account number">
+        </div>
+        <div class="input-group">
+          <label>IFSC Code</label>
+          <input type="text" id="ifscCode" placeholder="e.g. SBIN0001234" style="text-transform: uppercase;">
+        </div>
+      </div>
+
+      <div id="upiSection" class="hidden-section">
+        <div class="input-group">
+          <label>UPI ID</label>
+          <input type="text" id="upiId" placeholder="e.g. username@okhdfcbank" style="text-transform: lowercase;">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="btnSubmitKYC">Submit Verification</button>
+    </form>
+  </div>
+
+  <div class="modal-overlay" id="kycAlertModal">
+    <div class="alert-box">
+      <div class="alert-title" id="modalTitle">Notification</div>
+      <div class="alert-msg" id="modalMessage">Message content goes here.</div>
+      <button class="btn-alert-close" id="modalBtn" onclick="closeKYCAlert()">Okay, Done</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwo1DnQjzSQtYkvaWKFyfZ2zWqzRw-G-jxU1ux1ADd0dDj67o7vc0_LkPn3o0_CNMnM/exec";
+    const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
+    const loginUserName = localStorage.getItem("currentUserName") || "User";
+    const loginUserMobile = localStorage.getItem("currentUserMobile") || "";
+
+    function showAlert(title, msg, isSuccess) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerText = msg;
+      const btn = document.getElementById('modalBtn');
+      btn.style.background = isSuccess ? "var(--success)" : "#ef4444";
+      document.getElementById('kycAlertModal').style.display = "flex";
+    }
+
+    function closeKYCAlert() {
+      document.getElementById('kycAlertModal').style.display = "none";
+      fetchKYCStatus();
+    }
+
+    function togglePaymentFields() {
+      const type = document.getElementById('paymentType').value;
+      const bankSec = document.getElementById('bankSection');
+      const upiSec = document.getElementById('upiSection');
+      
+      // Clean inputs first
+      document.getElementById('bankName').value = "";
+      document.getElementById('accountNumber').value = "";
+      document.getElementById('confirmAccount').value = "";
+      document.getElementById('ifscCode').value = "";
+      document.getElementById('upiId').value = "";
+
+      if(type === "Bank Account") {
+        bankSec.style.display = "block";
+        upiSec.style.display = "none";
+      } else if(type === "UPI ID") {
+        bankSec.style.display = "none";
+        upiSec.style.display = "block";
+      } else {
+        bankSec.style.display = "none";
+        upiSec.style.display = "none";
+      }
+    }
+
+    function fetchKYCStatus() {
+      if(!loginUserId) return;
+      
+      const banner = document.getElementById('kycStatusBanner');
+      fetch(API_URL + `?action=checkKYC&userId=${loginUserId}`)
+        .then(res => res.json())
+        .then(res => {
+          if(res && res.kycStatus) {
+            banner.style.display = "block";
+            banner.innerText = "KYC Status: " + res.kycStatus.toUpperCase();
+            
+            if(res.kycStatus.toLowerCase() === "approved") {
+              banner.style.background = "#f0fdf4";
+              banner.style.color = "var(--success)";
+              document.getElementById('btnSubmitKYC').disabled = true;
+              document.getElementById('btnSubmitKYC').innerText = "Verified Account";
+            } else if(res.kycStatus.toLowerCase() === "pending") {
+              banner.style.background = "#fff7ed";
+              banner.style.color = "var(--pending)";
+              document.getElementById('btnSubmitKYC').innerText = "Re-submit Verification";
+            } else {
+              banner.style.background = "#fef2f2";
+              banner.style.color = "#ef4444";
+            }
+          }
+        }).catch(err => console.error("KYC verification tracking sync offline."));
+    }
+
+    function submitKYCData() {
+      const type = document.getElementById('paymentType').value;
+      const btn = document.getElementById('btnSubmitKYC');
+      
+      if(!type) {
+        showAlert("Validation Error", "Please select a valid payment channel method!", false);
+        return;
+      }
+
+      let bName = "", accNum = "", ifsc = "", upi = "";
+
+      if(type === "Bank Account") {
+        bName = document.getElementById('bankName').value.trim();
+        accNum = document.getElementById('accountNumber').value.trim();
+        const confAcc = document.getElementById('confirmAccount').value.trim();
+        ifsc = document.getElementById('ifscCode').value.trim().toUpperCase();
+
+        if(!bName || !accNum || !ifsc) {
+          showAlert("Validation Error", "Please completely fill all Bank Account details fields!", false);
+          return;
+        }
+        if(accNum !== confAcc) {
+          showAlert("Security Mismatch", "Account Number and Confirm Account Number fields do not match!", false);
+          return;
+        }
+      } else {
+        upi = document.getElementById('upiId').value.trim().toLowerCase();
+        if(!upi) {
+          showAlert("Validation Error", "Please enter a valid UPI ID identity string!", false);
+          return;
+        }
+      }
+
+      btn.innerText = "Uploading Logs...";
+      btn.disabled = true;
+
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "submitKYC",
+          userId: loginUserId,
+          name: loginUserName,
+          mobile: loginUserMobile,
+          paymentType: type,
+          bankName: bName,
+          accountNumber: accNum,
+          ifsc: ifsc,
+          upiId: upi
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.innerText = "Submit Verification";
+        btn.disabled = false;
+        if(data.status === "success") {
+          showAlert("Submission Success", data.message, true);
+        } else {
+          showAlert("Transaction Denied", data.message || "Failed to log records.", false);
+        }
+      })
+      .catch(err => {
+        btn.innerText = "Submit Verification";
+        btn.disabled = false;
+        showAlert("Server Error", "Unable to establish secure transmission logs with deployment server.", false);
+      });
+    }
+
+    window.onload = fetchKYCStatus;
+  </script>
+</body>
+</html>
