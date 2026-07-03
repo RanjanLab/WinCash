@@ -149,8 +149,29 @@
                   statusClass = "status-failed";
                 }
                 
+                // 🎯 AUTOMATIC DYNAMIC DATE FORMATTER TO FORCELOCK DD-MM-YYYY
+                let displayDate = "N/A";
+                if (row.date) {
+                  let dateStr = row.date.toString().trim();
+                  
+                  // Handles standard long GMT software text formatting logs
+                  if (dateStr.includes("GMT") || (isNaN(dateStr) && dateStr.split(" ").length > 3)) {
+                    let d = new Date(dateStr);
+                    if (!isNaN(d.getTime())) {
+                      let day = String(d.getDate()).padStart(2, '0');
+                      let month = String(d.getMonth() + 1).padStart(2, '0');
+                      let year = d.getFullYear();
+                      displayDate = `${day}-${month}-${year}`;
+                    } else {
+                      displayDate = dateStr;
+                    }
+                  } else {
+                    displayDate = dateStr;
+                  }
+                }
+                
                 html += `<tr>
-                  <td>${row.date || 'N/A'}</td>
+                  <td>${displayDate}</td>
                   <td><strong>₹${row.amount || 0}</strong></td>
                   <td><span class="status-badge ${statusClass}">${row.status || 'Pending'}</span></td>
                 </tr>`;
