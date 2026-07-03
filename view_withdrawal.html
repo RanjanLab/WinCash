@@ -27,12 +27,19 @@
     .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--accent); box-shadow: 0 4px 12px rgba(194,65,12,0.2); transition: background 0.2s; margin-top: 10px; }
     .btn-action:hover { background: #9a3412; }
     
-    .table-container { overflow-x: auto; max-width: 450px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); background: white; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; background: white; min-width: 100%; }
-    th, td { border-bottom: 1px solid #f1f5f9; padding: 14px 12px; text-align: left; font-size: 14px; }
+    /* Premium Mobile Fit Table Engine - Modified for No Scroll */
+    .table-container { max-width: 450px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); background: white; }
+    table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; } /* Table layout fixed kiya taaki bahar na jaye */
+    th, td { border-bottom: 1px solid #f1f5f9; padding: 12px 8px; text-align: left; font-size: 13px; word-wrap: break-word; white-space: normal; }
+    
+    /* Column widths allocated for automatic perfect mobile fitting */
+    th:nth-child(1), td:nth-child(1) { width: 40%; } /* Date (DD-MM-YYYY) */
+    th:nth-child(2), td:nth-child(2) { width: 30%; } /* Amount */
+    th:nth-child(3), td:nth-child(3) { width: 30%; } /* Status */
+    
     th { background: var(--primary); color: white; font-weight: 600; }
     
-    .status-badge { font-weight: bold; padding: 4px 8px; border-radius: 6px; display: inline-block; font-size: 12px; }
+    .status-badge { font-weight: bold; padding: 4px 6px; border-radius: 6px; display: inline-block; font-size: 11px; text-align: center; width: 100%; box-sizing: border-box; }
     .status-pending { color: var(--pending); background: #fff7ed; }
     .status-approved { color: var(--success); background: #f0fdf4; }
     .status-failed { color: #ef4444; background: #fef2f2; }
@@ -69,11 +76,29 @@
   </div>
 
   <script>
-    // 🎯 LINKED WITH YOUR BRAND NEW EXEC URL TOKEN FOR WITHDRAWAL SYSTEM
     const API_URL = "https://script.google.com/macros/s/AKfycbwTKIP6NRT6t_iSW4g61dKaqcZBYU71GtRLBgjQED22nKHyiMXozNJpaZksXVZcKpii/exec";
     const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
     const loginUserName = localStorage.getItem("currentUserName") || "User";
     const loginUserMobile = localStorage.getItem("currentUserMobile") || "";
+
+    // Date ko DD-MM-YYYY format me lane wala helper function
+    function formatCleanDate(rawDate) {
+      if(!rawDate) return "N/A";
+      let dateStr = rawDate.toString();
+      const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
+      let parts = dateStr.split(" ");
+      if(parts.length >= 4 && months[parts[1]]) {
+        return `${parts[2].padStart(2, '0')}-${months[parts[1]]}-${parts[3]}`; // DD-MM-YYYY
+      }
+      
+      if(dateStr.includes("-") && dateStr.length >= 10) {
+        let cleanParts = dateStr.substring(0, 10).split("-");
+        if(cleanParts.length === 3 && cleanParts[0].length === 4) {
+          return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`; // YYYY-MM-DD to DD-MM-YYYY
+        }
+      }
+      return dateStr.substring(0, 10); 
+    }
 
     function loadWithdrawalHistory() {
       if(!loginUserId) {
@@ -97,8 +122,10 @@
                   statusClass = "status-failed";
                 }
                 
+                let displayDate = formatCleanDate(row.date); // Format Apply Kiya
+                
                 html += `<tr>
-                  <td>${row.date}</td>
+                  <td>${displayDate}</td>
                   <td><strong>₹${row.amount}</strong></td>
                   <td><span class="status-badge ${statusClass}">${row.status}</span></td>
                 </tr>`;
@@ -127,7 +154,6 @@
       btn.innerText = "Processing Transact...";
       btn.disabled = true;
       
-      // Sending request directly via POST execution block to backend loop
       fetch(API_URL, {
         method: "POST",
         mode: "no-cors",
@@ -145,7 +171,6 @@
         amountInput.value = "";
         btn.innerText = "Withdraw Fund";
         btn.disabled = false;
-        // Reload history data instantly
         setTimeout(loadWithdrawalHistory, 1500);
       })
       .catch(err => {
