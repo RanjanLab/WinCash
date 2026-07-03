@@ -27,15 +27,13 @@
     .btn-action { width: 100%; padding: 14px 10px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--accent); box-shadow: 0 4px 12px rgba(194,65,12,0.2); transition: background 0.2s; margin-top: 10px; }
     .btn-action:hover { background: #9a3412; }
     
-    /* Premium Mobile Fit Table Engine - Modified for No Scroll */
     .table-container { max-width: 450px; margin: 0 auto; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); background: white; }
-    table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; } /* Table layout fixed kiya taaki bahar na jaye */
+    table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; }
     th, td { border-bottom: 1px solid #f1f5f9; padding: 12px 8px; text-align: left; font-size: 13px; word-wrap: break-word; white-space: normal; }
     
-    /* Column widths allocated for automatic perfect mobile fitting */
-    th:nth-child(1), td:nth-child(1) { width: 40%; } /* Date (DD-MM-YYYY) */
-    th:nth-child(2), td:nth-child(2) { width: 30%; } /* Amount */
-    th:nth-child(3), td:nth-child(3) { width: 30%; } /* Status */
+    th:nth-child(1), td:nth-child(1) { width: 40%; }
+    th:nth-child(2), td:nth-child(2) { width: 30%; }
+    th:nth-child(3), td:nth-child(3) { width: 30%; }
     
     th { background: var(--primary); color: white; font-weight: 600; }
     
@@ -43,6 +41,20 @@
     .status-pending { color: var(--pending); background: #fff7ed; }
     .status-approved { color: var(--success); background: #f0fdf4; }
     .status-failed { color: #ef4444; background: #fef2f2; }
+
+    /* Premium Custom Dynamic HTML Overlay Alert System */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 20000; backdrop-filter: blur(4px); }
+    .alert-box { background: white; width: 88%; max-width: 380px; padding: 30px 24px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); box-sizing: border-box; animation: popup 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    
+    @keyframes popup {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .alert-icon { font-size: 50px; margin-bottom: 15px; display: block; }
+    .alert-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+    .alert-msg { font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 22px; }
+    .btn-alert-close { width: 100%; padding: 13px; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
   </style>
 </head>
 <body>
@@ -75,18 +87,48 @@
     </table>
   </div>
 
+  <div class="modal-overlay" id="customAlertModal">
+    <div class="alert-box">
+      <div class="alert-icon" id="modalIcon">🎉</div>
+      <div class="alert-title" id="modalTitle">Request Sent!</div>
+      <div class="alert-msg" id="modalMessage">Your payout request registration completed successfully.</div>
+      <button class="btn-alert-close" id="modalBtn" onclick="closeCustomAlert()">Okay, Done</button>
+    </div>
+  </div>
+
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzWyzaljyAVD-221dHdF2XBabfV3AFniSbhfTO2YvWHP09yc_-ro7kPCJ4HQQ0Zlk6V/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxEsBe0qGN4Q0KhZA4SJvMfIa0g0xO3RS7d_BXv_jU-9nBp8igni4MX4c_vhLHlCNI/exec";
     const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
     const loginUserName = localStorage.getItem("currentUserName") || "User";
     const loginUserMobile = localStorage.getItem("currentUserMobile") || "";
 
-    // 100% Guaranteed Date conversion engine to DD-MM-YYYY format
+    function showCustomAlert(title, message, isSuccess) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerText = message;
+      
+      const iconEl = document.getElementById('modalIcon');
+      const btnEl = document.getElementById('modalBtn');
+      
+      if (isSuccess) {
+        iconEl.innerText = "🎉";
+        btnEl.style.background = "var(--success)";
+      } else {
+        iconEl.innerText = "⚠️";
+        btnEl.style.background = "#ef4444";
+      }
+      
+      document.getElementById('customAlertModal').style.display = "flex";
+    }
+
+    function closeCustomAlert() {
+      document.getElementById('customAlertModal').style.display = "none";
+      loadWithdrawalHistory();
+    }
+
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       try {
         let d = new Date(rawDate);
-        // Agar dynamic parse na ho paye toh string format filters check karein
         if (isNaN(d.getTime())) {
           let dateStr = rawDate.toString();
           const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
@@ -98,19 +140,18 @@
           if(dateStr.includes("-") && dateStr.length >= 10) {
             let cleanParts = dateStr.substring(0, 10).split("-");
             if(cleanParts.length === 3 && cleanParts[0].length === 4) {
-              return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`; // YYYY-MM-DD to DD-MM-YYYY
+              return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`;
             }
           }
           if(dateStr.includes("/") && dateStr.length >= 10) {
             let cleanParts = dateStr.substring(0, 10).split("/");
             if(cleanParts.length === 3 && cleanParts[2].length === 4) {
-              return `${cleanParts[0].padStart(2, '0')}-${cleanParts[1].padStart(2, '0')}-${cleanParts[2]}`; // DD/MM/YYYY to DD-MM-YYYY
+              return `${cleanParts[0].padStart(2, '0')}-${cleanParts[1].padStart(2, '0')}-${cleanParts[2]}`;
             }
           }
           return dateStr.substring(0, 10);
         }
         
-        // Agar dynamic Javascript Date successfully parse ho gayi
         let day = String(d.getDate()).padStart(2, '0');
         let month = String(d.getMonth() + 1).padStart(2, '0');
         let year = d.getFullYear();
@@ -142,7 +183,7 @@
                   statusClass = "status-failed";
                 }
                 
-                let displayDate = formatCleanDate(row.date); // Hardened formatting mechanism applied
+                let displayDate = formatCleanDate(row.date);
                 
                 html += `<tr>
                   <td>${displayDate}</td>
@@ -167,17 +208,16 @@
       const btn = document.getElementById('btnSubmit');
       
       if(!amount || isNaN(amount) || Number(amount) <= 0) {
-        alert("Please enter a valid amount!");
+        showCustomAlert("Validation Error", "Please enter a valid amount greater than zero!", false);
         return;
       }
       
       btn.innerText = "Processing Transact...";
       btn.disabled = true;
       
+      // Dynamic Server Validation mapping interface (no-cors removed to read JSON responses)
       fetch(API_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "withdraw",
           userId: loginUserId,
@@ -186,18 +226,22 @@
           amount: Number(amount)
         })
       })
-      .then(() => {
-        alert("Withdrawal request submitted successfully!");
-        amountInput.value = "";
+      .then(res => res.json())
+      .then(data => {
         btn.innerText = "Withdraw Fund";
         btn.disabled = false;
-        setTimeout(loadWithdrawalHistory, 1500);
+        
+        if (data.status === "success") {
+          showCustomAlert("Withdrawal Request Success", `Your payout transaction request of ₹${amount} has been submitted successfully for administrative confirmation!`, true);
+          amountInput.value = "";
+        } else {
+          showCustomAlert("Transaction Denied", data.message || "Insufficient balance to process request.", false);
+        }
       })
       .catch(err => {
-        alert("System error or network lag. Checking status...");
         btn.innerText = "Withdraw Fund";
         btn.disabled = false;
-        setTimeout(loadWithdrawalHistory, 1500);
+        showCustomAlert("Server Error", "Unable to establish communication link with deployment server.", false);
       });
     }
 
