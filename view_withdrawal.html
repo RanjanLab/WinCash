@@ -149,24 +149,40 @@
                   statusClass = "status-failed";
                 }
                 
-                // 🎯 AUTOMATIC DYNAMIC DATE FORMATTER TO FORCELOCK DD-MM-YYYY
+                // 🎯 RE-ENGINEERED FAIL-SAFE STRIPPER (FORCELOCKS ANY LONG TEXT TO DD-MM-YYYY)
                 let displayDate = "N/A";
                 if (row.date) {
                   let dateStr = row.date.toString().trim();
                   
-                  // Handles standard long GMT software text formatting logs
-                  if (dateStr.includes("GMT") || (isNaN(dateStr) && dateStr.split(" ").length > 3)) {
-                    let d = new Date(dateStr);
-                    if (!isNaN(d.getTime())) {
-                      let day = String(d.getDate()).padStart(2, '0');
-                      let month = String(d.getMonth() + 1).padStart(2, '0');
-                      let year = d.getFullYear();
-                      displayDate = `${day}-${month}-${year}`;
-                    } else {
-                      displayDate = dateStr;
+                  // Check 1: If it contains long string signature like "Sat Mar 07 2026..."
+                  if (dateStr.includes(" ") && isNaN(dateStr)) {
+                    let parts = dateStr.split(" ");
+                    if (parts.length >= 4) {
+                      const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
+                      let monthName = parts[1]; // "Mar"
+                      let dayNum = parts[2].padStart(2, '0'); // "07"
+                      let yearNum = parts[3]; // "2026"
+                      
+                      if (months[monthName]) {
+                        displayDate = `${dayNum}-${months[monthName]}-${yearNum}`;
+                      } else {
+                        let d = new Date(dateStr);
+                        if (!isNaN(d.getTime())) {
+                          displayDate = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+                        } else {
+                          displayDate = dateStr.substring(0, 10);
+                        }
+                      }
                     }
-                  } else {
-                    displayDate = dateStr;
+                  } 
+                  // Check 2: If it's standard ISO format (YYYY-MM-DD)
+                  else if (dateStr.includes("-") && dateStr.split("-")[0].length === 4) {
+                    let parts = dateStr.substring(0, 10).split("-");
+                    displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                  } 
+                  // Check 3: If it already matches clean configurations
+                  else {
+                    displayDate = dateStr.replace(/\//g, "-");
                   }
                 }
                 
