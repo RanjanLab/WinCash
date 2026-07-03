@@ -212,36 +212,60 @@
         return;
       }
       
-      btn.innerText = "Processing Transact...";
+      btn.innerText = "Checking Balance...";
       btn.disabled = true;
       
-      // Dynamic Server Validation mapping interface (no-cors removed to read JSON responses)
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "withdraw",
-          userId: loginUserId,
-          name: loginUserName,
-          mobile: loginUserMobile,
-          amount: Number(amount)
-        })
-      })
+      // 🚀 FRONTEND DUAL-LAYER LOCK: Fetching real-time balance from server dashboard first
+      fetch(API_URL + `?action=getDashboard&userId=${loginUserId}`)
       .then(res => res.json())
-      .then(data => {
-        btn.innerText = "Withdraw Fund";
-        btn.disabled = false;
-        
-        if (data.status === "success") {
-          showCustomAlert("Withdrawal Request Success", `Your payout transaction request of ₹${amount} has been submitted successfully for administrative confirmation!`, true);
-          amountInput.value = "";
-        } else {
-          showCustomAlert("Transaction Denied", data.message || "Insufficient balance to process request.", false);
+      .then(dashRes => {
+        let currentAvailable = 0;
+        if(dashRes && dashRes.status === "success" && dashRes.data) {
+          currentAvailable = Number(dashRes.data.availableBalance || dashRes.data.availablebalance || 0);
         }
+        
+        // Check if the requested amount overflows the fetched dashboard balance
+        if(Number(amount) > currentAvailable) {
+          btn.innerText = "Withdraw Fund";
+          btn.disabled = false;
+          showCustomAlert("Transaction Denied", `Insufficient Balance! Your available balance is ₹${currentAvailable}, but you requested ₹${amount}.`, false);
+          return;
+        }
+        
+        // Proceed with request submission if pre-check passes
+        btn.innerText = "Processing Transact...";
+        fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "withdraw",
+            userId: loginUserId,
+            name: loginUserName,
+            mobile: loginUserMobile,
+            amount: Number(amount)
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          btn.innerText = "Withdraw Fund";
+          btn.disabled = false;
+          
+          if (data.status === "success") {
+            showCustomAlert("Withdrawal Request Success", `Your payout transaction request of ₹${amount} has been submitted successfully for administrative confirmation!`, true);
+            amountInput.value = "";
+          } else {
+            showCustomAlert("Transaction Denied", data.message || "Insufficient balance to process request.", false);
+          }
+        })
+        .catch(err => {
+          btn.innerText = "Withdraw Fund";
+          btn.disabled = false;
+          showCustomAlert("Server Error", "Unable to establish communication link with deployment server.", false);
+        });
       })
       .catch(err => {
         btn.innerText = "Withdraw Fund";
         btn.disabled = false;
-        showCustomAlert("Server Error", "Unable to establish communication link with deployment server.", false);
+        showCustomAlert("Sync Error", "Failed to fetch live wallet authorization logs.", false);
       });
     }
 
