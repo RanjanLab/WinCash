@@ -149,22 +149,22 @@
                   statusClass = "status-failed";
                 }
                 
-                // 🎯 RE-ENGINEERED FAIL-SAFE STRIPPER (FORCELOCKS ANY LONG TEXT TO DD-MM-YYYY)
+                // 🎯 RE-MAPPED ABSOLUTE CHRONOLOGICAL FORCELOCK (STRICTLY FORCES DD-MM-YYYY)
                 let displayDate = "N/A";
                 if (row.date) {
                   let dateStr = row.date.toString().trim();
                   
-                  // Check 1: If it contains long string signature like "Sat Mar 07 2026..."
+                  // Check 1: Handling long dynamic GMT text format string ("Sat Mar 07 2026...")
                   if (dateStr.includes(" ") && isNaN(dateStr)) {
                     let parts = dateStr.split(" ");
                     if (parts.length >= 4) {
                       const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
-                      let monthName = parts[1]; // "Mar"
-                      let dayNum = parts[2].padStart(2, '0'); // "07"
-                      let yearNum = parts[3]; // "2026"
+                      let monthName = parts[1]; // e.g. "Mar" or "Jul"
+                      let dayNum = parts[2].padStart(2, '0'); // Correct Date Token
+                      let yearNum = parts[3]; // Correct Year Token
                       
                       if (months[monthName]) {
-                        displayDate = `${dayNum}-${months[monthName]}-${yearNum}`;
+                        displayDate = `${dayNum}-${months[monthName]}-${yearNum}`; // Direct Chronological Lock
                       } else {
                         let d = new Date(dateStr);
                         if (!isNaN(d.getTime())) {
@@ -175,14 +175,25 @@
                       }
                     }
                   } 
-                  // Check 2: If it's standard ISO format (YYYY-MM-DD)
-                  else if (dateStr.includes("-") && dateStr.split("-")[0].length === 4) {
-                    let parts = dateStr.substring(0, 10).split("-");
-                    displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                  } 
-                  // Check 3: If it already matches clean configurations
-                  else {
-                    displayDate = dateStr.replace(/\//g, "-");
+                  // Check 2: If backend outputs slashed or dashed configurations where MM might be shifted
+                  else if (dateStr.includes("-") || dateStr.includes("/")) {
+                    let cleanStr = dateStr.replace(/\//g, "-");
+                    let parts = cleanStr.split("-");
+                    
+                    // If it is standard ISO YYYY-MM-DD
+                    if (parts[0].length === 4) {
+                      displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    } 
+                    // If it was parsed by system as MM-DD-YYYY, convert it to strict DD-MM-YYYY
+                    else if (parts[2].length === 4 && Number(parts[0]) <= 12 && Number(parts[1]) > 12) {
+                      displayDate = `${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}-${parts[2]}`;
+                    } 
+                    // Fallback to preserve row data safely
+                    else {
+                      displayDate = cleanStr;
+                    }
+                  } else {
+                    displayDate = dateStr;
                   }
                 }
                 
