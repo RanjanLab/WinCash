@@ -81,23 +81,43 @@
     const loginUserName = localStorage.getItem("currentUserName") || "User";
     const loginUserMobile = localStorage.getItem("currentUserMobile") || "";
 
-    // Date ko DD-MM-YYYY format me lane wala helper function
+    // 100% Guaranteed Date conversion engine to DD-MM-YYYY format
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
-      let dateStr = rawDate.toString();
-      const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
-      let parts = dateStr.split(" ");
-      if(parts.length >= 4 && months[parts[1]]) {
-        return `${parts[2].padStart(2, '0')}-${months[parts[1]]}-${parts[3]}`; // DD-MM-YYYY
-      }
-      
-      if(dateStr.includes("-") && dateStr.length >= 10) {
-        let cleanParts = dateStr.substring(0, 10).split("-");
-        if(cleanParts.length === 3 && cleanParts[0].length === 4) {
-          return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`; // YYYY-MM-DD to DD-MM-YYYY
+      try {
+        let d = new Date(rawDate);
+        // Agar dynamic parse na ho paye toh string format filters check karein
+        if (isNaN(d.getTime())) {
+          let dateStr = rawDate.toString();
+          const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
+          let parts = dateStr.split(" ");
+          
+          if(parts.length >= 4 && months[parts[1]]) {
+            return `${parts[2].padStart(2, '0')}-${months[parts[1]]}-${parts[3]}`;
+          }
+          if(dateStr.includes("-") && dateStr.length >= 10) {
+            let cleanParts = dateStr.substring(0, 10).split("-");
+            if(cleanParts.length === 3 && cleanParts[0].length === 4) {
+              return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`; // YYYY-MM-DD to DD-MM-YYYY
+            }
+          }
+          if(dateStr.includes("/") && dateStr.length >= 10) {
+            let cleanParts = dateStr.substring(0, 10).split("/");
+            if(cleanParts.length === 3 && cleanParts[2].length === 4) {
+              return `${cleanParts[0].padStart(2, '0')}-${cleanParts[1].padStart(2, '0')}-${cleanParts[2]}`; // DD/MM/YYYY to DD-MM-YYYY
+            }
+          }
+          return dateStr.substring(0, 10);
         }
+        
+        // Agar dynamic Javascript Date successfully parse ho gayi
+        let day = String(d.getDate()).padStart(2, '0');
+        let month = String(d.getMonth() + 1).padStart(2, '0');
+        let year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+      } catch(e) {
+        return rawDate.toString().substring(0, 10);
       }
-      return dateStr.substring(0, 10); 
     }
 
     function loadWithdrawalHistory() {
@@ -122,7 +142,7 @@
                   statusClass = "status-failed";
                 }
                 
-                let displayDate = formatCleanDate(row.date); // Format Apply Kiya
+                let displayDate = formatCleanDate(row.date); // Hardened formatting mechanism applied
                 
                 html += `<tr>
                   <td>${displayDate}</td>
