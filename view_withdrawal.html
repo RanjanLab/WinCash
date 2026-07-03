@@ -97,7 +97,7 @@
   </div>
 
   <script>
-    // 🚀 FIXED TARGETED ACTIVE DEPLOYMENT WEB APP URL
+    // 🚀 RESTORED ORIGINAL STABLE SCRIPT ID ROUTE LINK
     const API_URL = "https://script.google.com/macros/s/AKfycbwo1DnQjzSQtYkvaWKFyfZ2zWqzRw-G-jxU1ux1ADd0dDj67o7vc0_LkPn3o0_CNMnM/exec";
     
     const loginUserId = (localStorage.getItem("currentUserId") || "").trim().toLowerCase();
@@ -127,37 +127,33 @@
       loadWithdrawalHistory();
     }
 
+    // 🎯 HARDENED FAIL-SAFE DATE ENGINE TO GET EXACT DD-MM-YYYY ALWAYS
     function formatCleanDate(rawDate) {
       if(!rawDate) return "N/A";
       try {
-        let d = new Date(rawDate);
-        if (isNaN(d.getTime())) {
-          let dateStr = rawDate.toString();
-          const months = { Jan:"01", Feb:"02", Mar:"03", Apr:"04", May:"05", Jun:"06", Jul:"07", Aug:"08", Sep:"09", Oct:"10", Nov:"11", Dec:"12" };
-          let parts = dateStr.split(" ");
-          
-          if(parts.length >= 4 && months[parts[1]]) {
-            return `${parts[2].padStart(2, '0')}-${months[parts[1]]}-${parts[3]}`;
-          }
-          if(dateStr.includes("-") && dateStr.length >= 10) {
-            let cleanParts = dateStr.substring(0, 10).split("-");
-            if(cleanParts.length === 3 && cleanParts[0].length === 4) {
-              return `${cleanParts[2]}-${cleanParts[1]}-${cleanParts[0]}`;
-            }
-          }
-          if(dateStr.includes("/") && dateStr.length >= 10) {
-            let cleanParts = dateStr.substring(0, 10).split("/");
-            if(cleanParts.length === 3 && cleanParts[2].length === 4) {
-              return `${cleanParts[0].padStart(2, '0')}-${cleanParts[1].padStart(2, '0')}-${cleanParts[2]}`;
-            }
-          }
+        let dateStr = rawDate.toString().trim();
+        
+        // Check 1: Agar raw string pehle se hi DD-MM-YYYY format mein hai
+        if (dateStr.includes("-") && dateStr.split("-")[0].length === 2) {
           return dateStr.substring(0, 10);
         }
         
-        let day = String(d.getDate()).padStart(2, '0');
-        let month = String(d.getMonth() + 1).padStart(2, '0');
-        let year = d.getFullYear();
-        return `${day}-${month}-${year}`;
+        // Check 2: Agar ISO format (YYYY-MM-DD) aa raha hai
+        if (dateStr.includes("-") && dateStr.split("-")[0].length === 4) {
+          let parts = dateStr.substring(0, 10).split("-");
+          return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        
+        // Check 3: Standard dynamic date object conversion logic
+        let d = new Date(rawDate);
+        if (!isNaN(d.getTime())) {
+          let day = String(d.getDate()).padStart(2, '0');
+          let month = String(d.getMonth() + 1).padStart(2, '0');
+          let year = d.getFullYear();
+          return `${day}-${month}-${year}`;
+        }
+        
+        return dateStr.substring(0, 10);
       } catch(e) {
         return rawDate.toString().substring(0, 10);
       }
@@ -239,7 +235,6 @@
         
         btn.innerText = "Processing Transact...";
         
-        // Form Content Type Submission Logic to avoid dynamic CORS text blocks
         fetch(API_URL, {
           method: "POST",
           headers: {
