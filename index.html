@@ -44,9 +44,9 @@
         .animated-btn:active { transform: scale(0.96); opacity: 0.9; }
         .animated-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
 
-        /* FIXED TOP HEADER (HIDDEN BY DEFAULT BEFORE LOGIN) */
+        /* FIXED TOP HEADER */
         .fin-header { 
-            display: none; /* Initial hidden condition until auth success */
+            display: none; 
             background: linear-gradient(135deg, var(--fintech-purple), #3b1366); 
             padding: 18px 16px; 
             color: var(--pure-white); 
@@ -70,7 +70,7 @@
         /* Dynamic Main Body Scroll Area */
         .main-scroll-content {
             flex: 1;
-            margin-top: 0px;      /* Starts at 0px when unauthenticated */
+            margin-top: 0px;      
             margin-bottom: 0px;   
             overflow-y: auto;      
             padding-bottom: 20px;
@@ -147,9 +147,9 @@
         .status-badge.rejected { background: #fee2e2; color: #dc2626; }
         .admin-remark { display: block; font-size: 11px; color: #64748b; font-style: italic; margin-top: 3px; font-weight: 500; }
         
-        /* FIXED BOTTOM TAB NAVIGATION BAR (HIDDEN BY DEFAULT BEFORE LOGIN) */
+        /* FIXED BOTTOM TAB NAVIGATION BAR */
         .bottom-nav { 
-            display: none; /* Initial hidden condition until auth success */
+            display: none; 
             background: var(--pure-white); 
             border-top: 1px solid var(--border-soft); 
             padding: 6px 0; 
@@ -171,16 +171,14 @@
 <body>
 
 <div class="app-shell" id="globalAppShell">
-    <!-- TOP HEADER -->
     <div class="fin-header" id="mainAppHeader">
-        <div class="menu-burger animated-btn" onclick="toggleDrawer(true)">
+        <div class="menu-burger animated-btn" id="headerBurgerMenu" onclick="toggleDrawer(true)">
             <div></div><div></div><div></div>
         </div>
         <div class="app-brand">CASH<span>GAIN</span></div>
         <div style="width: 32px;"></div> 
     </div>
 
-    <!-- BACKDROP DRAWER COMPONENTS -->
     <div class="drawer-backdrop" id="menuBackdrop" onclick="toggleDrawer(false)"></div>
     <div class="menu-drawer" id="menuDrawer">
         <div class="drawer-header">
@@ -200,10 +198,8 @@
         </div>
     </div>
 
-    <!-- DYNAMIC SCROLL CONTAINER -->
     <div class="main-scroll-content">
         
-        <!-- MODULE PANEL: AUTH SYSTEM -->
         <div id="panel-auth" class="auth-container">
             <div class="auth-banner">
                 <h2 id="auth-title">Welcome back</h2>
@@ -246,25 +242,19 @@
             </div>
         </div>
 
-        <!-- MODULE PANEL: LOGGED IN INTERACTIVE DASHBOARD -->
         <div id="panel-dashboard" class="dashboard-wrapper">
-            <!-- GLOBAL APP CARD SHOWING AVAILABLE BALANCE -->
             <div class="wallet-card">
                 <p>Available Balance</p>
                 <h2 id="lbl-balance">₹00.00</h2>
-                <div style="font-size: 11px; color:#cbd5e1; margin-top:8px; font-weight:500;" id="lbl-date-stamp">Date: --/--/----</div>
             </div>
 
-            <!-- WALLET TOTALS STATUS GRID -->
             <div class="grid-stats">
                 <div class="grid-box"><span>Deposit</span><h4 id="lbl-deposit">₹00.00</h4></div>
                 <div class="grid-box"><span>Earning</span><h4 id="lbl-earning">₹00.00</h4></div>
                 <div class="grid-box"><span>Withdrawal</span><h4 id="lbl-debit">₹00.00</h4></div>
             </div>
 
-            <!-- VIEW: HOME MODULE -->
             <div id="mod-home" class="view-section" style="display: block;">
-                <!-- REFERRAL LINK SHARE BUTTON -->
                 <div style="padding: 0; margin-bottom: 15px;">
                     <div class="alert-card" style="text-align: center; margin-bottom: 10px; background: #f8fafc; border: 1px solid var(--border-soft); color: var(--dark-navy);">
                         Your Personal Referral Identity Token:
@@ -273,14 +263,20 @@
                     <button class="fin-primary-btn animated-btn" style="background:var(--fintech-blue); box-shadow:0 4px 12px rgba(0,186,242,0.2); margin-top:0; padding: 11px;" onclick="copyAndShareReferralLink()">🔗 Copy & Share Invite Link</button>
                 </div>
                 
-                <!-- TOTAL REFERRAL & TOTAL REWARDS BOX -->
-                <div class="grid-stats" style="margin: 0 0 20px 0; grid-template-columns: 1fr 1fr;">
+                <div class="grid-stats" style="margin: 0 0 10px 0; grid-template-columns: 1fr 1fr;">
                     <div class="grid-box"><span>Total Referral</span><h4 id="lbl-cnt-refer">0 Member</h4></div>
                     <div class="grid-box"><span>Total Rewards</span><h4 id="lbl-sum-refer">₹00.00</h4></div>
                 </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
+                        <tbody id="data-body-refer"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- VIEW: SEPARATE DEPOSIT PORTAL CORE PAGE -->
             <div id="mod-deposit_page" class="view-section">
                 <h3>Deposit Portal Core</h3>
                 <div class="alert-card">Select preferred transaction engine method and route requested capital amounts directly into gateway address node.</div>
@@ -314,21 +310,12 @@
                 <h3 style="margin-top: 25px; margin-bottom: 5px;">Deposit History Logs</h3>
                 <div class="table-responsive">
                     <table class="fin-table">
-                        <thead><tr><th>Date</th><th>Amount</th><th>UTR Key</th><th>Status Matrix</th></tr></thead>
+                        <thead><tr><th>Date</th><th>Amount</th><th>UTR</th><th>Status</th></tr></thead>
                         <tbody id="data-body-deposit"></tbody>
-                    </table>
-                </div>
-
-                <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
-                <div class="table-responsive">
-                    <table class="fin-table">
-                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
-                        <tbody id="data-body-refer"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- VIEW: EARNINGS MODULE -->
             <div id="mod-earning" class="view-section">
                 <h3>Daily ROI Ledger</h3>
                 <div class="alert-card">This history log lists permanent daily ROI computations written securely directly onto the operational server books.</div>
@@ -340,7 +327,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: WITHDRAWAL MODULE -->
             <div id="mod-withdraw" class="view-section">
                 <h3>Withdrawal Vault</h3>
                 <div class="alert-card">Ensure your structural bank account specifications within the KYC validation panel are completely accurate prior to requesting payouts.</div>
@@ -356,7 +342,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: KYC MODULE -->
             <div id="mod-kyc" class="view-section">
                 <h3>KYC Bank Parameters</h3>
                 <div class="alert-card">Update your bank routing targets correctly. Submitted configurations are evaluated by the backend parameters engine.</div>
@@ -370,14 +355,12 @@
                     <div id="fields-kyc-upi" style="display: none;">
                         <div class="form-block"><label>UPI Handle ID</label><input type="text" id="in-kyc-upi" placeholder="username@upi"></div>
                     </div>
+                    <div style="height: 10px;"></div>
                     <button type="submit" class="fin-primary-btn animated-btn">Update KYC Configuration</button>
                 </form>
             </div>
         </div>
-    </div> <!-- SCROLL CONTAINER END -->
-
-    <!-- LOCKED BOTTOM TAB NAVIGATION BAR -->
-    <div class="bottom-nav" id="mainAppFooter">
+    </div> <div class="bottom-nav" id="mainAppFooter">
         <button class="b-nav-item active" id="bn-hom" onclick="switchDashboardView('home')">
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             Home
@@ -386,7 +369,6 @@
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
             Earnings
         </button>
-        <!-- Deposit button successfully placed to the right side of Earnings -->
         <button class="b-nav-item" id="bn-dep" onclick="switchDashboardView('deposit_page')">
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 0 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             Deposit
@@ -414,6 +396,21 @@
         doubleClickLock = true;
         setTimeout(() => { doubleClickLock = false; }, 2000);
         return true;
+    }
+
+    function cleanDateFormat(rawDate) {
+        if (!rawDate) return "--/--/----";
+        let str = rawDate.toString().trim();
+        if (str.includes(" ")) str = str.split(" ")[0];
+        
+        let parts = str.replace(/-/g, "/").split("/");
+        if (parts.length === 3) {
+            if (parts[0].length === 4) {
+                return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+            }
+            return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        }
+        return str;
     }
 
     function toggleDrawer(open) {
@@ -562,7 +559,6 @@
     }
 
     function bootMainFintechApplication() {
-        // Enforce structural visibility layouts
         document.getElementById('globalAppShell').classList.add('logged-in');
         document.getElementById('mainAppHeader').style.display = 'flex';
         document.getElementById('mainAppFooter').style.display = 'flex';
@@ -570,11 +566,10 @@
         document.getElementById('panel-auth').style.display = 'none';
         document.getElementById('panel-dashboard').style.display = 'flex';
         
+        document.getElementById('headerBurgerMenu').classList.remove('disabled');
+        
         document.getElementById('drawer-name').innerText = currentSession.name;
         document.getElementById('drawer-uid').innerText = `ID: ${currentSession.userId}`;
-        
-        let d = new Date();
-        document.getElementById('lbl-date-stamp').innerText = `Date: ${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
         
         refreshWalletBalances();
         pullFintechModuleHistory("Deposit", "data-body-deposit");
@@ -601,8 +596,9 @@
             let element = document.getElementById(`mod-${c}`);
             if(element) element.style.display = c === viewName ? 'block' : 'none';
             
-            let navBtn = document.getElementById(`bn-${c.substring(0,3)}`);
-            if(navBtn) navBtn.classList.toggle('active', c === viewName);
+            let shortHandToken = c === 'deposit_page' ? 'dep' : c.substring(0,3);
+            let activeTargetBtn = document.getElementById(`bn-${shortHandToken}`);
+            if(activeTargetBtn) activeTargetBtn.classList.toggle('active', c === viewName);
         });
         
         if (viewName === 'home') {
@@ -682,18 +678,24 @@
             if(res.status === 'success' && res.data) {
                 res.data.forEach(row => {
                     let tr = document.createElement('tr');
-                    let rawStatus = row.status.trim();
-                    let badgeClass = 'pending';
-                    
-                    if(rawStatus.toLowerCase() === 'approved') badgeClass = 'approved';
-                    if(rawStatus.toLowerCase() === 'rejected') badgeClass = 'rejected';
-                    
-                    let embeddedRemark = row.message ? `<span class="admin-remark">Remark: ${row.message}</span>` : "";
+                    let formattedTxDate = cleanDateFormat(row.date);
                     
                     if(sheetTitle === "Deposit") {
-                        tr.innerHTML = `<td>${row.date}</td><td>₹${parseFloat(row.amount).toFixed(2)}</td><td>${row.utr}</td><td><span class="status-badge ${badgeClass}">${rawStatus}</span>${embeddedRemark}</td>`;
+                        let rawStatus = row.status.trim();
+                        let badgeClass = 'pending';
+                        if(rawStatus.toLowerCase() === 'approved') badgeClass = 'approved';
+                        if(rawStatus.toLowerCase() === 'rejected') badgeClass = 'rejected';
+                        let embeddedRemark = row.message ? `<span class="admin-remark">Remark: ${row.message}</span>` : "";
+
+                        // FIXED: Aligned indexes correctly so row.utr fetches numeric values instead of string fields
+                        tr.innerHTML = `<td>${formattedTxDate}</td><td>₹${parseFloat(row.amount).toFixed(2)}</td><td>${row.utr}</td><td><span class="status-badge ${badgeClass}">${rawStatus}</span>${embeddedRemark}</td>`;
                     } else {
-                        tr.innerHTML = `<td>${row.date}</td><td>₹${parseFloat(row.amount).toFixed(2)}</td><td><span class="status-badge ${badgeClass}">${rawStatus}</span>${embeddedRemark}</td>`;
+                        let rawStatus = row.status.trim();
+                        let badgeClass = 'pending';
+                        if(rawStatus.toLowerCase() === 'approved') badgeClass = 'approved';
+                        if(rawStatus.toLowerCase() === 'rejected') badgeClass = 'rejected';
+                        let embeddedRemark = row.message ? `<span class="admin-remark">Remark: ${row.message}</span>` : "";
+                        tr.innerHTML = `<td>${formattedTxDate}</td><td>₹${parseFloat(row.amount).toFixed(2)}</td><td><span class="status-badge ${badgeClass}">${rawStatus}</span>${embeddedRemark}</td>`;
                     }
                     body.appendChild(tr);
                 });
@@ -711,7 +713,8 @@
             if(res.status === 'success' && res.data) {
                 res.data.forEach(row => {
                     let tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${row.date}</td><td style="color:var(--success-green); font-weight:700;">+₹${parseFloat(row.amount).toFixed(2)}</td><td>${row.remark}</td>`;
+                    let formattedTxDate = cleanDateFormat(row.date);
+                    tr.innerHTML = `<td>${formattedTxDate}</td><td style="color:var(--success-green); font-weight:700;">+₹${parseFloat(row.amount).toFixed(2)}</td><td>${row.remark}</td>`;
                     body.appendChild(tr);
                 });
             }
@@ -775,7 +778,8 @@
                 body.innerHTML = "";
                 res.history.forEach(item => {
                     let tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${item.date}</td><td>${item.user}</td><td style="color:var(--success-green); font-weight:700;">+₹${parseFloat(item.reward).toFixed(2)}</td>`;
+                    let formattedTxDate = cleanDateFormat(item.date);
+                    tr.innerHTML = `<td>${formattedTxDate}</td><td>${item.user}</td><td style="color:var(--success-green); font-weight:700;">+₹${parseFloat(item.reward).toFixed(2)}</td>`;
                     body.appendChild(tr);
                 });
             }
@@ -812,7 +816,6 @@
         currentSession = null;
         toggleDrawer(false);
         
-        // Relock structural visibility states
         document.getElementById('globalAppShell').classList.remove('logged-in');
         document.getElementById('mainAppHeader').style.display = 'none';
         document.getElementById('mainAppFooter').style.display = 'none';
