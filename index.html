@@ -44,9 +44,9 @@
         .animated-btn:active { transform: scale(0.96); opacity: 0.9; }
         .animated-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
 
-        /* FIXED TOP HEADER (HIDDEN BY DEFAULT BEFORE LOGIN) */
+        /* FIXED TOP HEADER */
         .fin-header { 
-            display: none; /* Initial hidden condition until auth success */
+            display: none; 
             background: linear-gradient(135deg, var(--fintech-purple), #3b1366); 
             padding: 18px 16px; 
             color: var(--pure-white); 
@@ -70,7 +70,7 @@
         /* Dynamic Main Body Scroll Area */
         .main-scroll-content {
             flex: 1;
-            margin-top: 0px;      /* Starts at 0px when unauthenticated */
+            margin-top: 0px;      
             margin-bottom: 0px;   
             overflow-y: auto;      
             padding-bottom: 20px;
@@ -147,9 +147,9 @@
         .status-badge.rejected { background: #fee2e2; color: #dc2626; }
         .admin-remark { display: block; font-size: 11px; color: #64748b; font-style: italic; margin-top: 3px; font-weight: 500; }
         
-        /* FIXED BOTTOM TAB NAVIGATION BAR (HIDDEN BY DEFAULT BEFORE LOGIN) */
+        /* FIXED BOTTOM TAB NAVIGATION BAR */
         .bottom-nav { 
-            display: none; /* Initial hidden condition until auth success */
+            display: none; 
             background: var(--pure-white); 
             border-top: 1px solid var(--border-soft); 
             padding: 6px 0; 
@@ -274,9 +274,18 @@
                 </div>
                 
                 <!-- TOTAL REFERRAL & TOTAL REWARDS BOX -->
-                <div class="grid-stats" style="margin: 0 0 20px 0; grid-template-columns: 1fr 1fr;">
+                <div class="grid-stats" style="margin: 0 0 10px 0; grid-template-columns: 1fr 1fr;">
                     <div class="grid-box"><span>Total Referral</span><h4 id="lbl-cnt-refer">0 Member</h4></div>
                     <div class="grid-box"><span>Total Rewards</span><h4 id="lbl-sum-refer">₹00.00</h4></div>
+                </div>
+
+                <!-- REFERRAL HISTORY LOGS (MOVED ABSOLUTE BOTTOM OF HOME PAGE) -->
+                <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
+                        <tbody id="data-body-refer"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -316,14 +325,6 @@
                     <table class="fin-table">
                         <thead><tr><th>Date</th><th>Amount</th><th>UTR Key</th><th>Status Matrix</th></tr></thead>
                         <tbody id="data-body-deposit"></tbody>
-                    </table>
-                </div>
-
-                <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
-                <div class="table-responsive">
-                    <table class="fin-table">
-                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
-                        <tbody id="data-body-refer"></tbody>
                     </table>
                 </div>
             </div>
@@ -386,7 +387,6 @@
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
             Earnings
         </button>
-        <!-- Deposit button successfully placed to the right side of Earnings -->
         <button class="b-nav-item" id="bn-dep" onclick="switchDashboardView('deposit_page')">
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 0 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             Deposit
@@ -403,7 +403,7 @@
 </div>
 
 <script>
-    const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbzpcOs409fNf5WqX7oXpiwKNDA0Z2CI4ul1TObJ1roIdyeSI8dLPfdSd0qFYcQFugFh/exec";
+    const DEPLOY_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
     
     let currentSession = null;
     let cachedMerchantUpi = "";
@@ -562,13 +562,14 @@
     }
 
     function bootMainFintechApplication() {
-        // Enforce structural visibility layouts
         document.getElementById('globalAppShell').classList.add('logged-in');
         document.getElementById('mainAppHeader').style.display = 'flex';
         document.getElementById('mainAppFooter').style.display = 'flex';
         
         document.getElementById('panel-auth').style.display = 'none';
         document.getElementById('panel-dashboard').style.display = 'flex';
+        
+        document.getElementById('headerBurgerMenu').classList.remove('disabled');
         
         document.getElementById('drawer-name').innerText = currentSession.name;
         document.getElementById('drawer-uid').innerText = `ID: ${currentSession.userId}`;
@@ -812,7 +813,6 @@
         currentSession = null;
         toggleDrawer(false);
         
-        // Relock structural visibility states
         document.getElementById('globalAppShell').classList.remove('logged-in');
         document.getElementById('mainAppHeader').style.display = 'none';
         document.getElementById('mainAppFooter').style.display = 'none';
