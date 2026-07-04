@@ -44,7 +44,7 @@
         .animated-btn:active { transform: scale(0.96); opacity: 0.9; }
         .animated-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
 
-        /* FIXED TOP HEADER (STRICTLY LOCKED) */
+        /* FIXED TOP HEADER */
         .fin-header { 
             background: linear-gradient(135deg, var(--fintech-purple), #3b1366); 
             padding: 18px 16px; 
@@ -142,7 +142,7 @@
         .status-badge.rejected { background: #fee2e2; color: #dc2626; }
         .admin-remark { display: block; font-size: 11px; color: #64748b; font-style: italic; margin-top: 3px; font-weight: 500; }
         
-        /* FIXED BOTTOM TAB NAVIGATION BAR (STRICTLY LOCKED TO SCREEN BOTTOM) */
+        /* FIXED BOTTOM TAB NAVIGATION BAR */
         .bottom-nav { 
             background: var(--pure-white); 
             border-top: 1px solid var(--border-soft); 
@@ -184,11 +184,11 @@
             <button class="drawer-close-btn animated-btn" onclick="toggleDrawer(false)">✕</button>
         </div>
         <div class="drawer-links">
-            <div class="drawer-item" onclick="handleDrawerSelect('deposit')">💳 Deposit Portal</div>
+            <div class="drawer-item" onclick="handleDrawerSelect('home')">🏠 Home Dashboard</div>
+            <div class="drawer-item" onclick="handleDrawerSelect('deposit_page')">💵 Deposit Panel</div>
             <div class="drawer-item" onclick="handleDrawerSelect('earning')">📈 Growth History</div>
             <div class="drawer-item" onclick="handleDrawerSelect('withdraw')">🏧 Withdrawal Vault</div>
             <div class="drawer-item" onclick="handleDrawerSelect('kyc')">🆔 KYC verification</div>
-            <div class="drawer-item" onclick="handleDrawerSelect('refer')">🤝 Referral System</div>
             <div class="drawer-item" style="color: #dc2626; margin-top: auto;" onclick="triggerLogoff()">🚪 Secure Logout</div>
         </div>
     </div>
@@ -245,13 +245,28 @@
             </div>
 
             <div class="grid-stats">
-                <div class="grid-box"><span>Deposited</span><h4 id="lbl-deposit">₹00.00</h4></div>
-                <div class="grid-box"><span>Earnings</span><h4 id="lbl-earning">₹00.00</h4></div>
-                <div class="grid-box"><span>Withdrawn</span><h4 id="lbl-debit">₹00.00</h4></div>
+                <div class="grid-box"><span>Deposit</span><h4 id="lbl-deposit">₹00.00</h4></div>
+                <div class="grid-box"><span>Earning</span><h4 id="lbl-earning">₹00.00</h4></div>
+                <div class="grid-box"><span>Withdrawal</span><h4 id="lbl-debit">₹00.00</h4></div>
             </div>
 
-            <div id="mod-deposit" class="view-section" style="display: block;">
-                <h3>Deposit Core</h3>
+            <div id="mod-home" class="view-section" style="display: block;">
+                <div style="padding: 0; margin-bottom: 15px;">
+                    <div class="alert-card" style="text-align: center; margin-bottom: 10px; background: #f8fafc; border: 1px solid var(--border-soft); color: var(--dark-navy);">
+                        Your Personal Referral Identity Token:
+                        <strong style="font-size:18px; color:var(--fintech-purple); display:block; margin-top:4px;" id="lbl-my-ref-string">---</strong>
+                    </div>
+                    <button class="fin-primary-btn animated-btn" style="background:var(--fintech-blue); box-shadow:0 4px 12px rgba(0,186,242,0.2); margin-top:0; padding: 11px;" onclick="copyAndShareReferralLink()">🔗 Copy & Share Invite Link</button>
+                </div>
+                
+                <div class="grid-stats" style="margin: 0 0 20px 0; grid-template-columns: 1fr 1fr;">
+                    <div class="grid-box"><span>Total Referral</span><h4 id="lbl-cnt-refer">0 Member</h4></div>
+                    <div class="grid-box"><span>Total Rewards</span><h4 id="lbl-sum-refer">₹00.00</h4></div>
+                </div>
+            </div>
+
+            <div id="mod-deposit_page" class="view-section">
+                <h3>Deposit Portal Core</h3>
                 <div class="alert-card">Select preferred transaction engine method and route requested capital amounts directly into gateway address node.</div>
                 
                 <div class="alert-card" style="background:#fff7ed; border: 1px solid #ffedd5; text-align:center; color: var(--dark-navy)">
@@ -280,10 +295,19 @@
                     <button type="submit" class="fin-primary-btn animated-btn">Submit Request</button>
                 </form>
 
+                <h3 style="margin-top: 25px; margin-bottom: 5px;">Deposit History Logs</h3>
                 <div class="table-responsive">
                     <table class="fin-table">
                         <thead><tr><th>Date</th><th>Amount</th><th>UTR Key</th><th>Status Matrix</th></tr></thead>
                         <tbody id="data-body-deposit"></tbody>
+                    </table>
+                </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
+                        <tbody id="data-body-refer"></tbody>
                     </table>
                 </div>
             </div>
@@ -330,32 +354,11 @@
                     <button type="submit" class="fin-primary-btn animated-btn">Update KYC Configuration</button>
                 </form>
             </div>
-
-            <div id="mod-refer" class="view-section">
-                <h3>Referral Program Layout</h3>
-                <div class="alert-card" style="text-align: center;">
-                    Your Personal Referral Identity Token:<br>
-                    <strong style="font-size:20px; color:var(--fintech-purple); display:block; margin-top:6px;" id="lbl-my-ref-string">---</strong>
-                </div>
-                <button class="fin-primary-btn animated-btn" style="background:var(--fintech-blue); box-shadow:0 4px 12px rgba(0,186,242,0.2); margin-bottom:16px;" onclick="copyAndShareReferralLink()">Copy & Share Invite Link</button>
-                
-                <div class="grid-stats" style="margin: 0 0 16px 0;">
-                    <div class="grid-box"><span>Total Invited</span><h4 id="lbl-cnt-refer">0 Member</h4></div>
-                    <div class="grid-box" style="grid-column: span 2;"><span>Accumulated Rewards</span><h4 id="lbl-sum-refer">₹00.00</h4></div>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="fin-table">
-                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
-                        <tbody id="data-body-refer"></tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </div> <div class="bottom-nav">
-        <button class="b-nav-item active" id="bn-dep" onclick="switchDashboardView('deposit')">
-            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 0 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            Deposit
+        <button class="b-nav-item active" id="bn-hom" onclick="switchDashboardView('home')">
+            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Home
         </button>
         <button class="b-nav-item" id="bn-ear" onclick="switchDashboardView('earning')">
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
@@ -372,7 +375,7 @@
     </div>
 </div>
 
-<script>
+<script {is_code_run: true}>
     const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbzpcOs409fNf5WqX7oXpiwKNDA0Z2CI4ul1TObJ1roIdyeSI8dLPfdSd0qFYcQFugFh/exec";
     
     let currentSession = null;
@@ -545,6 +548,7 @@
         
         refreshWalletBalances();
         pullFintechModuleHistory("Deposit", "data-body-deposit");
+        pullReferralPanelData();
         fetchGatewayUpiIdConfiguration();
     }
 
@@ -562,18 +566,29 @@
     }
 
     function switchDashboardView(viewName) {
-        let components = ['deposit', 'earning', 'withdraw', 'kyc', 'refer'];
+        let components = ['home', 'deposit_page', 'earning', 'withdraw', 'kyc'];
         components.forEach(c => {
             let element = document.getElementById(`mod-${c}`);
             if(element) element.style.display = c === viewName ? 'block' : 'none';
+            
             let navBtn = document.getElementById(`bn-${c.substring(0,3)}`);
             if(navBtn) navBtn.classList.toggle('active', c === viewName);
         });
         
-        if (viewName === 'deposit') pullFintechModuleHistory("Deposit", "data-body-deposit");
+        // Synced Tab highlights
+        let activeNav = document.getElementById('bn-hom');
+        if(activeNav) activeNav.classList.toggle('active', viewName === 'home');
+        
+        if (viewName === 'home') {
+            refreshWalletBalances();
+            pullReferralPanelData();
+        }
+        if (viewName === 'deposit_page') {
+            pullFintechModuleHistory("Deposit", "data-body-deposit");
+            fetchGatewayUpiIdConfiguration();
+        }
         if (viewName === 'earning') pullEarningHistoryLogs();
         if (viewName === 'withdraw') pullFintechModuleHistory("Withdrawal", "data-body-withdraw");
-        if (viewName === 'refer') pullReferralPanelData();
     }
 
     function fetchGatewayUpiIdConfiguration() {
@@ -582,7 +597,8 @@
         .then(res => {
             if(res.status === 'success') {
                 cachedMerchantUpi = res.upiId;
-                document.getElementById('lbl-gateway-upi').innerText = res.upiId;
+                let elem = document.getElementById('lbl-gateway-upi');
+                if(elem) elem.innerText = res.upiId;
             }
         });
     }
