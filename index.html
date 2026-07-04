@@ -171,7 +171,6 @@
 <body>
 
 <div class="app-shell" id="globalAppShell">
-    <!-- TOP HEADER -->
     <div class="fin-header" id="mainAppHeader">
         <div class="menu-burger animated-btn" onclick="toggleDrawer(true)">
             <div></div><div></div><div></div>
@@ -180,7 +179,6 @@
         <div style="width: 32px;"></div> 
     </div>
 
-    <!-- BACKDROP DRAWER COMPONENTS -->
     <div class="drawer-backdrop" id="menuBackdrop" onclick="toggleDrawer(false)"></div>
     <div class="menu-drawer" id="menuDrawer">
         <div class="drawer-header">
@@ -200,10 +198,8 @@
         </div>
     </div>
 
-    <!-- DYNAMIC SCROLL CONTAINER -->
     <div class="main-scroll-content">
         
-        <!-- MODULE PANEL: AUTH SYSTEM -->
         <div id="panel-auth" class="auth-container">
             <div class="auth-banner">
                 <h2 id="auth-title">Welcome back</h2>
@@ -246,25 +242,20 @@
             </div>
         </div>
 
-        <!-- MODULE PANEL: LOGGED IN INTERACTIVE DASHBOARD -->
         <div id="panel-dashboard" class="dashboard-wrapper">
-            <!-- GLOBAL APP CARD SHOWING AVAILABLE BALANCE -->
             <div class="wallet-card">
                 <p>Available Balance</p>
                 <h2 id="lbl-balance">₹00.00</h2>
                 <div style="font-size: 11px; color:#cbd5e1; margin-top:8px; font-weight:500;" id="lbl-date-stamp">Date: --/--/----</div>
             </div>
 
-            <!-- WALLET TOTALS STATUS GRID -->
             <div class="grid-stats">
                 <div class="grid-box"><span>Deposit</span><h4 id="lbl-deposit">₹00.00</h4></div>
                 <div class="grid-box"><span>Earning</span><h4 id="lbl-earning">₹00.00</h4></div>
                 <div class="grid-box"><span>Withdrawal</span><h4 id="lbl-debit">₹00.00</h4></div>
             </div>
 
-            <!-- VIEW: HOME MODULE -->
             <div id="mod-home" class="view-section" style="display: block;">
-                <!-- REFERRAL LINK SHARE BUTTON -->
                 <div style="padding: 0; margin-bottom: 15px;">
                     <div class="alert-card" style="text-align: center; margin-bottom: 10px; background: #f8fafc; border: 1px solid var(--border-soft); color: var(--dark-navy);">
                         Your Personal Referral Identity Token:
@@ -273,13 +264,11 @@
                     <button class="fin-primary-btn animated-btn" style="background:var(--fintech-blue); box-shadow:0 4px 12px rgba(0,186,242,0.2); margin-top:0; padding: 11px;" onclick="copyAndShareReferralLink()">🔗 Copy & Share Invite Link</button>
                 </div>
                 
-                <!-- TOTAL REFERRAL & TOTAL REWARDS BOX -->
                 <div class="grid-stats" style="margin: 0 0 10px 0; grid-template-columns: 1fr 1fr;">
                     <div class="grid-box"><span>Total Referral</span><h4 id="lbl-cnt-refer">0 Member</h4></div>
                     <div class="grid-box"><span>Total Rewards</span><h4 id="lbl-sum-refer">₹00.00</h4></div>
                 </div>
 
-                <!-- REFERRAL HISTORY LOGS (MOVED ABSOLUTE BOTTOM OF HOME PAGE) -->
                 <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
                 <div class="table-responsive">
                     <table class="fin-table">
@@ -289,7 +278,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: SEPARATE DEPOSIT PORTAL CORE PAGE -->
             <div id="mod-deposit_page" class="view-section">
                 <h3>Deposit Portal Core</h3>
                 <div class="alert-card">Select preferred transaction engine method and route requested capital amounts directly into gateway address node.</div>
@@ -329,7 +317,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: EARNINGS MODULE -->
             <div id="mod-earning" class="view-section">
                 <h3>Daily ROI Ledger</h3>
                 <div class="alert-card">This history log lists permanent daily ROI computations written securely directly onto the operational server books.</div>
@@ -341,7 +328,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: WITHDRAWAL MODULE -->
             <div id="mod-withdraw" class="view-section">
                 <h3>Withdrawal Vault</h3>
                 <div class="alert-card">Ensure your structural bank account specifications within the KYC validation panel are completely accurate prior to requesting payouts.</div>
@@ -357,7 +343,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: KYC MODULE -->
             <div id="mod-kyc" class="view-section">
                 <h3>KYC Bank Parameters</h3>
                 <div class="alert-card">Update your bank routing targets correctly. Submitted configurations are evaluated by the backend parameters engine.</div>
@@ -371,14 +356,12 @@
                     <div id="fields-kyc-upi" style="display: none;">
                         <div class="form-block"><label>UPI Handle ID</label><input type="text" id="in-kyc-upi" placeholder="username@upi"></div>
                     </div>
+                    <div style="height: 10px;"></div>
                     <button type="submit" class="fin-primary-btn animated-btn">Update KYC Configuration</button>
                 </form>
             </div>
         </div>
-    </div> <!-- SCROLL CONTAINER END -->
-
-    <!-- LOCKED BOTTOM TAB NAVIGATION BAR -->
-    <div class="bottom-nav" id="mainAppFooter">
+    </div> <div class="bottom-nav" id="mainAppFooter">
         <button class="b-nav-item active" id="bn-hom" onclick="switchDashboardView('home')">
             <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             Home
@@ -568,8 +551,6 @@
         
         document.getElementById('panel-auth').style.display = 'none';
         document.getElementById('panel-dashboard').style.display = 'flex';
-        
-        document.getElementById('headerBurgerMenu').classList.remove('disabled');
         
         document.getElementById('drawer-name').innerText = currentSession.name;
         document.getElementById('drawer-uid').innerText = `ID: ${currentSession.userId}`;
