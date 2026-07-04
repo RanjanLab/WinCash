@@ -1,254 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cashgain - Secure Login</title>
-  <style>
-    :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --bg: #f4f6f9; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; padding: 15px; box-sizing: border-box; }
-    
-    /* 2-Second Intro Splash Screen */
-    #splash { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: all 0.5s ease; }
-    .logo-anim { width: 100px; height: 100px; background: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold; color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: pulse 1.5s infinite; }
-    .splash-title { color: white; font-size: 32px; font-weight: bold; margin-top: 20px; letter-spacing: 2px; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    
-    /* Forms Container - Optimized for Premium Mobile Fit */
-    .form-box { background: white; padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%; max-width: 360px; display: none; text-align: center; animation: fadeIn 0.5s ease; box-sizing: border-box; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    h2 { color: var(--primary); margin-bottom: 25px; font-size: 24px; font-weight: 700; }
-    input { width: 100%; padding: 13px 15px; margin: 10px 0; border: 1px solid #dcdde1; border-radius: 8px; box-sizing: border-box; font-size: 15px; transition: 0.2s; background: #fafafa; display: block !important; visibility: visible !important; opacity: 1 !important; }
-    input:focus { border-color: var(--primary); background: #fff; outline: none; }
-    
-    /* Premium Action Buttons with Loading Engine */
-    button { position: relative; width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15); }
-    button:hover { background: #219653; }
-    button:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
-    
-    /* ⚡ Fast Loader CSS Spinner Animation */
-    .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .link-text { color: var(--primary); margin-top: 18px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: 600; transition: 0.2s; display: inline-block; }
-    .link-text:hover { color: #1a252f; text-decoration: underline; }
-    .alert-box { background: #fdf2f2; color: var(--danger); padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 15px; display: none; border: 1px solid #fde2e2; text-align: left; font-weight: 500; line-height: 1.4; }
-    
-    /* Registration Success Card Elements */
-    .credential-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; }
-    .credential-box p { margin: 8px 0; font-size: 15px; }
-    .warning-banner { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 13px; margin-top: 15px; text-align: left; line-height: 1.4; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashgain Indian Portal</title>
+    <style>
+        :root {
+            --primary-navy: #0F172A;
+            --accent-orange: #FF9933;
+            --accent-green: #138808;
+            --light-slate: #F8FAFC;
+            --border-color: #E2E8F0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--light-slate); color: var(--primary-navy); display: flex; justify-content: center; padding: 20px 10px; }
+        .app-window { width: 100%; max-width: 480px; background: #FFFFFF; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; border-top: 5px solid var(--accent-orange); }
+        .auth-header { padding: 30px 20px; text-align: center; background: linear-gradient(135deg, #1E293B, #0F172A); color: #FFF; }
+        .tabs { display: flex; background: #F1F5F9; padding: 5px; margin: 15px; border-radius: 8px; }
+        .tab-trigger { flex: 1; padding: 10px; border: none; background: transparent; font-weight: 600; color: #64748B; cursor: pointer; border-radius: 6px; }
+        .tab-trigger.active { background: #FFF; color: var(--primary-navy); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .form-container { padding: 5px 20px 25px 20px; }
+        .input-block { margin-bottom: 16px; }
+        .input-block label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #475569; text-transform: uppercase; }
+        .input-block input, .input-block select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: #F8FAFC; }
+        .input-block input:focus { outline: none; border-color: var(--accent-orange); background: #FFF; }
+        .action-btn { width: 100%; padding: 14px; background: var(--primary-navy); color: #FFF; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .action-btn:hover { opacity: 0.9; }
+        /* Dashboard Framework CSS */
+        .dash-shell { display: none; }
+        .top-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #FFF; border-bottom: 1px solid var(--border-color); }
+        .user-badge h3 { font-size: 16px; font-weight: 700; }
+        .user-badge p { font-size: 11px; color: #64748B; margin-top: 2px; }
+        .logout-link { font-size: 12px; font-weight: 600; color: #EF4444; cursor: pointer; border: 1px solid #FEE2E2; padding: 6px 12px; border-radius: 6px; background: #FEF2F2; }
+        .wallet-banner { margin: 15px; padding: 20px; background: radial-gradient(circle at top left, #1E293B, #0F172A); border-radius: 12px; color: #FFF; position: relative; overflow: hidden; }
+        .wallet-banner::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: var(--accent-orange); opacity: 0.1; border-radius: 50%; }
+        .wallet-banner span { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 600; }
+        .wallet-banner .live-balance { font-size: 32px; font-weight: 700; margin-top: 5px; letter-spacing: -0.5px; }
+        .stats-matrix { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px; }
+        .stat-box { background: #FFF; padding: 12px 10px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
+        .stat-box p { font-size: 10px; color: #64748B; font-weight: 600; text-transform: uppercase; }
+        .stat-box h5 { font-size: 13px; font-weight: 700; margin-top: 4px; color: #1E293B; }
+        .nav-deck { display: flex; background: #FFF; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .nav-tab-item { flex: 1; text-align: center; padding: 12px; font-size: 12px; font-weight: 600; color: #64748B; cursor: pointer; }
+        .nav-tab-item.active { color: var(--accent-green); border-bottom: 3px solid var(--accent-green); background: #F0FDF4; }
+        .view-panel { padding: 20px; display: none; }
+        .view-panel h4 { font-size: 15px; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid var(--accent-orange); padding-left: 8px; }
+        .info-card { background: #F8FAFC; border: 1px dashed var(--border-color); padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; line-height: 1.5; color: #475569; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        .history-table th { background: #F1F5F9; padding: 8px; text-align: left; font-weight: 600; color: #475569; }
+        .history-table td { padding: 10px 8px; border-bottom: 1px solid var(--border-color); color: #334155; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .badge.approved { background: #DCFCE7; color: #15803D; }
+        .badge.pending { background: #FEF3C7; color: #B45309; }
+    </style>
 </head>
 <body>
 
-  <div id="splash">
-    <div class="logo-anim">CG</div>
-    <div class="splash-title">Cashgain</div>
-  </div>
-
-  <div id="loginSection" class="form-box" style="display: block;">
-    <h2>Cashgain Login</h2>
-    <div id="loginError" class="alert-box"></div>
-    <input type="text" id="loginUser" placeholder="User ID / Mobile Number">
-    <input type="password" id="loginPass" placeholder="Password">
-    <button id="loginBtn" onclick="handleLogin()">
-      <span>Login</span>
-      <div class="spinner" id="loginSpinner"></div>
-    </button>
-    <div class="link-text" onclick="switchForm('register')">Create New Account</div><br>
-    <div class="link-text" onclick="switchForm('forget')">Forgot Password?</div>
-  </div>
-
-  <div id="registerSection" class="form-box">
-    <h2>Account Registration</h2>
-    <div id="regError" class="alert-box"></div>
-    <input type="text" id="regName" placeholder="Full Name">
-    <input type="text" id="regMobile" placeholder="Mobile Number">
-    <input type="password" id="regPass" placeholder="Create Password">
-    <input type="password" id="regConfirmPass" placeholder="Confirm Password">
-    <!-- 📋 Kept id same for internal backend script bindings -->
-    <input type="text" id="regByRefer" placeholder="Referral Code (Optional)">
-    <button id="regBtn" onclick="handleRegister()">
-      <span>Sign Up</span>
-      <div class="spinner" id="regSpinner"></div>
-    </button>
-    <div class="link-text" onclick="switchForm('login')">Already have an account? Login</div>
-  </div>
-
-  <div id="successSection" class="form-box">
-    <div class="check-icon" style="font-size: 60px; color: var(--success); margin-bottom: 15px;">✔️</div>
-    <h2>Registration Successful!</h2>
-    <div class="credential-box">
-      <p><strong>User ID:</strong> <span id="showUserId" style="color:var(--success); font-weight:bold;"></span></p>
-      <p><strong>Password:</strong> <span id="showPassword"></span></p>
-    </div>
-    <div class="warning-banner">
-      ⚠️ <strong>Security Warning:</strong> Please do not share your User ID and Password with anyone.
-    </div>
-    <button onclick="switchForm('login')">Go to Login</button>
-  </div>
-
-  <div id="forgetSection" class="form-box">
-    <h2>Recover Password</h2>
-    <div id="forgetError" class="alert-box"></div>
-    <div id="forgetSuccess" class="alert-box" style="background:#edf7ed; color:var(--success); border-color:#e1f0e1;"></div>
-    <input type="text" id="forUser" placeholder="Enter User ID">
-    <input type="text" id="forMobile" placeholder="Registered Mobile Number">
-    <button id="forBtn" onclick="handleForget()">
-      <span>Find Password</span>
-      <div class="spinner" id="forSpinner ="></div>
-    </button>
-    <div class="link-text" onclick="switchForm('login')">Back to Login</div>
-  </div>
-
-  <script>
-    // 🔥 LIVE UPDATED: NEW API CONSOLE EXEC MAPPING
-    const API_URL = "https://script.google.com/macros/s/AKfycbxBy5Rzl4LESf2nMawE1d79RqKYDTrpx72tU00xrDWFuTc7AsDgxx7Tr_vX_PzYDeoa/exec";
-
-    // 2-Second Intro Logic + Realtime Auto-Fill Protocol Switch
-    setTimeout(() => {
-      const splash = document.getElementById('splash');
-      splash.style.opacity = '0';
-      setTimeout(() => {
-        splash.style.display = 'none';
+<div class="app-window">
+    <div id="auth-gate">
+        <div class="auth-header">
+            <h2>CASHGAIN PORTAL</h2>
+            <p style="font-size: 12px; opacity: 0.8; margin-top: 4px;">Secure Indian Commercial Ecosystem</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-trigger active" id="trigger-login" onclick="toggleAuth('login')">Sign In</button>
+            <button class="tab-trigger" id="trigger-reg" onclick="toggleAuth('reg')">Register</button>
+        </div>
         
-        // 🔥 REFERRAL DEEP-LINK COMPILER ENGINE
-        const urlParams = new URLSearchParams(window.location.search);
-        const refCode = urlParams.get('ref');
-        
-        if (refCode && refCode.trim() !== "") {
-          const referInput = document.getElementById('regByRefer');
-          if (referInput) {
-            referInput.value = refCode.trim();
-            referInput.readOnly = true; // Lock field input box
-            referInput.style.backgroundColor = "#e8f0fe"; // Modern premium layout highlight
-            referInput.style.fontWeight = "bold";
-            referInput.style.color = "#2980b9";
-          }
-          // Direct switch system logic to skip login form frame panel
-          switchForm('register');
-        }
-      }, 500);
-    }, 2000);
+        <div class="form-container" id="login-frame">
+            <form onsubmit="executeLogin(event)">
+                <div class="input-block">
+                    <label>User ID / Registered Mobile</label>
+                    <input type="text" id="log-user" placeholder="Enter credentials" required>
+                </div>
+                <div class="input-block">
+                    <label>Password</label>
+                    <input type="password" id="log-pass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="action-btn">Secure Log In</button>
+            </form>
+        </div>
 
-    function switchForm(type) {
-      document.getElementById('loginError').style.display = 'none';
-      document.getElementById('regError').style.display = 'none';
-      document.getElementById('forgetError').style.display = 'none';
-      document.getElementById('forgetSuccess').style.display = 'none';
+        <div class="form-container" id="reg-frame" style="display: none;">
+            <form onsubmit="executeRegister(event)">
+                <div class="input-block"><label>Full Name</label><input type="text" id="reg-name" placeholder="As per legal documents" required></div>
+                <div class="input-block"><label>Mobile Number</label><input type="tel" id="reg-mobile" pattern="[0-9]{10}" placeholder="10-digit Indian standard" required></div>
+                <div class="input-block"><label>Create Password</label><input type="password" id="reg-pass" placeholder="Minimum 4 characters" required></div>
+                <div class="input-block"><label>Sponsor Refer Code</label><input type="text" id="reg-byrefer" placeholder="Optional referral string"></div>
+                <button type="submit" class="action-btn" style="background: var(--accent-green)">Create New Account</button>
+            </form>
+        </div>
+    </div>
 
-      document.getElementById('loginSection').style.display = (type === 'login') ? 'block' : 'none';
-      document.getElementById('registerSection').style.display = (type === 'register') ? 'block' : 'none';
-      document.getElementById('forgetSection').style.display = (type === 'forget') ? 'block' : 'none';
-      document.getElementById('successSection').style.display = (type === 'success') ? 'block' : 'none';
+    <div id="dash-gate" class="dash-shell">
+        <div class="top-navbar">
+            <div class="user-badge">
+                <h3 id="profile-name">Loading Profile...</h3>
+                <p id="profile-date"></p>
+            </div>
+            <div class="logout-link" onclick="triggerLogoff()">Logout</div>
+        </div>
+
+        <div class="wallet-banner">
+            <span>Current Main Balance</span>
+            <div class="live-balance" id="view-balance">₹00.00</div>
+        </div>
+
+        <div class="stats-matrix">
+            <div class="stat-box"><p>Deposited</p><h5 id="view-deposit">₹00.00</h5></div>
+            <div class="stat-box"><p>Earnings</p><h5 id="view-earning">₹00.00</h5></div>
+            <div class="stat-box"><p>Withdrawn</p><h5 id="view-debit">₹00.00</h5></div>
+        </div>
+
+        <div class="nav-deck">
+            <div class="nav-tab-item active" id="nt-dep" onclick="switchView('deposit')">Deposit</div>
+            <div class="nav-tab-item" id="nt-wit" onclick="switchView('withdraw')">Withdraw</div>
+            <div class="nav-tab-item" id="nt-kyc" onclick="switchView('kyc')">KYC</div>
+            <div class="nav-tab-item" id="nt-ref" onclick="switchView('refer')">Referral</div>
+        </div>
+
+        <div id="v-deposit" class="view-panel" style="display: block;">
+            <h4>Deposit Core</h4>
+            <div class="info-card">Please deposit your custom capital to our dynamic node via official UPI apps. Note down the accurate 12-Digit transaction Ref/UTR Code.</div>
+            <div class="info-card" style="background:#FFFDF5; border-color:var(--accent-orange); text-align:center;">
+                Official Gateway UPI ID: <strong id="live-gateway-upi" style="color:var(--primary-navy)">Fetching Node...</strong>
+            </div>
+            <form onsubmit="postDeposit(event)">
+                <div class="input-block"><label>Amount (₹)</label><input type="number" id="form-dep-amt" step="0.01" placeholder="00.00" required></div>
+                <div class="input-block"><label>12-Digit Transaction UTR</label><input type="text" id="form-dep-utr" pattern="[0-9]{12}" placeholder="Enter valid reference code" required></div>
+                <button type="submit" class="action-btn">Log Transaction Entry</button>
+            </form>
+            <table class="history-table"><thead id="th-dep"><tr><th>Date</th><th>Amount</th><th>UTR</th><th>Status</th></tr></thead><tbody id="table-dep"></tbody></table>
+        </div>
+
+        <div id="v-withdraw" class="view-panel">
+            <h4>Withdrawal Vault</h4>
+            <div class="info-card">Settlements are strictly pushed via standard banking hours directly to validated verification credentials. Check individual limits before dispatching requests.</div>
+            <form onsubmit="postWithdraw(event)">
+                <div class="input-block"><label>Amount (₹)</label><input type="number" id="form-wit-amt" step="0.01" placeholder="00.00" required></div>
+                <button type="submit" class="action-btn" style="background:var(--accent-orange)">Initiate Payout</button>
+            </form>
+            <table class="history-table"><thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody id="table-wit"></tbody></table>
+        </div>
+
+        <div id="v-kyc" class="view-panel">
+            <h4>Indian KYC Settlement Validation</h4>
+            <div class="info-card">Provide exact specifications matching bank record targets to clear automated payouts completely without manual holds.</div>
+            <form onsubmit="postKYC(event)">
+                <div class="input-block"><label>Transfer Matrix Type</label><select id="form-kyc-type" onchange="toggleKYCDrop()"><option value="BANK">IMPS / NEFT Bank Account</option><option value="UPI">Virtual Private Address (UPI VPA)</option></select></div>
+                <div id="box-kyc-bank">
+                    <div class="input-block"><label>Bank Structure Name</label><input type="text" id="form-kyc-bname" placeholder="SBI, PNB, ICICI, etc."></div>
+                    <div class="input-block"><label>Account Number</label><input type="text" id="form-kyc-acc" placeholder="Enter bank account identifier"></div>
+                    <div class="input-block"><label>IFSC Code</label><input type="text" id="form-kyc-ifsc" placeholder="11 character alpha-numeric" style="text-transform:uppercase"></div>
+                </div>
+                <div id="box-kyc-upi" style="display: none;"><div class="input-block"><label>UPI Handle</label><input type="text" id="form-kyc-upi" placeholder="example@paytm"></div></div>
+                <button type="submit" class="action-btn">Update Gateway Parameters</button>
+            </form>
+        </div>
+
+        <div id="v-refer" class="view-panel">
+            <h4>Referral Linkage</h4>
+            <div class="info-card" style="text-align: center;">Your Personal Sponsor Referral Token:<br><strong style="font-size: 18px; color: var(--accent-green);" id="lbl-myrefer">---</strong></div>
+            <div class="stats-matrix" style="margin: 10px 0;"><div class="stat-box"><p>Total Invited</p><h5 id="lbl-cnt-ref">0</h5></div><div class="stat-box"><p>Total Rewards</p><h5 id="lbl-sum-ref">₹00.00</h5></div></div>
+            <table class="history-table"><thead><tr><th>Date</th><th>Joined User</th><th>Reward</th></tr></thead><tbody id="table-ref"></tbody></table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DEPLOYED GOOGLE APPS SCRIPT WEB APP URL PISTON (Yahan apna App link lagayein)
+    const DEPLOY_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+    let activeSession = null;
+
+    function toggleAuth(mode) {
+        document.getElementById('trigger-login').classList.toggle('active', mode==='login');
+        document.getElementById('trigger-reg').classList.toggle('active', mode==='reg');
+        document.getElementById('login-frame').style.display = mode==='login' ? 'block' : 'none';
+        document.getElementById('reg-frame').style.display = mode==='reg' ? 'block' : 'none';
     }
 
-    function toggleLoader(btnId, spinnerId, isStarting) {
-      const btn = document.getElementById(btnId);
-      const spinner = document.getElementById(spinnerId);
-      if(isStarting) {
-        btn.disabled = true;
-        spinner.style.display = "block";
-      } else {
-        btn.disabled = false;
-        spinner.style.display = "none";
-      }
+    function toggleKYCDrop() {
+        let type = document.getElementById('form-kyc-type').value;
+        document.getElementById('box-kyc-bank').style.display = type==='BANK' ? 'block' : 'none';
+        document.getElementById('box-kyc-upi').style.display = type==='UPI' ? 'block' : 'none';
     }
 
-    function handleLogin() {
-      let user = document.getElementById('loginUser').value;
-      let pass = document.getElementById('loginPass').value;
-      if(!user || !pass) return alert('Please fill in all details');
+    function formatCurrency(val) {
+        return "₹" + parseFloat(val || 0).toFixed(2);
+    }
 
-      toggleLoader('loginBtn', 'loginSpinner', true);
-
-      fetch(API_URL + `?action=login&user=${user}&pass=${pass}`)
+    function executeLogin(e) {
+        e.preventDefault();
+        let u = document.getElementById('log-user').value;
+        let p = document.getElementById('log-pass').value;
+        
+        fetch(`${DEPLOY_URL}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`)
         .then(res => res.json())
-        .then(data => {
-          toggleLoader('loginBtn', 'loginSpinner', false);
-          if(data.status === "success") {
-            localStorage.setItem("currentUserId", data.userId);
-            localStorage.setItem("currentUserName", data.name);
-            localStorage.setItem("currentUserMobile", data.mobile);
-            window.location.href = "dashboard.html";
-          } else {
-            document.getElementById('loginError').innerText = data.message;
-            document.getElementById('loginError').style.display = 'block';
-          }
-        })
-        .catch(err => {
-          toggleLoader('loginBtn', 'loginSpinner', false);
-          alert('Network connection error. Try again.');
+        .then(res => {
+            if(res.status === 'success') {
+                activeSession = res;
+                bootDashboard();
+            } else {
+                alert(res.message);
+            }
+        }).catch(() => alert("Network Handshake Error. Check Google Sheet Web App Deployment configurations."));
+    }
+
+    function executeRegister(e) {
+        e.preventDefault();
+        let payload = {
+            action: 'register',
+            name: document.getElementById('reg-name').value,
+            mobile: document.getElementById('reg-mobile').value,
+            pass: document.getElementById('reg-pass').value,
+            byRefer: document.getElementById('reg-byrefer').value
+        };
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status==='success') {
+                alert(`Registration Success! User ID assigned: ${res.userId}. Proceeding to Login.`);
+                toggleAuth('login');
+                document.getElementById('log-user').value = res.userId;
+            } else {
+                alert(res.message);
+            }
         });
     }
 
-    function handleRegister() {
-      let name = document.getElementById('regName').value;
-      let mobile = document.getElementById('regMobile').value;
-      let pass = document.getElementById('regPass').value;
-      let confirmPass = document.getElementById('regConfirmPass').value;
-      let byRefer = document.getElementById('regByRefer').value;
-
-      if(!name || !mobile || !pass || !confirmPass) return alert('Please fill in all mandatory fields');
-      
-      if(pass !== confirmPass) {
-        document.getElementById('regError').innerText = "Passwords do not match! Please check again.";
-        document.getElementById('regError').style.display = 'block';
-        return;
-      }
-
-      toggleLoader('regBtn', 'regSpinner', true);
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'register', name, mobile, pass, byRefer })
-      })
-      .then(res => res.json())
-      .then(data => {
-        toggleLoader('regBtn', 'regSpinner', false);
-        if(data.status === "success") {
-          document.getElementById('showUserId').innerText = data.userId;
-          document.getElementById('showPassword').innerText = pass;
-          switchForm('success');
-        } else {
-          document.getElementById('regError').innerText = data.message;
-          document.getElementById('regError').style.display = 'block';
-        }
-      })
-      .catch(err => {
-        toggleLoader('regBtn', 'regSpinner', false);
-        alert('Network connection error. Try again.');
-      });
+    function bootDashboard() {
+        document.getElementById('auth-gate').style.display = 'none';
+        document.getElementById('dash-gate').style.display = 'block';
+        document.getElementById('profile-name').innerText = activeSession.name;
+        
+        let t = new Date();
+        document.getElementById('profile-date').innerText = `Date: ${String(t.getDate()).padStart(2,'0')}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getFullYear()}`;
+        
+        syncWalletData();
+        loadModuleHistory("Deposit", "table-dep");
+        fetchUPIConfig();
     }
 
-    function handleForget() {
-      let userId = document.getElementById('forUser').value;
-      let mobile = document.getElementById('forMobile').value;
-      if(!userId || !mobile) return alert('Please enter both User ID and Mobile Number');
-
-      toggleLoader('forBtn', 'forSpinner', true);
-
-      fetch(API_URL + `?action=forget&userId=${userId}&mobile=${mobile}`)
+    function syncWalletData() {
+        fetch(`${DEPLOY_URL}?action=getDashboard&userId=${activeSession.userId}`)
         .then(res => res.json())
-        .then(data => {
-          toggleLoader('forBtn', 'forSpinner', false);
-          if(data.status === "success") {
-            document.getElementById('forgetError').style.display = 'none';
-            document.getElementById('forgetSuccess').innerText = "Your Password is: " + data.password;
-            document.getElementById('forgetSuccess').style.display = 'block';
-          } else {
-            document.getElementById('forgetSuccess').style.display = 'none';
-            document.getElementById('forgetError').innerText = data.message;
-            document.getElementById('forgetError').style.display = 'block';
-          }
-        })
-        .catch(err => {
-          toggleLoader('forBtn', 'forSpinner', false);
-          alert('Network connection error. Try again.');
+        .then(res => {
+            if(res.status==='success') {
+                document.getElementById('view-balance').innerText = formatCurrency(res.data.availableBalance);
+                document.getElementById('view-deposit').innerText = formatCurrency(res.data.deposit);
+                document.getElementById('view-earning').innerText = formatCurrency(res.data.earning);
+                document.getElementById('view-debit').innerText = formatCurrency(res.data.debit);
+            }
         });
     }
-  </script>
+
+    function switchView(panel) {
+        let targets = ['deposit', 'withdraw', 'kyc', 'refer'];
+        targets.forEach(t => {
+            document.getElementById(`v-${t}`).style.display = t===panel ? 'block' : 'none';
+            document.getElementById(`nt-${t.substring(0,3)}`).classList.toggle('active', t===panel);
+        });
+        if(panel==='deposit') loadModuleHistory("Deposit", "table-dep");
+        if(panel==='withdraw') loadModuleHistory("Withdrawal", "table-wit");
+        if(panel==='refer') loadReferralView();
+    }
+
+    function fetchUPIConfig() {
+        fetch(`${DEPLOY_URL}?action=getUpi`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status==='success') document.getElementById('live-gateway-upi').innerText = res.upiId;
+        });
+    }
+
+    function loadModuleHistory(sheet, targetTableId) {
+        let actionName = sheet === "Deposit" ? "getDepositHistory" : "getWithdrawHistory";
+        fetch(`${DEPLOY_URL}?action=${actionName}&userId=${activeSession.userId}`)
+        .then(res => res.json())
+        .then(res => {
+            let container = document.getElementById(targetTableId);
+            container.innerHTML = "";
+            if(res.status==='success' && res.data) {
+                res.data.forEach(item => {
+                    let row = document.createElement('tr');
+                    let badgeClass = item.status.toLowerCase() === 'approved' ? 'approved' : 'pending';
+                    if(sheet === "Deposit") {
+                        row.innerHTML = `<td>${item.date}</td><td>${formatCurrency(item.amount)}</td><td>${item.utr}</td><td><span class="badge ${badgeClass}">${item.status}</span></td>`;
+                    } else {
+                        row.innerHTML = `<td>${item.date}</td><td>${formatCurrency(item.amount)}</td><td><span class="badge ${badgeClass}">${item.status}</span></td>`;
+                    }
+                    container.appendChild(row);
+                });
+            }
+        });
+    }
+
+    function loadReferralView() {
+        fetch(`${DEPLOY_URL}?action=getReferralData&userId=${activeSession.userId}`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status==='success') {
+                document.getElementById('lbl-myrefer').innerText = res.ownReferCode;
+                document.getElementById('lbl-cnt-ref').innerText = res.totalRefers;
+                document.getElementById('lbl-sum-ref').innerText = formatCurrency(res.totalRewards);
+                
+                let container = document.getElementById('table-ref');
+                container.innerHTML = "";
+                res.history.forEach(item => {
+                    let row = document.createElement('tr');
+                    row.innerHTML = `<td>${item.date}</td><td>${item.user}</td><td>${formatCurrency(item.reward)}</td>`;
+                    container.appendChild(row);
+                });
+            }
+        });
+    }
+
+    function postDeposit(e) {
+        e.preventDefault();
+        let payload = {
+            action: 'deposit',
+            userId: activeSession.userId,
+            name: activeSession.name,
+            mobile: activeSession.mobile,
+            amount: document.getElementById('form-dep-amt').value,
+            utr: document.getElementById('form-dep-utr').value
+        };
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            document.getElementById('form-dep-amt').value = "";
+            document.getElementById('form-dep-utr').value = "";
+            switchView('deposit');
+        });
+    }
+
+    function postWithdraw(e) {
+        e.preventDefault();
+        let payload = {
+            action: 'withdraw',
+            userId: activeSession.userId,
+            name: activeSession.name,
+            mobile: activeSession.mobile,
+            amount: document.getElementById('form-wit-amt').value
+        };
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            document.getElementById('form-wit-amt').value = "";
+            syncWalletData();
+            switchView('withdraw');
+        });
+    }
+
+    function postKYC(e) {
+        e.preventDefault();
+        let payload = {
+            action: 'kyc',
+            userId: activeSession.userId,
+            name: activeSession.name,
+            mobile: activeSession.mobile,
+            paymentType: document.getElementById('form-kyc-type').value,
+            bankName: document.getElementById('form-kyc-bname').value,
+            accountNumber: document.getElementById('form-kyc-acc').value,
+            ifsc: document.getElementById('form-kyc-ifsc').value,
+            upiId: document.getElementById('form-kyc-upi').value
+        };
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => alert(res.message));
+    }
+
+    function triggerLogoff() {
+        activeSession = null;
+        document.getElementById('dash-gate').style.display = 'none';
+        document.getElementById('auth-gate').style.display = 'block';
+        document.getElementById('log-user').value = "";
+        document.getElementById('log-pass').value = "";
+    }
+</script>
 </body>
 </html>
