@@ -44,7 +44,7 @@
         .animated-btn:active { transform: scale(0.96); opacity: 0.9; }
         .animated-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
 
-        /* FIXED TOP HEADER */
+        /* FIXED TOP HEADER (STRICTLY LOCKED) */
         .fin-header { 
             background: linear-gradient(135deg, var(--fintech-purple), #3b1366); 
             padding: 18px 16px; 
@@ -53,10 +53,12 @@
             align-items: center; 
             justify-content: space-between; 
             z-index: 110; 
-            position: absolute; 
+            position: fixed; 
             top: 0; 
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
+            max-width: 480px;
             height: 60px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
         }
@@ -140,16 +142,18 @@
         .status-badge.rejected { background: #fee2e2; color: #dc2626; }
         .admin-remark { display: block; font-size: 11px; color: #64748b; font-style: italic; margin-top: 3px; font-weight: 500; }
         
-        /* FIXED BOTTOM TAB NAVIGATION BAR (STRICTLY LOCKED) */
+        /* FIXED BOTTOM TAB NAVIGATION BAR (STRICTLY LOCKED TO SCREEN BOTTOM) */
         .bottom-nav { 
             background: var(--pure-white); 
             border-top: 1px solid var(--border-soft); 
             display: flex; 
             padding: 6px 0; 
-            position: absolute; 
+            position: fixed; 
             bottom: 0; 
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
+            max-width: 480px;
             height: 60px;
             z-index: 110; 
             box-shadow: 0 -4px 12px rgba(0,0,0,0.03); 
@@ -383,7 +387,6 @@
     }
 
     function toggleDrawer(open) {
-        // Enforce block check if unauthorized
         if (!currentSession && open) return;
 
         const drawer = document.getElementById('menuDrawer');
@@ -532,7 +535,6 @@
         document.getElementById('panel-auth').style.display = 'none';
         document.getElementById('panel-dashboard').style.display = 'flex';
         
-        // Unlock header menu accessibility
         document.getElementById('headerBurgerMenu').classList.remove('disabled');
         
         document.getElementById('drawer-name').innerText = currentSession.name;
@@ -768,7 +770,6 @@
         currentSession = null;
         toggleDrawer(false);
         
-        // Relock burger menu on sign out
         document.getElementById('headerBurgerMenu').classList.add('disabled');
         
         document.getElementById('panel-dashboard').style.display = 'none';
