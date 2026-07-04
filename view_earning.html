@@ -58,8 +58,38 @@
         let html = "";
         if(data.status === "success") {
           data.history.forEach(row => {
+            
+            // 🎯 FAIL-SAFE DATE FORMATTER FOR STRICT DD-MM-YYYY RENDER
+            let displayDate = "N/A";
+            if (row.date) {
+              let strDate = row.date.toString().trim();
+              
+              // Handles ISO format like 2026-04-07T07:00:00.000Z
+              if (strDate.includes("T") && strDate.includes("-")) {
+                let cleanPart = strDate.split("T")[0]; // Got "2026-04-07"
+                let parts = cleanPart.split("-");
+                if (parts[0].length === 4) {
+                  displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                } else {
+                  displayDate = cleanPart;
+                }
+              }
+              // Handles formats that have spaces or slashed/dashed values
+              else if (strDate.includes("-") || strDate.includes("/")) {
+                let normStr = strDate.replace(/\//g, "-");
+                let parts = normStr.split("-");
+                if (parts[0].length === 4) {
+                  displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                } else {
+                  displayDate = normStr;
+                }
+              } else {
+                displayDate = strDate;
+              }
+            }
+
             html += `<tr>
-              <td>${row.date}</td>
+              <td>${displayDate}</td>
               <td><span class="profit-text">+₹${row.amount}</span></td>
               <td class="remark-text">${row.remark}</td>
             </tr>`;
