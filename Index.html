@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cashgain Indian Native Fintech App</title>
+    <style>
+        :root {
+            --fintech-purple: #5f259f;
+            --fintech-blue: #00baf2;
+            --dark-navy: #111726;
+            --pure-white: #ffffff;
+            --background-grey: #f5f7fa;
+            --border-soft: #e5e9f0;
+            --success-green: #22c55e;
+            --alert-orange: #f97316;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--background-grey); 
+            color: var(--dark-navy); 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+        }
+        
+        /* Device Enforcer Wrapper & Scroll Setup */
+        .app-shell { 
+            width: 100%; 
+            max-width: 480px; 
+            background: var(--pure-white); 
+            height: 100vh; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.08); 
+            overflow: hidden; 
+        }
+        
+        /* Click Micro-Animations */
+        .animated-btn { position: relative; transition: transform 0.1s ease, opacity 0.2s ease; cursor: pointer; }
+        .animated-btn:active { transform: scale(0.96); opacity: 0.9; }
+        .animated-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+
+        /* FIXED TOP HEADER (HIDDEN BY DEFAULT BEFORE LOGIN) */
+        .fin-header { 
+            display: none; /* Initial hidden condition until auth success */
+            background: linear-gradient(135deg, var(--fintech-purple), #3b1366); 
+            padding: 18px 16px; 
+            color: var(--pure-white); 
+            align-items: center; 
+            justify-content: space-between; 
+            z-index: 110; 
+            position: fixed; 
+            top: 0; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        .menu-burger { width: 32px; height: 32px; display: flex; flex-direction: column; justify-content: center; gap: 5px; cursor: pointer; }
+        .menu-burger div { width: 22px; height: 3px; background-color: var(--pure-white); border-radius: 2px; transition: 0.3s; }
+        .app-brand { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .app-brand span { color: var(--fintech-blue); }
+
+        /* Dynamic Main Body Scroll Area */
+        .main-scroll-content {
+            flex: 1;
+            margin-top: 0px;      /* Starts at 0px when unauthenticated */
+            margin-bottom: 0px;   
+            overflow-y: auto;      
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            -webkit-overflow-scrolling: touch; 
+        }
+        
+        /* Logged In Dynamic Buffer Pushes */
+        .app-shell.logged-in .main-scroll-content {
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        /* Navigation Smooth Drawer Menu Slider */
+        .menu-drawer { position: fixed; top: 0; left: -100%; width: 290px; height: 100%; background: var(--pure-white); z-index: 200; box-shadow: 5px 0 25px rgba(0,0,0,0.2); transition: left 0.35s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column; }
+        .menu-drawer.open { left: 0; }
+        .drawer-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 150; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .drawer-backdrop.show { display: block; opacity: 1; }
+        .drawer-header { background: var(--dark-navy); color: var(--pure-white); padding: 24px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--fintech-blue); }
+        .drawer-user-info h4 { font-size: 16px; font-weight: 700; }
+        .drawer-user-info p { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        .drawer-close-btn { font-size: 24px; color: var(--pure-white); background: transparent; border: none; cursor: pointer; padding: 5px; line-height: 1; }
+        .drawer-links { padding: 15px 0; display: flex; flex-direction: column; }
+        .drawer-item { padding: 14px 20px; font-size: 14px; font-weight: 600; color: #334155; display: flex; align-items: center; border-bottom: 1px solid var(--border-soft); }
+        .drawer-item:active { background-color: var(--background-grey); }
+
+        /* Auth Screen Setup */
+        .auth-container { padding: 45px 20px 25px 20px; width: 100%; display: flex; flex-direction: column; justify-content: center; background: var(--pure-white); min-height: 90vh; }
+        .auth-banner { text-align: center; margin-bottom: 30px; }
+        .auth-banner h2 { font-size: 24px; font-weight: 800; color: var(--dark-navy); }
+        .auth-banner p { font-size: 13px; color: #64748b; margin-top: 4px; }
+        
+        .fin-tabs { display: flex; background: #e2e8f0; padding: 4px; border-radius: 10px; margin-bottom: 24px; }
+        .fin-tab-trigger { flex: 1; padding: 11px; text-align: center; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #475569; border-radius: 8px; cursor: pointer; }
+        .fin-tab-trigger.active { background: var(--pure-white); color: var(--fintech-purple); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+        
+        .form-block { margin-bottom: 16px; }
+        .form-block label { display: block; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .form-block input, .form-block select { width: 100%; padding: 13px; border: 1px solid var(--border-soft); border-radius: 10px; font-size: 14px; background: var(--background-grey); color: var(--dark-navy); transition: all 0.2s; }
+        .form-block input:focus, .form-block select:focus { outline: none; border-color: var(--fintech-purple); background: var(--pure-white); box-shadow: 0 0 0 3px rgba(95,37,159,0.1); }
+        
+        .fin-primary-btn { width: 100%; padding: 14px; background: var(--fintech-purple); color: var(--pure-white); border: none; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(95,37,159,0.2); margin-top: 10px; }
+        .switch-link { text-align: center; font-size: 13px; color: var(--fintech-blue); font-weight: 600; margin-top: 18px; text-decoration: none; display: block; cursor: pointer; }
+
+        /* Unified Fintech Dashboard Grid */
+        .dashboard-wrapper { display: none; width: 100%; flex-direction: column; }
+        .wallet-card { margin: 16px; padding: 20px; background: linear-gradient(135deg, #1e1b4b, var(--dark-navy)); border-radius: 16px; color: var(--pure-white); box-shadow: 0 8px 20px rgba(17,23,38,0.15); position: relative; }
+        .wallet-card::after { content: ''; position: absolute; bottom: -20px; right: -20px; width: 100px; height: 100px; background: rgba(0,186,242,0.1); border-radius: 50%; }
+        .wallet-card p { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 600; }
+        .wallet-card h2 { font-size: 30px; font-weight: 800; margin-top: 4px; letter-spacing: -0.5px; color: var(--pure-white); }
+        
+        .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 16px 16px 16px; }
+        .grid-box { background: var(--pure-white); padding: 12px 8px; border-radius: 12px; border: 1px solid var(--border-soft); text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .grid-box span { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; }
+        .grid-box h4 { font-size: 13px; font-weight: 800; margin-top: 4px; color: var(--dark-navy); }
+
+        /* Content Modules */
+        .view-section { padding: 16px; display: none; width: 100%; }
+        .view-section h3 { font-size: 16px; font-weight: 800; margin-bottom: 14px; text-transform: uppercase; color: var(--dark-navy); border-left: 4px solid var(--fintech-blue); padding-left: 8px; letter-spacing: 0.3px; }
+        
+        .alert-card { background: #f0fdf4; border: 1px dashed #bbf7d0; padding: 12px; border-radius: 10px; font-size: 12px; color: #166534; line-height: 1.5; margin-bottom: 16px; }
+        .devnagari-hindi-box { display: none; background: #fff7ed; border: 1px solid #ffedd5; color: #c2410c; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; margin-bottom: 16px; line-height: 1.6; text-align: left; }
+        
+        /* Modern Native Fintech Table */
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 15px; border-radius: 12px; border: 1px solid var(--border-soft); }
+        .fin-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        .fin-table th { background: var(--background-grey); padding: 10px 8px; font-weight: 700; color: #475569; border-bottom: 1px solid var(--border-soft); }
+        .fin-table td { padding: 12px 8px; border-bottom: 1px solid var(--border-soft); background: var(--pure-white); color: #334155; }
+        
+        .status-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .status-badge.approved { background: #dcfce7; color: #16a34a; }
+        .status-badge.pending { background: #fef3c7; color: #d97706; }
+        .status-badge.rejected { background: #fee2e2; color: #dc2626; }
+        .admin-remark { display: block; font-size: 11px; color: #64748b; font-style: italic; margin-top: 3px; font-weight: 500; }
+        
+        /* FIXED BOTTOM TAB NAVIGATION BAR (HIDDEN BY DEFAULT BEFORE LOGIN) */
+        .bottom-nav { 
+            display: none; /* Initial hidden condition until auth success */
+            background: var(--pure-white); 
+            border-top: 1px solid var(--border-soft); 
+            padding: 6px 0; 
+            position: fixed; 
+            bottom: 0; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+            z-index: 110; 
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.03); 
+        }
+        .b-nav-item { flex: 1; text-align: center; background: transparent; border: none; font-size: 11px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; }
+        .b-nav-item.active { color: var(--fintech-purple); }
+        .b-nav-icon { width: 20px; height: 20px; fill: currentColor; }
+    </style>
+</head>
+<body>
+
+<div class="app-shell" id="globalAppShell">
+    <!-- TOP HEADER -->
+    <div class="fin-header" id="mainAppHeader">
+        <div class="menu-burger animated-btn" onclick="toggleDrawer(true)">
+            <div></div><div></div><div></div>
+        </div>
+        <div class="app-brand">CASH<span>GAIN</span></div>
+        <div style="width: 32px;"></div> 
+    </div>
+
+    <!-- BACKDROP DRAWER COMPONENTS -->
+    <div class="drawer-backdrop" id="menuBackdrop" onclick="toggleDrawer(false)"></div>
+    <div class="menu-drawer" id="menuDrawer">
+        <div class="drawer-header">
+            <div class="drawer-user-info">
+                <h4 id="drawer-name">Guest Profile</h4>
+                <p id="drawer-uid">ID: CGXXXX</p>
+            </div>
+            <button class="drawer-close-btn animated-btn" onclick="toggleDrawer(false)">✕</button>
+        </div>
+        <div class="drawer-links">
+            <div class="drawer-item" onclick="handleDrawerSelect('home')">🏠 Home Dashboard</div>
+            <div class="drawer-item" onclick="handleDrawerSelect('deposit_page')">💵 Deposit Panel</div>
+            <div class="drawer-item" onclick="handleDrawerSelect('earning')">📈 Growth History</div>
+            <div class="drawer-item" onclick="handleDrawerSelect('withdraw')">🏧 Withdrawal Vault</div>
+            <div class="drawer-item" onclick="handleDrawerSelect('kyc')">🆔 KYC verification</div>
+            <div class="drawer-item" style="color: #dc2626; margin-top: auto;" onclick="triggerLogoff()">🚪 Secure Logout</div>
+        </div>
+    </div>
+
+    <!-- DYNAMIC SCROLL CONTAINER -->
+    <div class="main-scroll-content">
+        
+        <!-- MODULE PANEL: AUTH SYSTEM -->
+        <div id="panel-auth" class="auth-container">
+            <div class="auth-banner">
+                <h2 id="auth-title">Welcome back</h2>
+                <p id="auth-desc">Sign in to manage your settlement funds</p>
+            </div>
+            
+            <div class="fin-tabs" id="auth-tab-row">
+                <button class="fin-tab-trigger active" id="btn-tab-login" onclick="switchAuthFlow('login')">Sign In</button>
+                <button class="fin-tab-trigger" id="btn-tab-reg" onclick="switchAuthFlow('reg')">Register</button>
+            </div>
+
+            <div id="form-login-shell">
+                <form onsubmit="executeLogin(event)">
+                    <div class="form-block"><label>User ID / Mobile</label><input type="text" id="in-log-user" placeholder="Enter registration identifier" required></div>
+                    <div class="form-block"><label>Password</label><input type="password" id="in-log-pass" placeholder="••••••••" required></div>
+                    <button type="submit" class="fin-primary-btn animated-btn">Log In Securely</button>
+                    <div class="switch-link" onclick="switchAuthFlow('forget')">Forgot Security Password?</div>
+                </form>
+            </div>
+
+            <div id="form-reg-shell" style="display: none;">
+                <form onsubmit="executeRegister(event)">
+                    <div class="form-block"><label>Full Name</label><input type="text" id="in-reg-name" placeholder="As per legal paperwork" required></div>
+                    <div class="form-block"><label>Mobile Number</label><input type="tel" id="in-reg-mobile" pattern="[0-9]{10}" placeholder="10-digit smartphone token" required></div>
+                    <div class="form-block"><label>Create Password</label><input type="password" id="in-reg-pass" placeholder="Password token character" required></div>
+                    <div class="form-block"><label>Sponsor Refer Code</label><input type="text" id="in-reg-refer" placeholder="Optional code entry" oninput="verifyReferrerNameRealtime()"></div>
+                    <button type="submit" class="fin-primary-btn animated-btn" style="background: var(--success-green); box-shadow: 0 4px 12px rgba(34,197,94,0.2);">Complete Registration</button>
+                    <div class="switch-link" onclick="switchAuthFlow('login')">Already have a profile? Sign In</div>
+                </form>
+            </div>
+
+            <div id="form-forget-shell" style="display: none;">
+                <form onsubmit="executePasswordReset(event)">
+                    <div class="form-block"><label>User ID</label><input type="text" id="in-for-uid" placeholder="Example: CG1001" required></div>
+                    <div class="form-block"><label>Registered Mobile</label><input type="tel" id="in-for-mobile" pattern="[0-9]{10}" placeholder="10-digit number entry" required></div>
+                    <div class="form-block"><label>Set New Password</label><input type="password" id="in-for-pass" placeholder="Establish new password code" required></div>
+                    <button type="submit" class="fin-primary-btn animated-btn" style="background: var(--alert-orange); box-shadow: 0 4px 12px rgba(249,115,22,0.2);">Confirm New Password</button>
+                    <div class="switch-link" onclick="switchAuthFlow('login')">Return to Authentication Interface</div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODULE PANEL: LOGGED IN INTERACTIVE DASHBOARD -->
+        <div id="panel-dashboard" class="dashboard-wrapper">
+            <!-- GLOBAL APP CARD SHOWING AVAILABLE BALANCE -->
+            <div class="wallet-card">
+                <p>Available Balance</p>
+                <h2 id="lbl-balance">₹00.00</h2>
+                <div style="font-size: 11px; color:#cbd5e1; margin-top:8px; font-weight:500;" id="lbl-date-stamp">Date: --/--/----</div>
+            </div>
+
+            <!-- WALLET TOTALS STATUS GRID -->
+            <div class="grid-stats">
+                <div class="grid-box"><span>Deposit</span><h4 id="lbl-deposit">₹00.00</h4></div>
+                <div class="grid-box"><span>Earning</span><h4 id="lbl-earning">₹00.00</h4></div>
+                <div class="grid-box"><span>Withdrawal</span><h4 id="lbl-debit">₹00.00</h4></div>
+            </div>
+
+            <!-- VIEW: HOME MODULE -->
+            <div id="mod-home" class="view-section" style="display: block;">
+                <!-- REFERRAL LINK SHARE BUTTON -->
+                <div style="padding: 0; margin-bottom: 15px;">
+                    <div class="alert-card" style="text-align: center; margin-bottom: 10px; background: #f8fafc; border: 1px solid var(--border-soft); color: var(--dark-navy);">
+                        Your Personal Referral Identity Token:
+                        <strong style="font-size:18px; color:var(--fintech-purple); display:block; margin-top:4px;" id="lbl-my-ref-string">---</strong>
+                    </div>
+                    <button class="fin-primary-btn animated-btn" style="background:var(--fintech-blue); box-shadow:0 4px 12px rgba(0,186,242,0.2); margin-top:0; padding: 11px;" onclick="copyAndShareReferralLink()">🔗 Copy & Share Invite Link</button>
+                </div>
+                
+                <!-- TOTAL REFERRAL & TOTAL REWARDS BOX -->
+                <div class="grid-stats" style="margin: 0 0 20px 0; grid-template-columns: 1fr 1fr;">
+                    <div class="grid-box"><span>Total Referral</span><h4 id="lbl-cnt-refer">0 Member</h4></div>
+                    <div class="grid-box"><span>Total Rewards</span><h4 id="lbl-sum-refer">₹00.00</h4></div>
+                </div>
+            </div>
+
+            <!-- VIEW: SEPARATE DEPOSIT PORTAL CORE PAGE -->
+            <div id="mod-deposit_page" class="view-section">
+                <h3>Deposit Portal Core</h3>
+                <div class="alert-card">Select preferred transaction engine method and route requested capital amounts directly into gateway address node.</div>
+                
+                <div class="alert-card" style="background:#fff7ed; border: 1px solid #ffedd5; text-align:center; color: var(--dark-navy)">
+                    Merchant UPI ID Node: <strong id="lbl-gateway-upi" style="color:var(--fintech-purple)">Fetching Configuration...</strong>
+                </div>
+
+                <div id="devnagari-paytm" class="devnagari-hindi-box">पेटीएम से पेमेंट करने के बाद 18-digit या 12-digit का Ref Number कॉपी करें।</div>
+                <div id="devnagari-phonepe" class="devnagari-hindi-box">PhonePe से पेमेंट करने के बाद 12-digit का UTR Number कॉपी करें।</div>
+
+                <form onsubmit="handleUpiDeepLinkRouting(event)">
+                    <div class="form-block"><label>Amount (₹)</label><input type="number" id="in-dep-amount" step="0.01" placeholder="00.00" required></div>
+                    <div class="form-block">
+                        <label>Choose Payment Application</label>
+                        <select id="in-dep-method" onchange="toggleDevnagariAlert()" required>
+                            <option value="">-- Choose UPI Application --</option>
+                            <option value="Paytm">Paytm Wallet / Core UPI</option>
+                            <option value="PhonePe">PhonePe Application Gateway</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="fin-primary-btn animated-btn" style="background:var(--success-green); box-shadow:0 4px 12px rgba(34,197,94,0.2);">Pay Now via UPI Node</button>
+                </form>
+
+                <form onsubmit="postDepositUtrRequest(event)" style="margin-top:20px; padding-top:15px; border-top: 2px dashed var(--border-soft);">
+                    <p style="font-size:11px; font-weight:800; color:var(--alert-orange); margin-bottom:10px; text-transform:uppercase;">Step 2: Log Settlement Ref Token</p>
+                    <div class="form-block"><label>Pasted Reference / UTR Number</label><input type="text" id="in-dep-utr" placeholder="Paste complete transaction reference string" required></div>
+                    <button type="submit" class="fin-primary-btn animated-btn">Submit Request</button>
+                </form>
+
+                <h3 style="margin-top: 25px; margin-bottom: 5px;">Deposit History Logs</h3>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Amount</th><th>UTR Key</th><th>Status Matrix</th></tr></thead>
+                        <tbody id="data-body-deposit"></tbody>
+                    </table>
+                </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 5px;">Referral History Logs</h3>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Joined User</th><th>Bonus Reward</th></tr></thead>
+                        <tbody id="data-body-refer"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: EARNINGS MODULE -->
+            <div id="mod-earning" class="view-section">
+                <h3>Daily ROI Ledger</h3>
+                <div class="alert-card">This history log lists permanent daily ROI computations written securely directly onto the operational server books.</div>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Earning Amount</th><th>Description Label</th></tr></thead>
+                        <tbody id="data-body-earning"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: WITHDRAWAL MODULE -->
+            <div id="mod-withdraw" class="view-section">
+                <h3>Withdrawal Vault</h3>
+                <div class="alert-card">Ensure your structural bank account specifications within the KYC validation panel are completely accurate prior to requesting payouts.</div>
+                <form onsubmit="postWithdrawRequest(event)">
+                    <div class="form-block"><label>Amount (₹)</label><input type="number" id="in-wit-amount" step="0.01" placeholder="00.00" required></div>
+                    <button type="submit" class="fin-primary-btn animated-btn" style="background:var(--alert-orange); box-shadow:0 4px 12px rgba(249,115,22,0.2);">Initiate Payout</button>
+                </form>
+                <div class="table-responsive">
+                    <table class="fin-table">
+                        <thead><tr><th>Date</th><th>Amount</th><th>Status Matrix</th></tr></thead>
+                        <tbody id="data-body-withdraw"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: KYC MODULE -->
+            <div id="mod-kyc" class="view-section">
+                <h3>KYC Bank Parameters</h3>
+                <div class="alert-card">Update your bank routing targets correctly. Submitted configurations are evaluated by the backend parameters engine.</div>
+                <form onsubmit="postKycRequest(event)">
+                    <div class="form-block"><label>Transfer Matrix Type</label><select id="in-kyc-type" onchange="toggleKycFormFields()"><option value="BANK">IMPS / NEFT Bank Account</option><option value="UPI">Virtual Private Address (UPI VPA)</option></select></div>
+                    <div id="fields-kyc-bank">
+                        <div class="form-block"><label>Bank Structure Name</label><input type="text" id="in-kyc-bname" placeholder="SBI, HDFC, ICICI, etc."></div>
+                        <div class="form-block"><label>Account Number</label><input type="text" id="in-kyc-acc" placeholder="Bank ledger account identification number"></div>
+                        <div class="form-block"><label>IFSC Code</label><input type="text" id="in-kyc-ifsc" placeholder="11-digit alphanumeric key" style="text-transform:uppercase;"></div>
+                    </div>
+                    <div id="fields-kyc-upi" style="display: none;">
+                        <div class="form-block"><label>UPI Handle ID</label><input type="text" id="in-kyc-upi" placeholder="username@upi"></div>
+                    </div>
+                    <button type="submit" class="fin-primary-btn animated-btn">Update KYC Configuration</button>
+                </form>
+            </div>
+        </div>
+    </div> <!-- SCROLL CONTAINER END -->
+
+    <!-- LOCKED BOTTOM TAB NAVIGATION BAR -->
+    <div class="bottom-nav" id="mainAppFooter">
+        <button class="b-nav-item active" id="bn-hom" onclick="switchDashboardView('home')">
+            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Home
+        </button>
+        <button class="b-nav-item" id="bn-ear" onclick="switchDashboardView('earning')">
+            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+            Earnings
+        </button>
+        <!-- Deposit button successfully placed to the right side of Earnings -->
+        <button class="b-nav-item" id="bn-dep" onclick="switchDashboardView('deposit_page')">
+            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 0 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            Deposit
+        </button>
+        <button class="b-nav-item" id="bn-wit" onclick="switchDashboardView('withdraw')">
+            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M19 14V6c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2zm-7-2c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm6 4H6v2h12v-2z"/></svg>
+            Withdraw
+        </button>
+        <button class="b-nav-item" id="bn-kyc" onclick="switchDashboardView('kyc')">
+            <svg class="b-nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            KYC
+        </button>
+    </div>
+</div>
+
+<script>
+    const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbzpcOs409fNf5WqX7oXpiwKNDA0Z2CI4ul1TObJ1roIdyeSI8dLPfdSd0qFYcQFugFh/exec";
+    
+    let currentSession = null;
+    let cachedMerchantUpi = "";
+    let doubleClickLock = false;
+
+    function acquireLock() {
+        if (doubleClickLock) return false;
+        doubleClickLock = true;
+        setTimeout(() => { doubleClickLock = false; }, 2000);
+        return true;
+    }
+
+    function toggleDrawer(open) {
+        if (!currentSession && open) return;
+
+        const drawer = document.getElementById('menuDrawer');
+        const backdrop = document.getElementById('menuBackdrop');
+        if (open) {
+            drawer.classList.add('open');
+            backdrop.classList.add('show');
+        } else {
+            drawer.classList.remove('open');
+            backdrop.classList.remove('show');
+        }
+    }
+
+    function handleDrawerSelect(moduleTarget) {
+        toggleDrawer(false);
+        switchDashboardView(moduleTarget);
+    }
+
+    function switchAuthFlow(flow) {
+        document.getElementById('form-login-shell').style.display = flow === 'login' ? 'block' : 'none';
+        document.getElementById('form-reg-shell').style.display = flow === 'reg' ? 'block' : 'none';
+        document.getElementById('form-forget-shell').style.display = flow === 'forget' ? 'block' : 'none';
+        document.getElementById('auth-tab-row').style.display = flow === 'forget' ? 'none' : 'flex';
+        
+        const title = document.getElementById('auth-title');
+        const desc = document.getElementById('auth-desc');
+        
+        if(flow === 'login') {
+            title.innerText = "Welcome back"; desc.innerText = "Sign in to manage your settlement funds";
+            document.getElementById('btn-tab-login').classList.add('active');
+            document.getElementById('btn-tab-reg').classList.remove('active');
+        } else if (flow === 'reg') {
+            title.innerText = "Create Account"; desc.innerText = "Establish financial gateway parameters";
+            document.getElementById('btn-tab-login').classList.remove('active');
+            document.getElementById('btn-tab-reg').classList.add('active');
+        } else {
+            title.innerText = "Account Recovery"; desc.innerText = "Validate core profile to overwrite password credentials";
+        }
+    }
+
+    function toggleKycFormFields() {
+        let selection = document.getElementById('in-kyc-type').value;
+        document.getElementById('fields-kyc-bank').style.display = selection === 'BANK' ? 'block' : 'none';
+        document.getElementById('fields-kyc-upi').style.display = selection === 'UPI' ? 'block' : 'none';
+    }
+
+    function toggleDevnagariAlert() {
+        let appMethod = document.getElementById('in-dep-method').value;
+        document.getElementById('devnagari-paytm').style.display = appMethod === 'Paytm' ? 'block' : 'none';
+        document.getElementById('devnagari-phonepe').style.display = appMethod === 'PhonePe' ? 'block' : 'none';
+    }
+
+    let nameSearchTimeout = null;
+    function verifyReferrerNameRealtime() {
+        clearTimeout(nameSearchTimeout);
+        let inputField = document.getElementById('in-reg-refer');
+        let rawCode = inputField.value.trim();
+        if(rawCode.includes(" (")) rawCode = rawCode.split(" (")[0].trim();
+        
+        if (rawCode.length < 5) return;
+        
+        nameSearchTimeout = setTimeout(() => {
+            fetch(`${DEPLOY_URL}?action=checkReferrerName&refCode=${encodeURIComponent(rawCode)}`)
+            .then(r => r.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    inputField.value = `${rawCode} (${res.name})`;
+                    inputField.style.color = 'var(--success-green)';
+                } else {
+                    inputField.style.color = 'var(--alert-orange)';
+                }
+            });
+        }, 600);
+    }
+
+    function executeLogin(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let u = document.getElementById('in-log-user').value;
+        let p = document.getElementById('in-log-pass').value;
+        
+        fetch(`${DEPLOY_URL}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                currentSession = res;
+                bootMainFintechApplication();
+            } else {
+                alert(res.message);
+            }
+        }).catch(() => alert("Connection error. Check script URL structure parameters."));
+    }
+
+    function executeRegister(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let payload = {
+            action: 'register',
+            name: document.getElementById('in-reg-name').value,
+            mobile: document.getElementById('in-reg-mobile').value,
+            pass: document.getElementById('in-reg-pass').value,
+            byRefer: document.getElementById('in-reg-refer').value
+        };
+        
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                alert(`Registration processing complete! Allocated User ID token: ${res.userId}. Navigating to security gate.`);
+                switchAuthFlow('login');
+                document.getElementById('in-log-user').value = res.userId;
+            } else {
+                alert(res.message);
+            }
+        });
+    }
+
+    function executePasswordReset(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let payload = {
+            action: 'forget',
+            userId: document.getElementById('in-for-uid').value,
+            mobile: document.getElementById('in-for-mobile').value,
+            newPass: document.getElementById('in-for-pass').value
+        };
+        
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            if(res.status === 'success') {
+                switchAuthFlow('login');
+                document.getElementById('in-log-user').value = payload.userId;
+                document.getElementById('in-for-uid').value = "";
+                document.getElementById('in-for-mobile').value = "";
+                document.getElementById('in-for-pass').value = "";
+            }
+        });
+    }
+
+    function bootMainFintechApplication() {
+        // Enforce structural visibility layouts
+        document.getElementById('globalAppShell').classList.add('logged-in');
+        document.getElementById('mainAppHeader').style.display = 'flex';
+        document.getElementById('mainAppFooter').style.display = 'flex';
+        
+        document.getElementById('panel-auth').style.display = 'none';
+        document.getElementById('panel-dashboard').style.display = 'flex';
+        
+        document.getElementById('drawer-name').innerText = currentSession.name;
+        document.getElementById('drawer-uid').innerText = `ID: ${currentSession.userId}`;
+        
+        let d = new Date();
+        document.getElementById('lbl-date-stamp').innerText = `Date: ${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+        
+        refreshWalletBalances();
+        pullFintechModuleHistory("Deposit", "data-body-deposit");
+        pullReferralPanelData();
+        fetchGatewayUpiIdConfiguration();
+    }
+
+    function refreshWalletBalances() {
+        fetch(`${DEPLOY_URL}?action=getDashboard&userId=${currentSession.userId}`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                document.getElementById('lbl-balance').innerText = "₹" + parseFloat(res.data.availableBalance).toFixed(2);
+                document.getElementById('lbl-deposit').innerText = "₹" + parseFloat(res.data.deposit).toFixed(2);
+                document.getElementById('lbl-earning').innerText = "₹" + parseFloat(res.data.earning).toFixed(2);
+                document.getElementById('lbl-debit').innerText = "₹" + parseFloat(res.data.debit).toFixed(2);
+            }
+        });
+    }
+
+    function switchDashboardView(viewName) {
+        let components = ['home', 'deposit_page', 'earning', 'withdraw', 'kyc'];
+        components.forEach(c => {
+            let element = document.getElementById(`mod-${c}`);
+            if(element) element.style.display = c === viewName ? 'block' : 'none';
+            
+            let navBtn = document.getElementById(`bn-${c.substring(0,3)}`);
+            if(navBtn) navBtn.classList.toggle('active', c === viewName);
+        });
+        
+        if (viewName === 'home') {
+            refreshWalletBalances();
+            pullReferralPanelData();
+        }
+        if (viewName === 'deposit_page') {
+            pullFintechModuleHistory("Deposit", "data-body-deposit");
+            fetchGatewayUpiIdConfiguration();
+        }
+        if (viewName === 'earning') pullEarningHistoryLogs();
+        if (viewName === 'withdraw') pullFintechModuleHistory("Withdrawal", "data-body-withdraw");
+    }
+
+    function fetchGatewayUpiIdConfiguration() {
+        fetch(`${DEPLOY_URL}?action=getUpi`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                cachedMerchantUpi = res.upiId;
+                let elem = document.getElementById('lbl-gateway-upi');
+                if(elem) elem.innerText = res.upiId;
+            }
+        });
+    }
+
+    function handleUpiDeepLinkRouting(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let amt = document.getElementById('in-dep-amount').value;
+        let method = document.getElementById('in-dep-method').value;
+        
+        if(!method) { alert("Please select payment application software target."); return; }
+        if(!cachedMerchantUpi) { alert("Gateway engine initialization in progress. Please retry."); return; }
+        
+        let targetDeepLinkString = `upi://pay?pa=${encodeURIComponent(cachedMerchantUpi)}&pn=CASHGAIN&am=${encodeURIComponent(amt)}&cu=INR`;
+        window.location.href = targetDeepLinkString;
+    }
+
+    function postDepositUtrRequest(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let payload = {
+            action: 'deposit',
+            userId: currentSession.userId,
+            name: currentSession.name,
+            mobile: currentSession.mobile,
+            amount: document.getElementById('in-dep-amount').value,
+            method: document.getElementById('in-dep-method').value,
+            utr: document.getElementById('in-dep-utr').value
+        };
+        
+        if(!payload.amount || !payload.method) { alert("Please complete Step 1 prior to submission logs tracking."); return; }
+        
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            document.getElementById('in-dep-amount').value = "";
+            document.getElementById('in-dep-method').value = "";
+            document.getElementById('in-dep-utr').value = "";
+            toggleDevnagariAlert();
+            pullFintechModuleHistory("Deposit", "data-body-deposit");
+        });
+    }
+
+    function pullFintechModuleHistory(sheetTitle, htmlTargetTableId) {
+        let targetAction = sheetTitle === "Deposit" ? "getDepositHistory" : "getWithdrawHistory";
+        fetch(`${DEPLOY_URL}?action=${targetAction}&userId=${currentSession.userId}`)
+        .then(res => res.json())
+        .then(res => {
+            let body = document.getElementById(htmlTargetTableId);
+            if(!body) return;
+            body.innerHTML = "";
+            if(res.status === 'success' && res.data) {
+                res.data.forEach(row => {
+                    let tr = document.createElement('tr');
+                    let rawStatus = row.status.trim();
+                    let badgeClass = 'pending';
+                    
+                    if(rawStatus.toLowerCase() === 'approved') badgeClass = 'approved';
+                    if(rawStatus.toLowerCase() === 'rejected') badgeClass = 'rejected';
+                    
+                    let embeddedRemark = row.message ? `<span class="admin-remark">Remark: ${row.message}</span>` : "";
+                    
+                    if(sheetTitle === "Deposit") {
+                        tr.innerHTML = `<td>${row.date}</td><td>₹${parseFloat(row.amount).toFixed(2)}</td><td>${row.utr}</td><td><span class="status-badge ${badgeClass}">${rawStatus}</span>${embeddedRemark}</td>`;
+                    } else {
+                        tr.innerHTML = `<td>${row.date}</td><td>₹${parseFloat(row.amount).toFixed(2)}</td><td><span class="status-badge ${badgeClass}">${rawStatus}</span>${embeddedRemark}</td>`;
+                    }
+                    body.appendChild(tr);
+                });
+            }
+        });
+    }
+
+    function pullEarningHistoryLogs() {
+        fetch(`${DEPLOY_URL}?action=getEarningHistory&userId=${currentSession.userId}`)
+        .then(res => res.json())
+        .then(res => {
+            let body = document.getElementById('data-body-earning');
+            if(!body) return;
+            body.innerHTML = "";
+            if(res.status === 'success' && res.data) {
+                res.data.forEach(row => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${row.date}</td><td style="color:var(--success-green); font-weight:700;">+₹${parseFloat(row.amount).toFixed(2)}</td><td>${row.remark}</td>`;
+                    body.appendChild(tr);
+                });
+            }
+        });
+    }
+
+    function postWithdrawRequest(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let payload = {
+            action: 'withdraw',
+            userId: currentSession.userId,
+            name: currentSession.name,
+            mobile: currentSession.mobile,
+            amount: document.getElementById('in-wit-amount').value
+        };
+        
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            document.getElementById('in-wit-amount').value = "";
+            refreshWalletBalances();
+            pullFintechModuleHistory("Withdrawal", "data-body-withdraw");
+        });
+    }
+
+    function postKycRequest(e) {
+        e.preventDefault();
+        if (!acquireLock()) return;
+        
+        let payload = {
+            action: 'kyc',
+            userId: currentSession.userId,
+            name: currentSession.name,
+            mobile: currentSession.mobile,
+            paymentType: document.getElementById('in-kyc-type').value,
+            bankName: document.getElementById('in-kyc-bname').value,
+            accountNumber: document.getElementById('in-kyc-acc').value,
+            ifsc: document.getElementById('in-kyc-ifsc').value,
+            upiId: document.getElementById('in-kyc-upi').value
+        };
+        
+        fetch(DEPLOY_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => alert(res.message));
+    }
+
+    function pullReferralPanelData() {
+        fetch(`${DEPLOY_URL}?action=getReferralData&userId=${currentSession.userId}`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                document.getElementById('lbl-my-ref-string').innerText = res.ownReferCode;
+                document.getElementById('lbl-cnt-refer').innerText = `${res.totalRefers} Member`;
+                document.getElementById('lbl-sum-refer').innerText = "₹" + parseFloat(res.totalRewards).toFixed(2);
+                
+                let body = document.getElementById('data-body-refer');
+                if(!body) return;
+                body.innerHTML = "";
+                res.history.forEach(item => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${item.date}</td><td>${item.user}</td><td style="color:var(--success-green); font-weight:700;">+₹${parseFloat(item.reward).toFixed(2)}</td>`;
+                    body.appendChild(tr);
+                });
+            }
+        });
+    }
+
+    function copyAndShareReferralLink() {
+        let code = document.getElementById('lbl-my-ref-string').innerText;
+        if(code === "---") return;
+        
+        let cleanUrl = window.location.href.split('?')[0];
+        let compiledLink = `${cleanUrl}?ref=${code}`;
+        
+        navigator.clipboard.writeText(compiledLink).then(() => {
+            alert("Referral Link copied successfully! Share it on WhatsApp to invite members.");
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        let searchParams = new URLSearchParams(window.location.search);
+        let refToken = searchParams.get('ref');
+        
+        if (refToken) {
+            switchAuthFlow('reg');
+            let referInput = document.getElementById('in-reg-refer');
+            if(referInput) {
+                referInput.value = refToken.trim();
+                verifyReferrerNameRealtime();
+            }
+        }
+    });
+
+    function triggerLogoff() {
+        currentSession = null;
+        toggleDrawer(false);
+        
+        // Relock structural visibility states
+        document.getElementById('globalAppShell').classList.remove('logged-in');
+        document.getElementById('mainAppHeader').style.display = 'none';
+        document.getElementById('mainAppFooter').style.display = 'none';
+        
+        document.getElementById('panel-dashboard').style.display = 'none';
+        document.getElementById('panel-auth').style.display = 'flex';
+        switchAuthFlow('login');
+        document.getElementById('in-log-user').value = "";
+        document.getElementById('in-log-pass').value = "";
+    }
+</script>
+</body>
+</html>
