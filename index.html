@@ -21,7 +21,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://ranjanlab.github.io/WinCash/">
 
-    <!-- Schema Markup for Google Site Name (Ye Google Search me "WinCash" dikhayega) -->
+    <!-- Schema Markup for Google Site Name -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -31,8 +31,8 @@
     }
     </script>
 
-    <!-- Google Site Verification (Aapko apna code yahan dalna hoga) -->
-    <!-- <meta name="google-site-verification" content="google4309aeaee1feabf3.html" /> -->
+    <!-- Google Site Verification -->
+    <meta name="google-site-verification" content="4309aeaee1feabf3" />
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -254,6 +254,12 @@
             line-height: 1.6;
         }
 
+        /* NEW SECTION ADDED FOR SEO (How to Play) */
+        .features.how-to-play {
+            background: var(--bg-light); 
+            border-top: none;
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -289,22 +295,20 @@
             font-size: 18px;
             font-weight: 700;
             border: none;
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.7); /* Badhaya hua shadow */
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.7); 
             animation: pulse-glow 2s infinite;
             position: relative;
-            overflow: hidden; /* Important for shimmer effect */
+            overflow: hidden; 
         }
 
-        /* Button Text & Icon Wrapper */
         .floating-btn span {
             position: relative;
-            z-index: 2; /* Keeps text above the shimmer */
+            z-index: 2; 
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* Shimmer Effect (Slower & Brighter) */
         .floating-btn::after {
             content: '';
             position: absolute;
@@ -314,24 +318,22 @@
             height: 100%;
             background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0) 100%);
             transform: skewX(-25deg);
-            animation: shimmer 4s infinite ease-in-out; /* Speed dheemi karne ke liye 4 seconds kiya */
-            z-index: 1; /* Keeps shimmer behind text */
+            animation: shimmer 4s infinite ease-in-out; 
+            z-index: 1; 
         }
 
-        /* Animations for Highlight & Slow Shimmer */
         @keyframes pulse-glow {
             0% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6); transform: scale(1); }
-            50% { box-shadow: 0 0 40px rgba(34, 197, 94, 1); transform: scale(1.05); } /* Thoda zyada bada aur chamakdar glow */
+            50% { box-shadow: 0 0 40px rgba(34, 197, 94, 1); transform: scale(1.05); } 
             100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6); transform: scale(1); }
         }
 
         @keyframes shimmer {
             0% { left: -100%; }
-            40% { left: 200%; } /* Dheere se guzrega (4 seconds ka 40% time lega) */
-            100% { left: 200%; } /* Fir thodi der rukega next animation ke liye */
+            40% { left: 200%; } 
+            100% { left: 200%; } 
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
             .hero p { font-size: 16px; }
@@ -400,7 +402,7 @@
     </section>
 
     <!-- NEW SECTION ADDED FOR SEO (How to Play) -->
-    <section class="features text-center" style="background: var(--bg-light); border-top: none;">
+    <section class="features how-to-play text-center">
         <div class="container">
             <h2 class="section-title">कैसे खेलें और पैसे जीतें?</h2>
             <p class="section-subtitle">WinCash के साथ शुरुआत करना बहुत आसान है</p>
